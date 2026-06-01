@@ -7,7 +7,7 @@ import { requireUser } from '@/lib/server/auth';
 import { db } from '@/lib/server/db';
 import { createToken, expiresAfterDays, hashToken } from '@/lib/server/security';
 
-export interface TutorActionState { error?: string; message?: string }
+export interface TutorActionState { error?: string; message?: string; shareLink?: string }
 
 function text(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
@@ -67,7 +67,8 @@ export async function createInviteAction(_: TutorActionState, formData: FormData
     insert into tutee_invites (tutor_id, display_name, token_hash, expires_at)
     values (${tutor.id}, ${displayName}, ${hashToken(token)}, ${expiresAfterDays(7)})
   `;
-  redirect(`/tutor?share=${encodeURIComponent(`/auth?invite=${token}`)}`);
+  revalidatePath('/tutor');
+  return { shareLink: `/auth?invite=${token}` };
 }
 
 export async function revokeInviteAction(formData: FormData) {

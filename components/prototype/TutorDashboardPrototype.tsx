@@ -61,10 +61,11 @@ function Header({ username }: { username: string }) {
 
 function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
   const [state, action, pending] = useActionState(createInviteAction, {});
+  const activeLink = state.shareLink ?? sharedLink;
   return (
     <section className="manage-card">
       <h2>학습자 초대</h2>
-      {sharedLink && <div className="share-link"><strong>공유할 링크</strong><code>{sharedLink}</code></div>}
+      {activeLink && <div className="share-link"><strong>공유할 링크</strong><code>{activeLink}</code></div>}
       <form className="compact-form" action={action}>
         <input name="displayName" placeholder="학습자 이름" required maxLength={40} />
         <button disabled={pending} type="submit">{pending ? '생성 중' : '초대 링크 만들기'}</button>
