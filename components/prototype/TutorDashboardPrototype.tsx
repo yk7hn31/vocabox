@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, MotionConfig } from 'framer-motion';
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import type { SavedList, TutorAssignment, TutorDashboardData, TutorTutee } from '@/lib/models';
 import type { WordItem } from '@/components/practice/types';
@@ -182,10 +182,27 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
         ))}
       </div>
 
-      {mounted && sheetOpen && createPortal(
+      {mounted && createPortal(
+        <AnimatePresence>
+          {sheetOpen && (
         <div className="csv-editor-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
-          <button className="csv-editor-backdrop" type="button" onClick={() => setSheetOpen(false)} aria-label="닫기" />
-          <div className="csv-editor-sheet">
+          <motion.button
+            className="csv-editor-backdrop"
+            type="button"
+            onClick={() => setSheetOpen(false)}
+            aria-label="닫기"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+          <motion.div
+            className="csv-editor-sheet"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
+          >
             <div className="csv-editor-grabber" aria-hidden="true" />
             <div className="csv-editor-header">
               <div>
@@ -243,8 +260,10 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
                 편집 완료
               </button>
             </div>
-          </div>
-        </div>,
+          </motion.div>
+        </div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </section>
