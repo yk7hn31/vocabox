@@ -105,6 +105,30 @@
   --shadow-lg: rgba(4, 69, 144, 0.08) 0px 14px 20px 4px;
   --shadow-subtle: rgba(10, 13, 18, 0.8) 0px 1px 2px 0px, rgb(10, 13, 18) 0px 0px 0px 1px;
 
+  /* Form controls */
+  --form-control-bg: #fbfdff;
+  --form-control-bg-hover: #ffffff;
+  --form-control-bg-disabled: #edf3f8;
+  --form-control-border: #dfeaf3;
+  --form-control-border-strong: #dce7ef;
+  --form-control-border-hover: #cfe2f1;
+  --form-control-border-focus: var(--color-electric-blue);
+  --form-control-focus-ring: 0 0 0 3px rgba(0, 105, 224, .1);
+  --form-control-placeholder: #94a3b8;
+  --form-control-text-disabled: var(--color-ash-gray);
+  --form-control-radius: 10px;
+  --form-control-radius-lg: 12px;
+  --form-button-bg: var(--color-midnight-ink);
+  --form-button-bg-hover: #252d3c;
+  --form-button-bg-disabled: #d1d9e0;
+  --form-button-secondary-bg: #f7fbff;
+  --form-button-secondary-bg-hover: #ffffff;
+  --form-button-secondary-text: var(--color-silver-pine);
+  --form-button-danger-bg: #fff4f5;
+  --form-button-danger-bg-hover: #ffe8eb;
+  --form-button-danger-border: #ffd1d5;
+  --form-button-danger-text: #d92d3a;
+
   /* Surfaces */
   --surface-sky-wash-canvas: #ebf5ff;
   --surface-canvas-white-base: #ffffff;
@@ -1097,6 +1121,17 @@ select {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
+  transition: color .15s ease;
+}
+
+.auth-identified-change:hover {
+  color: #005fc9;
+}
+
+.auth-identified-change:focus-visible,
+.auth-text-action:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
 }
 
 .auth-progress {
@@ -1144,21 +1179,33 @@ select {
   display: block;
   height: 52px;
   width: 100%;
-  border-radius: 12px;
-  border: 1.5px solid #dce7ef;
+  border-radius: var(--form-control-radius-lg);
+  border: 1.5px solid var(--form-control-border-strong);
   background: var(--white);
   color: var(--obs);
   padding: 0 15px;
   margin-top: 8px;
   font-size: var(--form-control-font-size);
-  transition: border-color .15s ease, box-shadow .15s ease;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.auth-form input:not([type="checkbox"]):hover:not(:disabled) {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
 }
 
 .auth-form input:focus,
 .coach-panel select:focus {
-  border-color: var(--elec);
-  box-shadow: 0 0 0 3px rgba(0, 105, 224, .1);
+  border-color: var(--form-control-border-focus);
+  box-shadow: var(--form-control-focus-ring);
   outline: none;
+}
+
+.auth-form input:disabled {
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
 }
 
 .otp-field-label {
@@ -1177,8 +1224,8 @@ select {
 .otp-box {
   flex: 1;
   height: 52px;
-  border: 1.5px solid #dce7ef;
-  border-radius: 12px;
+  border: 1.5px solid var(--form-control-border-strong);
+  border-radius: var(--form-control-radius-lg);
   background: var(--white);
   text-align: center;
   font-size: 22px;
@@ -1191,9 +1238,14 @@ select {
   padding: 0;
 }
 
+.otp-box:hover {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
+}
+
 .otp-box:focus {
-  border-color: var(--elec);
-  box-shadow: 0 0 0 3px rgba(0, 105, 224, .1);
+  border-color: var(--form-control-border-focus);
+  box-shadow: var(--form-control-focus-ring);
 }
 
 .otp-box.has-value {
@@ -1208,16 +1260,33 @@ select {
   justify-content: center;
   border: 0;
   border-radius: 28px;
-  background: var(--ink);
+  background: var(--form-button-bg);
   color: var(--white);
   font-size: var(--button-font-size);
   font-weight: 600;
   cursor: pointer;
   margin-top: 4px;
+  transition: background .18s ease, color .18s ease;
 }
 
 .auth-primary:hover {
-  background: #252d3c;
+  background: var(--form-button-bg-hover);
+}
+
+.auth-primary:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
+}
+
+.auth-primary:disabled {
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
+}
+
+.auth-primary:disabled:hover {
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
 }
 
 .auth-text-action {
@@ -1641,13 +1710,19 @@ select {
   display: block;
   width: 100%;
   height: 39px;
-  border-radius: 9px;
-  border: 1px solid #dce7ef;
+  border-radius: var(--form-control-radius);
+  border: 1px solid var(--form-control-border-strong);
   color: var(--obs);
   background: var(--white);
   padding: 0 8px;
   margin-top: 8px;
   font-size: var(--form-control-font-size);
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.coach-panel select:hover {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
 }
 
 .coach-panel button,
@@ -1665,22 +1740,17 @@ select {
   font-weight: 600;
   cursor: pointer;
   padding: 0 17px;
-  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
 
 .coach-panel button:not(.app-select-trigger):not(.app-date-trigger):hover,
-.new-assignment:hover,
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):hover,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):hover {
-  box-shadow: 0 8px 16px rgba(10, 13, 18, .12);
+.new-assignment:hover {
+  background: var(--form-button-bg-hover);
 }
 
 .coach-panel button:not(.app-select-trigger):not(.app-date-trigger):active,
-.new-assignment:active,
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):active,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):active {
-  box-shadow: none;
-  transform: scale(.99);
+.new-assignment:active {
+  background: var(--form-button-bg-hover);
 }
 
 .coach-panel button .feather-icon,
@@ -1952,7 +2022,7 @@ select {
   cursor: pointer;
   font-weight: 600;
   padding: 0 12px;
-  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
 .tutor-header button.prototype-account-link:hover,
@@ -1964,7 +2034,23 @@ select {
 
 .tutor-header button.prototype-account-link:active,
 .tutee-header button.prototype-account-link:active {
-  transform: scale(.98);
+  border-color: #dce9f4;
+  background: var(--white);
+  color: var(--obs);
+}
+
+.tutor-header button.prototype-account-link:focus-visible,
+.tutee-header button.prototype-account-link:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
+}
+
+.tutor-header button.prototype-account-link:disabled,
+.tutee-header button.prototype-account-link:disabled {
+  border-color: transparent;
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
 }
 
 .management-grid {
@@ -2002,9 +2088,9 @@ select {
 .assignment-form input,
 .assignment-record input {
   width: 100%;
-  border: 1px solid #dfeaf3;
-  border-radius: 10px;
-  background: #fbfdff;
+  border: 1px solid var(--form-control-border);
+  border-radius: var(--form-control-radius);
+  background: var(--form-control-bg);
   color: var(--obs);
   padding: 10px;
   font: inherit;
@@ -2012,29 +2098,87 @@ select {
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
+.manage-card input:hover,
+.manage-card textarea:hover,
+.assignment-form input:hover,
+.assignment-record input:hover {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
+}
+
 .manage-card input:focus,
 .manage-card textarea:focus,
-.assignment-form input:focus {
+.assignment-form input:focus,
+.assignment-record input:focus {
   outline: none;
-  border-color: var(--elec);
-  box-shadow: 0 0 0 3px rgba(0, 105, 224, .08);
+  border-color: var(--form-control-border-focus);
+  box-shadow: var(--form-control-focus-ring);
+  background: var(--form-control-bg-hover);
+}
+
+.manage-card input:disabled,
+.manage-card textarea:disabled,
+.assignment-form input:disabled,
+.assignment-record input:disabled {
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
 }
 
 .manage-card button,
 .assignment-record button {
   border: 0;
-  border-radius: 10px;
-  background: var(--ink);
+  border-radius: var(--form-control-radius);
+  background: var(--form-button-bg);
   color: var(--white);
   cursor: pointer;
   padding: 10px 14px;
   font-size: var(--button-font-size);
   font-weight: 600;
-  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
 .manage-card button {
   width: 100%;
+}
+
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):hover,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):hover {
+  background: var(--form-button-bg-hover);
+}
+
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):focus-visible,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
+}
+
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):disabled,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):disabled {
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
+}
+
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover {
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
+}
+
+.manage-card .mini-list button {
+  background: var(--form-button-secondary-bg);
+  color: var(--form-button-secondary-text);
+  border: 1px solid var(--form-control-border);
+  padding: 6px 8px;
+}
+
+.manage-card .mini-list button:hover {
+  background: var(--form-button-secondary-bg-hover);
+  border-color: var(--form-control-border-hover);
+  color: var(--obs);
+  box-shadow: none;
 }
 
 .share-link {
@@ -2093,9 +2237,6 @@ select {
 }
 
 .mini-list button {
-  background: #f1f6fa;
-  color: var(--pine);
-  padding: 6px 8px;
   width: auto;
 }
 
@@ -2107,9 +2248,9 @@ select {
 .csv-upload-target {
   position: relative;
   min-height: 84px;
-  border: 1px dashed #c3d8ea;
+  border: 1px dashed var(--form-control-border-hover);
   border-radius: 14px;
-  background: #f8fbfd;
+  background: var(--form-control-bg);
   color: var(--pine);
   display: grid;
   place-items: center;
@@ -2117,21 +2258,31 @@ select {
   padding: 15px;
   text-align: center;
   cursor: pointer;
-  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
 }
 
 .csv-upload-target:hover {
-  border-color: var(--elec);
-  background: var(--white);
-  box-shadow: 0 8px 16px rgba(0, 105, 224, .06);
+  border-color: var(--form-control-border-focus);
+  background: var(--form-control-bg-hover);
+}
+
+.csv-upload-target:focus-within {
+  border-color: var(--form-control-border-focus);
+  background: var(--form-control-bg-hover);
+  box-shadow: var(--form-control-focus-ring);
 }
 
 .csv-upload-target.is-parsing {
-  border-color: var(--elec);
-  background: #f6fbff;
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
   cursor: wait;
   pointer-events: none;
-  opacity: .75;
+}
+
+.csv-upload-target.is-parsing span,
+.csv-upload-target.is-parsing small {
+  color: var(--form-control-text-disabled);
 }
 
 .csv-upload-target input {
@@ -2190,7 +2341,7 @@ select {
 }
 
 .csv-entries-edit {
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: var(--ghostly);
   color: var(--elec);
@@ -2203,6 +2354,11 @@ select {
 
 .csv-entries-edit:hover {
   background: #b8ddff;
+}
+
+.csv-entries-edit:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 2px;
 }
 
 /* ──────────────────────────────────────────────
@@ -2369,19 +2525,19 @@ select {
   padding: 9px 10px;
   font: inherit;
   font-size: var(--form-control-font-size);
-  transition: border-color .15s, background .15s;
+  transition: border-color .15s, background .15s, box-shadow .15s;
 }
 
 .csv-editor-table input:hover {
-  background: var(--card);
-  border-color: var(--ghostly);
+  background: var(--form-control-bg);
+  border-color: var(--form-control-border-hover);
 }
 
 .csv-editor-table input:focus {
   outline: none;
-  border-color: var(--elec);
-  background: var(--white);
-  box-shadow: 0 0 0 3px rgba(0, 105, 224, .08);
+  border-color: var(--form-control-border-focus);
+  background: var(--form-control-bg-hover);
+  box-shadow: var(--form-control-focus-ring);
 }
 
 .csv-editor-footer {
@@ -2439,16 +2595,27 @@ select {
   box-shadow: 0 1px 3px rgba(10, 13, 18, .1);
 }
 
+.assign-mode-toggle button:hover {
+  background: var(--form-control-bg-hover);
+  color: var(--obs);
+}
+
+.assign-mode-toggle button:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 2px;
+}
+
 .assignment-form input[type="number"] {
   width: 100%;
   height: 42px;
-  border: 1px solid #dfeaf3;
-  border-radius: 11px;
-  background: #fbfdff;
+  border: 1px solid var(--form-control-border);
+  border-radius: var(--form-control-radius);
+  background: var(--form-control-bg);
   color: var(--obs);
   font: inherit;
   font-size: var(--form-control-font-size);
   padding: 0 12px;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
 .assignment-mode-badge {
@@ -2539,9 +2706,9 @@ select {
   width: 100%;
   height: 36px;
   padding: 0 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background: #fff;
+  border: 1px solid var(--form-control-border);
+  border-radius: var(--form-control-radius);
+  background: var(--form-control-bg);
   color: var(--obs);
   font: inherit;
   font-size: 14px;
@@ -2551,17 +2718,22 @@ select {
   justify-content: space-between;
   gap: 8px;
   text-align: left;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s, background .15s, box-shadow .15s;
   outline: none;
 }
 
+.app-select-trigger:hover {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
+}
+
 .app-select-trigger:focus-visible {
-  border-color: #94a3b8;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, .07);
+  border-color: var(--form-control-border-focus);
+  box-shadow: var(--form-control-focus-ring);
 }
 
 .app-select-trigger--empty {
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
 }
 
 .app-select-trigger > span {
@@ -2575,7 +2747,7 @@ select {
   flex-shrink: 0;
   width: 14px;
   height: 14px;
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
   transition: transform .18s ease;
 }
 
@@ -2587,7 +2759,7 @@ select {
   position: fixed;
   z-index: 100;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--form-control-border);
   border-radius: 8px;
   box-shadow: 0 4px 24px rgba(10, 13, 18, .12), 0 1px 4px rgba(10, 13, 18, .06);
   padding: 4px;
@@ -2613,7 +2785,7 @@ select {
 }
 
 .app-select-option:hover {
-  background: #f1f5f9;
+  background: var(--form-control-bg);
 }
 
 .app-select-option.is-selected {
@@ -2623,7 +2795,7 @@ select {
 }
 
 .app-select-option.is-disabled {
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
   cursor: default;
   pointer-events: none;
 }
@@ -2634,9 +2806,9 @@ select {
   width: 100%;
   height: 36px;
   padding: 0 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background: #fff;
+  border: 1px solid var(--form-control-border);
+  border-radius: var(--form-control-radius);
+  background: var(--form-control-bg);
   color: var(--obs);
   font: inherit;
   font-size: 14px;
@@ -2645,29 +2817,34 @@ select {
   align-items: center;
   gap: 8px;
   text-align: left;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s, background .15s, box-shadow .15s;
   outline: none;
 }
 
+.app-date-trigger:hover {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-control-bg-hover);
+}
+
 .app-date-trigger:focus-visible {
-  border-color: #94a3b8;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, .07);
+  border-color: var(--form-control-border-focus);
+  box-shadow: var(--form-control-focus-ring);
 }
 
 .app-date-trigger--empty {
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
 }
 
 .app-date-icon {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
 }
 
 .app-calendar {
   position: fixed;
   z-index: 100;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--form-control-border);
   border-radius: 10px;
   box-shadow: 0 4px 24px rgba(10, 13, 18, .12), 0 1px 4px rgba(10, 13, 18, .06);
   padding: 12px;
@@ -2684,7 +2861,7 @@ select {
 .app-calendar-nav-btn {
   width: 28px;
   height: 28px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--form-control-border);
   border-radius: 6px;
   background: transparent;
   color: var(--pine);
@@ -2696,8 +2873,15 @@ select {
 }
 
 .app-calendar-nav-btn:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--form-control-bg);
+  border-color: var(--form-control-border-hover);
+}
+
+.app-calendar-nav-btn:focus-visible,
+.app-calendar-day:focus-visible,
+.app-calendar-clear:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 2px;
 }
 
 .app-calendar-month {
@@ -2717,7 +2901,7 @@ select {
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
   padding: 2px 0;
 }
 
@@ -2744,7 +2928,7 @@ select {
 }
 
 .app-calendar-day:hover {
-  background: #f1f5f9;
+  background: var(--form-control-bg);
 }
 
 .app-calendar-day.is-today {
@@ -2760,14 +2944,14 @@ select {
 
 .app-calendar-footer {
   margin-top: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--form-control-border);
   padding-top: 8px;
 }
 
 .app-calendar-clear {
   border: 0;
   background: transparent;
-  color: #94a3b8;
+  color: var(--form-control-placeholder);
   font: inherit;
   font-size: 12px;
   cursor: pointer;
@@ -2783,7 +2967,7 @@ select {
   width: 100%;
   height: 40px;
   border: 0;
-  border-radius: 11px;
+  border-radius: var(--form-control-radius);
   background: var(--elec);
   color: var(--white);
   font-size: 13px;
@@ -2793,7 +2977,7 @@ select {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
 
 .assignment-submit:hover {
@@ -2801,8 +2985,19 @@ select {
 }
 
 .assignment-submit:disabled {
-  opacity: .45;
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
   cursor: not-allowed;
+}
+
+.assignment-submit:disabled:hover {
+  background: var(--form-button-bg-disabled);
+  color: var(--form-control-text-disabled);
+}
+
+.assignment-submit:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
 }
 
 .assignment-record-title {
@@ -2838,7 +3033,8 @@ select {
 }
 
 .record-actions .danger {
-  background: var(--coral-b);
+  background: var(--form-button-danger-bg);
+  color: var(--form-button-danger-text);
 }
 
 .student-account-actions {
@@ -2848,10 +3044,10 @@ select {
 .student-account-actions button,
 .assignment-record .record-actions button {
   height: 34px;
-  border: 1px solid #dfeaf3;
-  border-radius: 10px;
-  background: #f7fbff;
-  color: var(--pine);
+  border: 1px solid var(--form-control-border);
+  border-radius: var(--form-control-radius);
+  background: var(--form-button-secondary-bg);
+  color: var(--form-button-secondary-text);
   padding: 0 12px;
   font-size: 12px;
   font-weight: 700;
@@ -2860,16 +3056,38 @@ select {
 
 .student-account-actions button:hover,
 .assignment-record .record-actions button:hover {
-  border-color: #cfe2f1;
-  background: var(--white);
-  box-shadow: 0 6px 12px rgba(30, 47, 67, .045);
+  border-color: var(--form-control-border-hover);
+  background: var(--form-button-secondary-bg-hover);
+  color: var(--obs);
+  box-shadow: none;
 }
 
 .student-account-actions .danger,
 .assignment-record .record-actions .danger {
-  border-color: #ffd1d5;
-  background: #fff4f5;
-  color: #d92d3a;
+  border-color: var(--form-button-danger-border);
+  background: var(--form-button-danger-bg);
+  color: var(--form-button-danger-text);
+}
+
+.student-account-actions .danger:hover,
+.assignment-record .record-actions .danger:hover {
+  border-color: var(--form-button-danger-border);
+  background: var(--form-button-danger-bg-hover);
+  color: var(--form-button-danger-text);
+}
+
+.student-account-actions button:focus-visible,
+.assignment-record .record-actions button:focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
+}
+
+.student-account-actions button:disabled,
+.assignment-record .record-actions button:disabled {
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
 }
 
 .assignment-records {
