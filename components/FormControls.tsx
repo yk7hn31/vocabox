@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { FeatherIcon } from '@/components/FeatherIcon';
 
 // ── shared portal dropdown behaviour ──────────────────────────────────────
 
@@ -100,9 +101,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
         onClick={toggle}
       >
         <span>{selected?.label ?? placeholder}</span>
-        <svg className={`app-select-chevron${open ? ' is-open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        <FeatherIcon className={`app-select-chevron${open ? ' is-open' : ''}`} name="chevron-down" />
       </button>
       {mounted && createPortal(
         <AnimatePresence>
@@ -128,9 +127,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
                 >
                   <span>{opt.label}</span>
                   {opt.value === value && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="13" height="13" aria-hidden="true">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    <FeatherIcon name="check" strokeWidth={2.5} width={13} height={13} />
                   )}
                 </li>
               ))}
@@ -212,12 +209,6 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <svg className="app-date-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <rect x="3" y="4" width="18" height="18" rx="2" />
-          <line x1="16" y1="2" x2="16" y2="6" />
-          <line x1="8" y1="2" x2="8" y2="6" />
-          <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
         <span>{value ? formatKorean(value) : placeholder}</span>
       </button>
       {mounted && createPortal(
@@ -236,11 +227,11 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
             >
               <div className="app-calendar-nav">
                 <button type="button" className="app-calendar-nav-btn" onClick={prevMonth} aria-label="이전 달">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><polyline points="15 18 9 12 15 6" /></svg>
+                  <FeatherIcon name="chevron-left" width={14} height={14} />
                 </button>
                 <span className="app-calendar-month">{year}년 {month + 1}월</span>
                 <button type="button" className="app-calendar-nav-btn" onClick={nextMonth} aria-label="다음 달">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14"><polyline points="9 18 15 12 9 6" /></svg>
+                  <FeatherIcon name="chevron-right" width={14} height={14} />
                 </button>
               </div>
               <div className="app-calendar-weekdays">
@@ -280,5 +271,88 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
         document.body
       )}
     </>
+  );
+}
+
+// ── AppNumberInput ──────────────────────────────────────────────────────────
+
+interface AppNumberInputProps {
+  name: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  defaultValue?: number | string;
+  placeholder?: string;
+  required?: boolean;
+}
+
+export function AppNumberInput({
+  name,
+  min,
+  max,
+  step = 1,
+  defaultValue = '',
+  placeholder,
+  required,
+}: AppNumberInputProps) {
+  const [value, setValue] = useState(String(defaultValue));
+
+  const numVal = value === '' ? null : Number(value);
+
+  const clamp = (n: number) => {
+    let v = n;
+    if (min !== undefined) v = Math.max(min, v);
+    if (max !== undefined) v = Math.min(max, v);
+    return v;
+  };
+
+  const decrement = () => {
+    const base = numVal ?? (min ?? 0);
+    setValue(String(clamp(base - step)));
+  };
+
+  const increment = () => {
+    const base = numVal ?? (min ?? 0);
+    setValue(String(clamp(base + step)));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value.replace(/\D/g, ''));
+  };
+
+  const handleBlur = () => {
+    if (value === '') return;
+    const n = Number(value);
+    setValue(isNaN(n) ? '' : String(clamp(n)));
+  };
+
+  const canDecrement = numVal !== null && (min === undefined || numVal > min);
+  const canIncrement = numVal === null || max === undefined || numVal < max;
+
+  return (
+    <div className="app-number-input">
+      <input type="hidden" name={name} value={value} required={required} />
+      <button type="button" className="app-number-btn" onClick={decrement} disabled={!canDecrement} aria-label="감소">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="14" height="14" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+      <input
+        type="text"
+        inputMode="numeric"
+        className="app-number-field"
+        value={value}
+        placeholder={placeholder}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        aria-label={name}
+      />
+      <button type="button" className="app-number-btn" onClick={increment} disabled={!canIncrement} aria-label="증가">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="14" height="14" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </button>
+    </div>
   );
 }

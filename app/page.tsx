@@ -158,11 +158,11 @@ export default async function Home() {
             <p className="format-label">지원 CSV 형식</p>
             <pre>
               <code>{`word,pos,meanings
-resilient,형용사,회복력 있는
-run,동사,달리다;운영하다
-novel,명사,소설`}</code>
+resilient,adj,회복력 있는
+run,v,달리다;운영하다
+novel,n,소설`}</code>
             </pre>
-            <p className="format-hint">뜻이 여러 개면 세미콜론으로 구분하세요.</p>
+            <p className="format-hint">pos는 n=명사, adj=형용사, v=동사처럼 짧게 쓸 수 있어요.</p>
           </div>
         </section>
 

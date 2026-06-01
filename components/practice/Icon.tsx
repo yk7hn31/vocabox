@@ -15,9 +15,9 @@ interface IconProps {
 
 const iconNames = {
   x: 'x',
-  check: 'check',
+  check: 'check-circle',
   heart: 'heart',
-  cup: 'upload-cloud',
+  cup: 'upload',
   cr: 'chevron-right',
   ccw: 'rotate-ccw',
   award: 'award',

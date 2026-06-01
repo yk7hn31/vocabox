@@ -6,7 +6,7 @@ import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import type { SavedList, TutorAssignment, TutorDashboardData, TutorTutee } from '@/lib/models';
 import type { WordItem } from '@/components/practice/types';
-import { importVocabularyCsv } from '@/components/practice/preparation';
+import { importVocabularyCsv, POS_CODE_HINTS } from '@/components/practice/preparation';
 import { changeTutorPasswordAction, logoutAction } from '@/app/actions/auth';
 import {
   createAssignmentAction,
@@ -23,7 +23,7 @@ import {
   updateAssignmentDueDateAction,
 } from '@/app/actions/tutor';
 import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/prototype/FeatherIcons';
-import { AppSelect, AppDateInput } from '@/components/FormControls';
+import { AppSelect, AppDateInput, AppNumberInput } from '@/components/FormControls';
 import { SubmitButton } from '@/components/SubmitButton';
 
 type TuteeStatus = 'attention' | 'steady' | 'excellent';
@@ -161,7 +161,7 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
         <label className={`csv-upload-target${parsing ? ' is-parsing' : ''}`}>
           <input accept=".csv,text/csv" type="file" disabled={parsing} onChange={event => uploadCsv(event.target.files?.[0])} />
           <span>{parsing ? '파일 분석 중...' : csvFileName || 'CSV 파일 업로드'}</span>
-          <small>{parsing ? '' : entries.length ? `${entries.length}개 단어 검토됨` : 'word,pos,meanings 형식'}</small>
+          <small>{parsing ? '' : entries.length ? `${entries.length}개 단어 검토됨` : `word,pos,meanings · ${POS_CODE_HINTS.slice(0, 3).map(({ code, label }) => `${code}=${label}`).join(', ')}`}</small>
         </label>
         {entries.length > 0 && (
           <div className="csv-entries-bar">
@@ -451,7 +451,7 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
                     {assignMode === 'test' && (
                       <label>
                         <span>시험 시간 (분)</span>
-                        <input name="timeLimitMinutes" type="number" min="1" max="180" placeholder="예: 20" required />
+                        <AppNumberInput name="timeLimitMinutes" min={1} max={180} placeholder="예: 20" required />
                       </label>
                     )}
                   </div>

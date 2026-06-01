@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import type { WordItem } from '@/components/practice/types';
+import { normalizePartOfSpeech } from '@/components/practice/preparation';
 import { requireUser } from '@/lib/server/auth';
 import { db } from '@/lib/server/db';
 import { createToken, expiresAfterDays, hashToken } from '@/lib/server/security';
@@ -19,7 +20,7 @@ function entriesFromForm(formData: FormData): WordItem[] | null {
     if (!Array.isArray(entries) || entries.length < 1 || entries.length > 500) return null;
     const cleaned = entries.map(item => ({
       word: String(item.word ?? '').trim(),
-      pos: String(item.pos ?? '').trim(),
+      pos: normalizePartOfSpeech(String(item.pos ?? '')),
       meanings: Array.isArray(item.meanings) ? item.meanings.map(value => String(value).trim()).filter(Boolean) : [],
     }));
     return cleaned.every(item =>

@@ -8,6 +8,68 @@ export type VocabularyImport =
 
 const FALLBACK_DISTRACTORS = ['없다', '있다', '하다', '되다', '보다', '주다', '오다', '가다'];
 
+export const POS_CODE_HINTS = [
+  { code: 'n', label: '명사' },
+  { code: 'adj', label: '형용사' },
+  { code: 'v', label: '동사' },
+  { code: 'adv', label: '부사' },
+  { code: 'prep', label: '전치사' },
+  { code: 'conj', label: '접속사' },
+  { code: 'pron', label: '대명사' },
+  { code: 'interj', label: '감탄사' },
+] as const;
+
+const POS_ALIASES: Record<string, string> = {
+  n: '명사',
+  noun: '명사',
+  '명사': '명사',
+  adj: '형용사',
+  adjective: '형용사',
+  '형용사': '형용사',
+  v: '동사',
+  verb: '동사',
+  '동사': '동사',
+  adv: '부사',
+  adverb: '부사',
+  '부사': '부사',
+  prep: '전치사',
+  preposition: '전치사',
+  '전치사': '전치사',
+  conj: '접속사',
+  conjunction: '접속사',
+  '접속사': '접속사',
+  pron: '대명사',
+  pronoun: '대명사',
+  '대명사': '대명사',
+  interj: '감탄사',
+  interjection: '감탄사',
+  '감탄사': '감탄사',
+  det: '한정사',
+  determiner: '한정사',
+  '한정사': '한정사',
+  art: '관사',
+  article: '관사',
+  '관사': '관사',
+  aux: '조동사',
+  auxiliary: '조동사',
+  '조동사': '조동사',
+  num: '수사',
+  numeral: '수사',
+  '수사': '수사',
+  phrase: '구',
+  phr: '구',
+  '구': '구',
+  idiom: '숙어',
+  '숙어': '숙어',
+};
+
+export function normalizePartOfSpeech(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+
+  return POS_ALIASES[trimmed.toLowerCase().replace(/\.$/, '')] ?? trimmed;
+}
+
 function shuffle<T>(items: T[], random: RandomSource): T[] {
   const result = [...items];
 
@@ -48,7 +110,7 @@ export function importVocabularyCsv(text: string): VocabularyImport {
   const items = rows.slice(1).flatMap(row => {
     const columns = parseRow(row);
     const word = (columns[wordIndex] || '').trim();
-    const pos = posIndex >= 0 ? (columns[posIndex] || '').trim() : '';
+    const pos = posIndex >= 0 ? normalizePartOfSpeech(columns[posIndex] || '') : '';
     const rawMeanings = (columns[meaningIndex] || '').replace(/^"|"$/g, '').trim();
     const meanings = rawMeanings.split(';').map(meaning => meaning.trim()).filter(Boolean);
 
@@ -124,13 +186,13 @@ function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boo
 }
 
 export const SAMPLE_VOCABULARY = `word,pos,meanings
-ubiquitous,형용사,어디에나 있는
-ephemeral,형용사,일시적인
-ambiguous,형용사,모호한
-eloquent,형용사,웅변적인
-resilient,형용사,회복력 있는
-run,동사,달리다;운영하다;작동하다
-run,명사,달리기;연속
-bank,명사,은행;강둑
-novel,형용사,새로운;참신한
-novel,명사,소설`;
+ubiquitous,adj,어디에나 있는
+ephemeral,adj,일시적인
+ambiguous,adj,모호한
+eloquent,adj,웅변적인
+resilient,adj,회복력 있는
+run,v,달리다;운영하다;작동하다
+run,n,달리기;연속
+bank,n,은행;강둑
+novel,adj,새로운;참신한
+novel,n,소설`;

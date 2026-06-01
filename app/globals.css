@@ -1890,7 +1890,7 @@ select {
 
 .coach-board {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: start;
   gap: 11px;
 }
@@ -2126,8 +2126,7 @@ select {
   cursor: not-allowed;
 }
 
-.manage-card button,
-.assignment-record button {
+:where(.manage-card, .assignment-record) button {
   border: 0;
   border-radius: var(--form-control-radius);
   background: var(--form-button-bg);
@@ -2139,30 +2138,26 @@ select {
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.manage-card button {
+:where(.manage-card) button {
   width: 100%;
 }
 
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):hover,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):hover {
+:where(.manage-card, .assignment-record) button:not(:where(.app-select-trigger, .app-date-trigger)):hover {
   background: var(--form-button-bg-hover);
 }
 
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):focus-visible,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):focus-visible {
+:where(.manage-card, .assignment-record) button:not(:where(.app-select-trigger, .app-date-trigger)):focus-visible {
   outline: 2px solid var(--form-control-border-focus);
   outline-offset: 3px;
 }
 
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):disabled,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):disabled {
+:where(.manage-card, .assignment-record) button:not(:where(.app-select-trigger, .app-date-trigger)):disabled {
   background: var(--form-button-bg-disabled);
   color: var(--form-control-text-disabled);
   cursor: not-allowed;
 }
 
-.manage-card button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover,
-.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover {
+:where(.manage-card, .assignment-record) button:not(:where(.app-select-trigger, .app-date-trigger)):disabled:hover {
   background: var(--form-button-bg-disabled);
   color: var(--form-control-text-disabled);
 }
@@ -2174,11 +2169,24 @@ select {
   padding: 6px 8px;
 }
 
-.manage-card .mini-list button:hover {
+.manage-card .mini-list button:not(.app-select-trigger):not(.app-date-trigger):hover:not(:disabled) {
   background: var(--form-button-secondary-bg-hover);
   border-color: var(--form-control-border-hover);
   color: var(--obs);
   box-shadow: none;
+}
+
+.manage-card .mini-list button:not(.app-select-trigger):not(.app-date-trigger):focus-visible {
+  outline: 2px solid var(--form-control-border-focus);
+  outline-offset: 3px;
+}
+
+.manage-card .mini-list button:not(.app-select-trigger):not(.app-date-trigger):disabled,
+.manage-card .mini-list button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover {
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
 }
 
 .share-link {
@@ -2335,12 +2343,15 @@ select {
 }
 
 .csv-entries-bar > span {
+  flex: 1;
+  min-width: 0;
   color: var(--pine);
   font-size: 13px;
   font-weight: 600;
 }
 
 .csv-entries-edit {
+  flex: 0 0 auto;
   border: 1px solid transparent;
   border-radius: 8px;
   background: var(--ghostly);
@@ -2349,7 +2360,12 @@ select {
   font-weight: 600;
   padding: 6px 12px;
   cursor: pointer;
+  white-space: nowrap;
   transition: background .15s;
+}
+
+.manage-card .csv-entries-edit {
+  width: auto;
 }
 
 .csv-entries-edit:hover {
@@ -2963,6 +2979,69 @@ select {
   color: var(--coral-b);
 }
 
+/* ── AppNumberInput ─────────────────────────────────────────────────── */
+
+.app-number-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.app-number-input:focus-within {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, .07);
+}
+
+.app-number-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s, color .12s;
+}
+
+.app-number-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: var(--obs);
+}
+
+.app-number-btn:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.app-number-field {
+  flex: 1;
+  height: 100%;
+  border: 0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  background: transparent;
+  text-align: center;
+  font: inherit;
+  font-size: 14px;
+  color: var(--obs);
+  padding: 0;
+  outline: none;
+  min-width: 0;
+}
+
+.app-number-field::placeholder {
+  color: #94a3b8;
+}
+
 .assignment-submit {
   width: 100%;
   height: 40px;
@@ -3062,6 +3141,13 @@ select {
   box-shadow: none;
 }
 
+.assignment-record .record-actions button:not(.app-select-trigger):not(.app-date-trigger):hover:not(:disabled) {
+  border-color: var(--form-control-border-hover);
+  background: var(--form-button-secondary-bg-hover);
+  color: var(--obs);
+  box-shadow: none;
+}
+
 .student-account-actions .danger,
 .assignment-record .record-actions .danger {
   border-color: var(--form-button-danger-border);
@@ -3076,6 +3162,13 @@ select {
   color: var(--form-button-danger-text);
 }
 
+.assignment-record .record-actions .danger:not(.app-select-trigger):not(.app-date-trigger):hover:not(:disabled) {
+  border-color: var(--form-button-danger-border);
+  background: var(--form-button-danger-bg-hover);
+  color: var(--form-button-danger-text);
+  box-shadow: none;
+}
+
 .student-account-actions button:focus-visible,
 .assignment-record .record-actions button:focus-visible {
   outline: 2px solid var(--form-control-border-focus);
@@ -3084,6 +3177,14 @@ select {
 
 .student-account-actions button:disabled,
 .assignment-record .record-actions button:disabled {
+  border-color: var(--form-control-border);
+  background: var(--form-control-bg-disabled);
+  color: var(--form-control-text-disabled);
+  cursor: not-allowed;
+}
+
+.assignment-record .record-actions button:not(.app-select-trigger):not(.app-date-trigger):disabled,
+.assignment-record .record-actions button:not(.app-select-trigger):not(.app-date-trigger):disabled:hover {
   border-color: var(--form-control-border);
   background: var(--form-control-bg-disabled);
   color: var(--form-control-text-disabled);

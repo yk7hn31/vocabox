@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import type { QuizItem, WordItem } from './types';
 import { Icon } from './Icon';
 import { PrimaryAction } from './PracticeUI';
-import { importVocabularyCsv, prepareQuestionSet, SAMPLE_VOCABULARY } from './preparation';
+import { importVocabularyCsv, POS_CODE_HINTS, prepareQuestionSet, SAMPLE_VOCABULARY } from './preparation';
 
 interface UploadScreenProps {
   onStart: (items: QuizItem[]) => void;
@@ -93,11 +93,36 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
       {/* Format hint */}
       <div style={{ background: 'var(--ghostly)', borderRadius: 10, padding: '10px 13px', marginBottom: 13, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         <div style={{ marginTop: 1 }}><Icon name="info" size={13} color="var(--elec)" /></div>
-        <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
-          형식: <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>word,pos,meanings</code>
-          {' '}— 뜻이 여러 개면 세미콜론(;)으로 구분.{' '}
-          <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>pos</code> 컬럼은 선택사항.
-        </p>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55, marginBottom: 8 }}>
+            형식: <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>word,pos,meanings</code>
+            {' '}— 뜻이 여러 개면 세미콜론(;)으로 구분.{' '}
+            <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>pos</code> 컬럼은 선택사항.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }} aria-label="품사 코드 예시">
+            {POS_CODE_HINTS.map(({ code, label }) => (
+              <span
+                key={code}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  background: 'var(--card)',
+                  border: '1px solid rgba(0,105,224,.14)',
+                  borderRadius: 99,
+                  color: 'var(--pine)',
+                  fontFamily: "var(--font-pretendard)",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  padding: '3px 7px',
+                }}
+              >
+                <code style={{ color: 'var(--elec)', fontSize: 10, fontWeight: 700 }}>{code}</code>
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Sample button */}

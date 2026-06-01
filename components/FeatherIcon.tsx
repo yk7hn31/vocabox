@@ -7,7 +7,16 @@ export interface FeatherIconProps extends Omit<SVGProps<SVGSVGElement>, 'childre
   name: FeatherIconName;
 }
 
-export function FeatherIcon({ name, className, ...props }: FeatherIconProps) {
+export function FeatherIcon({
+  name,
+  className,
+  fill,
+  height,
+  stroke,
+  strokeWidth,
+  width,
+  ...props
+}: FeatherIconProps) {
   const icon = icons[name];
   const attrs = icon.attrs;
 
@@ -15,14 +24,14 @@ export function FeatherIcon({ name, className, ...props }: FeatherIconProps) {
     <svg
       aria-hidden="true"
       className={`${attrs.class}${className ? ` ${className}` : ''}`}
-      fill={attrs.fill}
-      height={attrs.height}
-      stroke={attrs.stroke}
+      fill={fill ?? attrs.fill}
+      height={height ?? attrs.height}
+      stroke={stroke ?? attrs.stroke}
       strokeLinecap={attrs['stroke-linecap']}
       strokeLinejoin={attrs['stroke-linejoin'] as SVGProps<SVGSVGElement>['strokeLinejoin']}
-      strokeWidth={attrs['stroke-width']}
+      strokeWidth={strokeWidth ?? attrs['stroke-width']}
       viewBox={attrs.viewBox}
-      width={attrs.width}
+      width={width ?? attrs.width}
       xmlns={attrs.xmlns}
       {...props}
       dangerouslySetInnerHTML={{ __html: icon.contents }}
