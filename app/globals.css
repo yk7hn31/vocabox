@@ -1133,6 +1133,45 @@ select {
   outline: none;
 }
 
+.otp-field-label {
+  display: block;
+  color: var(--pine);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.otp-input {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.otp-box {
+  flex: 1;
+  height: 52px;
+  border: 1.5px solid #dce7ef;
+  border-radius: 12px;
+  background: var(--white);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--obs);
+  caret-color: var(--elec);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  font-family: var(--font-pretendard);
+  padding: 0;
+}
+
+.otp-box:focus {
+  border-color: var(--elec);
+  box-shadow: 0 0 0 3px rgba(0, 105, 224, .1);
+}
+
+.otp-box.has-value {
+  border-color: #b0d4f0;
+}
+
 .auth-primary {
   display: flex;
   height: 53px;
@@ -3314,6 +3353,7 @@ select {
 }
 
 .word-preview-more {
+  display: block;
   padding: 9px 12px;
   text-align: center;
   color: var(--ash);

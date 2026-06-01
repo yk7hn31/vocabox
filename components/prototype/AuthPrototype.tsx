@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import { Check } from '@/components/prototype/FeatherIcons';
+import { OtpInput } from '@/components/OtpInput';
 import {
   acceptInviteAction,
   completePasscodeResetAction,
@@ -92,18 +93,19 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                         </label>
                       )}
                       <label>
-                        {register ? '비밀번호' : invited || reset ? '숫자 비밀번호' : '비밀번호'}
-                        <input
-                          autoComplete={register || invited || reset ? 'new-password' : 'current-password'}
-                          inputMode={invited || reset ? 'numeric' : undefined}
-                          maxLength={invited || reset ? 6 : undefined}
-                          minLength={register ? 12 : undefined}
-                          name="secret"
-                          pattern={invited || reset ? '[0-9]{6}' : undefined}
-                          placeholder={invited || reset ? '숫자 6자리' : register ? '12자 이상' : '비밀번호'}
-                          required
-                          type="password"
-                        />
+                        {register ? '비밀번호' : invited || reset ? '숫자 비밀번호 (6자리)' : '비밀번호'}
+                        {(invited || reset) ? (
+                          <OtpInput name="secret" required />
+                        ) : (
+                          <input
+                            autoComplete={register ? 'new-password' : 'current-password'}
+                            minLength={register ? 12 : undefined}
+                            name="secret"
+                            placeholder={register ? '12자 이상' : '비밀번호'}
+                            required
+                            type="password"
+                          />
+                        )}
                       </label>
                       {state.error && <p className="auth-error">{state.error}</p>}
                       <button className="auth-primary" disabled={pending} type="submit">

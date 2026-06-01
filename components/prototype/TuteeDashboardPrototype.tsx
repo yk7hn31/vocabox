@@ -8,6 +8,7 @@ import { Brand } from '@/components/Brand';
 import type { TuteeAssignment, TuteeDashboardData } from '@/lib/models';
 import { changeTuteePasscodeAction, logoutAction } from '@/app/actions/auth';
 import { SubmitButton } from '@/components/SubmitButton';
+import { OtpInput } from '@/components/OtpInput';
 import { ArrowRight, Award, BookOpen, CheckSquare, ChevronDown, Clipboard, Settings, User, X } from '@/components/prototype/FeatherIcons';
 
 type LearningMode = 'assigned' | 'history';
@@ -191,10 +192,10 @@ function SecurityPanel() {
     <section className="manage-card tutee-security">
       <h2>숫자 비밀번호 변경</h2>
       <form className="compact-security-form" action={action}>
-        <input name="currentPasscode" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="현재 6자리" type="password" required />
-        <input name="newPasscode" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} placeholder="새 6자리" type="password" required />
+        <label className="otp-field-label">현재 비밀번호<OtpInput name="currentPasscode" required /></label>
+        <label className="otp-field-label">새 비밀번호<OtpInput name="newPasscode" required /></label>
         {state.error && <p className="form-error">{state.error}</p>}
-        <button disabled={pending} type="submit">변경 후 다시 로그인</button>
+        <SubmitButton pendingText="변경 중...">변경 후 다시 로그인</SubmitButton>
       </form>
     </section>
   );
