@@ -2332,6 +2332,104 @@ select {
   padding: 12px;
 }
 
+.assign-mode-toggle {
+  display: flex;
+  border: 1px solid #dfeaf3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f4f8fc;
+}
+
+.assign-mode-toggle button {
+  flex: 1;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--ash);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  border-radius: 0;
+  padding: 0;
+  width: auto;
+}
+
+.assign-mode-toggle button.is-active {
+  background: var(--white);
+  color: var(--obs);
+  box-shadow: 0 1px 4px rgba(10, 13, 18, .08);
+  border-radius: 8px;
+  margin: 2px;
+}
+
+.assignment-form input[type="number"] {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #dfeaf3;
+  border-radius: 11px;
+  background: #fbfdff;
+  color: var(--obs);
+  font: inherit;
+  font-size: var(--form-control-font-size);
+  padding: 0 12px;
+}
+
+.assignment-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  margin-left: 6px;
+  letter-spacing: .02em;
+  vertical-align: middle;
+}
+
+.assignment-mode-badge--practice {
+  background: #e8f4ff;
+  color: var(--elec);
+}
+
+.assignment-mode-badge--test {
+  background: #fff3e8;
+  color: #d97706;
+}
+
+.test-timer {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--ash);
+  transition: color .3s;
+  min-width: 52px;
+  text-align: center;
+}
+
+.test-timer--urgent {
+  color: var(--coral-b);
+}
+
+.test-timeout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 13, 18, .72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.test-timeout-overlay p {
+  color: var(--white);
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--font-pretendard);
+  letter-spacing: -.02em;
+}
+
 .assignment-form-title {
   color: var(--obs) !important;
   font-size: 14px !important;

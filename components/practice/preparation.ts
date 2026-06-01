@@ -59,14 +59,18 @@ export function importVocabularyCsv(text: string): VocabularyImport {
 }
 
 export function prepareQuestionSet(items: WordItem[], random: RandomSource = Math.random): QuizItem[] {
-  return prepareQuestions(items, random, false);
+  return prepareQuestions(items, random, false, false);
 }
 
 export function prepareAssignedQuestionSet(items: WordItem[], random: RandomSource = Math.random): QuizItem[] {
-  return prepareQuestions(items, random, true);
+  return prepareQuestions(items, random, true, false);
 }
 
-function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boolean): QuizItem[] {
+export function prepareTestQuestionSet(items: WordItem[], random: RandomSource = Math.random): QuizItem[] {
+  return prepareQuestions(items, random, true, true);
+}
+
+function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boolean, testMode: boolean): QuizItem[] {
   const meaningPool = items.map(item => item.meanings[0]);
   const groups = new Map<string, WordItem[]>();
 
@@ -77,7 +81,9 @@ function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boo
   });
 
   const ordered = shuffle([...groups.values()], random).flatMap(group => shuffle(group, random));
-  const prompted = assigned
+  const prompted = testMode
+    ? ordered.map(item => ({ item, qType: 'mcq' as const }))
+    : assigned
     ? shuffle(ordered.flatMap(item => [
       { item, qType: 'mcq' as const },
       ...(random() < 0.4 ? [{ item, qType: 'type' as const }] : []),

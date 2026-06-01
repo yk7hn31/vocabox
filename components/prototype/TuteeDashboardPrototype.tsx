@@ -48,7 +48,11 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
             <h2>튜터가 배정한 단어</h2>
             <p className="tutee-focus-description">목록을 미리 보고, 준비되면 혼합형 퀴즈를 시작하세요.</p>
             <div className="assigned-set-heading">
-              <div><strong>{assignment.title}</strong><span>{dueLabel(assignment.dueDate)}</span></div>
+              <div>
+                <strong>{assignment.title}</strong>
+                <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+                <span>{dueLabel(assignment.dueDate)}</span>
+              </div>
               <small>{assignment.entries.length}개</small>
             </div>
             <div className="word-preview">
@@ -63,7 +67,14 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
               })}
             </div>
             <button className="tutee-secondary-action" type="button" onClick={openWords}><BookOpen />배정 단어 전체 보기</button>
-            {!readOnly && <Link className="tutee-start-action" href={`/tutee/assignments/${assignment.id}/practice`}>학습 시작하기 <ArrowRight /></Link>}
+            {!readOnly && (
+              <Link
+                className="tutee-start-action"
+                href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
+              >
+                {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
+              </Link>
+            )}
             {readOnly && <p className="read-only-note">보관된 계정입니다. 이전 기록만 볼 수 있습니다.</p>}
           </>
         ) : (

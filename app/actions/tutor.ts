@@ -134,6 +134,15 @@ export async function createAssignmentAction(_: TutorActionState, formData: Form
   const tuteeId = text(formData, 'tuteeId');
   const listId = text(formData, 'listId');
   const dueDate = dueDateFromForm(formData);
+  const mode = text(formData, 'mode') || 'practice';
+  if (!['practice', 'test'].includes(mode)) return { error: '올바른 학습 유형을 선택하세요.' };
+  let timeLimitMinutes: number | null = null;
+  if (mode === 'test') {
+    const raw = text(formData, 'timeLimitMinutes');
+    const parsed = parseInt(raw, 10);
+    if (!raw || isNaN(parsed) || parsed < 1 || parsed > 180) return { error: '시험 시간은 1-180분으로 설정하세요.' };
+    timeLimitMinutes = parsed;
+  }
   if (dueDate === undefined) return { error: '올바른 마감 날짜를 입력하세요.' };
   if (!(await activeOwnedTutee(tutor.id, tuteeId))) return { error: '활성 학습자를 선택하세요.' };
   const result = await db().begin(async sql => {
@@ -144,8 +153,8 @@ export async function createAssignmentAction(_: TutorActionState, formData: Form
     const list = lists[0];
     if (!list) return false;
     const created = await sql<{ id: string }[]>`
-      insert into assignments (tutor_id, tutee_id, source_list_id, title, due_date)
-      values (${tutor.id}, ${tuteeId}, ${list.id}, ${list.title}, ${dueDate}) returning id
+      insert into assignments (tutor_id, tutee_id, source_list_id, title, due_date, mode, time_limit_minutes)
+      values (${tutor.id}, ${tuteeId}, ${list.id}, ${list.title}, ${dueDate}, ${mode}, ${timeLimitMinutes}) returning id
     `;
     await sql`
       insert into assignment_entries (assignment_id, position, word, pos, meanings)

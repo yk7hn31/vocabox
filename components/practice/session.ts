@@ -45,7 +45,8 @@ export type PracticeAction =
   | { type: 'type-answer'; answer: string }
   | { type: 'submit-answer' }
   | { type: 'continue' }
-  | { type: 'exit' };
+  | { type: 'exit' }
+  | { type: 'test-submit'; answer: string };
 
 export const MAX_LIVES = 5;
 
@@ -129,6 +130,22 @@ export function reducePracticeSession(session: PracticeSession, action: Practice
       };
     case 'exit':
       return INITIAL_PRACTICE_SESSION;
+    case 'test-submit': {
+      if (!question || session.screen !== 'quiz') return session;
+      const isRight = action.answer === question.correct;
+      const newHistory = [...session.history, toAttempt(question, action.answer, isRight)];
+      if (session.index + 1 >= session.questions.length) {
+        return { ...session, screen: 'result', history: newHistory, phase: 'answered', selectedAnswer: action.answer };
+      }
+      return {
+        ...session,
+        index: session.index + 1,
+        phase: 'answering',
+        selectedAnswer: null,
+        typedAnswer: '',
+        history: newHistory,
+      };
+    }
   }
 }
 

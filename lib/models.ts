@@ -33,6 +33,8 @@ export interface TutorAssignment {
   title: string;
   dueDate: string | null;
   archived: boolean;
+  mode: 'practice' | 'test';
+  timeLimitMinutes: number | null;
   entries: WordItem[];
   attempts: TutorAttempt[];
 }
@@ -66,6 +68,8 @@ export interface TuteeAssignment {
   dueDate: string | null;
   archived: boolean;
   complete: boolean;
+  mode: 'practice' | 'test';
+  timeLimitMinutes: number | null;
   entries: WordItem[];
   attempts: TutorAttempt[];
 }

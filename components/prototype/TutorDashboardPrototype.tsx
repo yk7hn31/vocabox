@@ -287,6 +287,7 @@ function Trend({ student }: { student: TutorTutee }) {
 
 function StudentDetail({ student, lists }: { student: TutorTutee; lists: SavedList[] }) {
   const [assignState, assignAction, assigning] = useActionState(createAssignmentAction, {});
+  const [assignMode, setAssignMode] = useState<'practice' | 'test'>('practice');
   const attempts = student.assignments.flatMap(assignment => assignment.attempts);
   const latest = latestAttempt(student);
   const wrongWords = latest?.responses.filter(item => item.isRight === false).map(item => item.word) ?? [];
@@ -315,7 +316,12 @@ function StudentDetail({ student, lists }: { student: TutorTutee; lists: SavedLi
         {!student.archived && (
           <form className="assignment-form" action={assignAction}>
             <input name="tuteeId" type="hidden" value={student.id} />
+            <input name="mode" type="hidden" value={assignMode} />
             <p className="assignment-form-title">새 과제</p>
+            <div className="assign-mode-toggle">
+              <button type="button" className={assignMode === 'practice' ? 'is-active' : ''} onClick={() => setAssignMode('practice')}>학습</button>
+              <button type="button" className={assignMode === 'test' ? 'is-active' : ''} onClick={() => setAssignMode('test')}>시험</button>
+            </div>
             <div className="assignment-fields">
               <label>
                 <span>단어장</span>
@@ -328,6 +334,12 @@ function StudentDetail({ student, lists }: { student: TutorTutee; lists: SavedLi
                 <span>마감일</span>
                 <input name="dueDate" type="date" />
               </label>
+              {assignMode === 'test' && (
+                <label>
+                  <span>시험 시간 (분)</span>
+                  <input name="timeLimitMinutes" type="number" min="1" max="180" placeholder="예: 20" required />
+                </label>
+              )}
             </div>
             <button className="assignment-submit" disabled={assigning} type="submit"><Plus />배정</button>
             {assignState.error && <p className="form-error">{assignState.error}</p>}
@@ -361,7 +373,11 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
   return (
     <article className="assignment-record">
       <div className="assignment-record-header">
-        <div><strong>{assignment.title}{assignment.archived ? ' · 보관됨' : ''}</strong><span>최근 {latest?.percent ?? '-'}% · 최고 {best}% · {best >= 80 ? '완료' : '진행 중'} · 시도 {assignment.attempts.length}회</span></div>
+        <div>
+          <strong>{assignment.title}{assignment.archived ? ' · 보관됨' : ''}</strong>
+          <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+          <span>최근 {latest?.percent ?? '-'}% · 최고 {best}% · {best >= 80 ? '완료' : '진행 중'} · 시도 {assignment.attempts.length}회</span>
+        </div>
       </div>
       <form className="assignment-due-form" action={updateAssignmentDueDateAction}>
         <input name="assignmentId" type="hidden" value={assignment.id} />

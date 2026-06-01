@@ -19,6 +19,7 @@ interface QuizScreenProps {
   onType: (answer: string) => void;
   onSubmit: () => void;
   onContinue: () => void;
+  testMode?: boolean;
 }
 
 export function QuizScreen({
@@ -28,6 +29,7 @@ export function QuizScreen({
   onType,
   onSubmit,
   onContinue,
+  testMode = false,
 }: QuizScreenProps) {
   const {
     item,
@@ -83,18 +85,20 @@ export function QuizScreen({
         >
           <div style={{ height: '100%', width: `${((index + 1) / total) * 100}%`, background: 'var(--elec)', borderRadius: 99, transition: 'width .5s ease' }} />
         </div>
-        <div style={{
-          fontFamily: "var(--font-pretendard)",
-          fontSize: 14,
-          fontWeight: 600,
-          color: lives <= 1 ? 'var(--coral-b)' : 'var(--obs)',
-          letterSpacing: '-.01em',
-          minWidth: 30,
-          textAlign: 'right',
-          transition: 'color .3s',
-        }} aria-label={`남은 기회 ${lives}개`}>
-          {lives}/{maxLives}
-        </div>
+        {!testMode && (
+          <div style={{
+            fontFamily: "var(--font-pretendard)",
+            fontSize: 14,
+            fontWeight: 600,
+            color: lives <= 1 ? 'var(--coral-b)' : 'var(--obs)',
+            letterSpacing: '-.01em',
+            minWidth: 30,
+            textAlign: 'right',
+            transition: 'color .3s',
+          }} aria-label={`남은 기회 ${lives}개`}>
+            {lives}/{maxLives}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 11 }}>
@@ -102,8 +106,8 @@ export function QuizScreen({
           {index + 1} / {total}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <QuestionTypeBadge type={item.qType} />
-          {streak >= 2 && (
+          {!testMode && <QuestionTypeBadge type={item.qType} />}
+          {!testMode && streak >= 2 && (
             <span style={{ background: '#fffaeb', border: '1px solid #fcd34d', borderRadius: 99, padding: '2px 9px', fontSize: 13, fontWeight: 600, color: '#92400e', fontFamily: "var(--font-pretendard)", display: 'flex', alignItems: 'center', gap: 4 }}>
               <Icon name="zap" size={11} color="#92400e" sw={2} />{streak} 연속
             </span>

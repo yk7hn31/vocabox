@@ -16,7 +16,7 @@ import { db } from './db';
 interface ListRow { id: string; title: string; archived_at: Date | null }
 interface EntryRow { id: string; parent_id: string; word: string; pos: string; meanings: string[] }
 interface TuteeRow { id: string; username: string; display_name: string; archived_at: Date | null }
-interface AssignmentRow { id: string; tutee_id: string; title: string; due_date: string | null; archived_at: Date | null }
+interface AssignmentRow { id: string; tutee_id: string; title: string; due_date: string | null; archived_at: Date | null; mode: string; time_limit_minutes: number | null }
 interface AttemptRow {
   id: string; assignment_id: string; score: number; mcq_total: number; percent: number;
   duration_ms: number; completed_at: Date; is_late: boolean;
@@ -65,7 +65,7 @@ async function readAssignments(tuteeIds: string[]) {
   if (!tuteeIds.length) return { assignments: [] as AssignmentRow[], entries: [] as EntryRow[], attempts: [] as AttemptRow[], responses: [] as ResponseRow[] };
   const sql = db();
   const assignments = await sql<AssignmentRow[]>`
-    select id, tutee_id, title, due_date::text, archived_at
+    select id, tutee_id, title, due_date::text, archived_at, mode, time_limit_minutes
     from assignments where tutee_id in ${sql(tuteeIds)}
     order by created_at desc
   `;
@@ -121,6 +121,8 @@ export async function getTutorDashboard(user: CurrentUser): Promise<TutorDashboa
       title: assignment.title,
       dueDate: assignment.due_date,
       archived: Boolean(assignment.archived_at),
+      mode: assignment.mode as 'practice' | 'test',
+      timeLimitMinutes: assignment.time_limit_minutes,
       entries: entriesFor(assignment.id, related.entries),
       attempts: attemptsFor(assignment.id, related.attempts, related.responses),
     })),
@@ -157,6 +159,8 @@ export async function getTuteeDashboard(user: CurrentUser): Promise<TuteeDashboa
       dueDate: assignment.due_date,
       archived: Boolean(assignment.archived_at),
       complete: attempts.some(attempt => attempt.percent >= 80),
+      mode: assignment.mode as 'practice' | 'test',
+      timeLimitMinutes: assignment.time_limit_minutes,
       entries: entriesFor(assignment.id, related.entries),
       attempts,
     };
@@ -191,7 +195,7 @@ export async function getPublicReset(tokenHash: string) {
 
 export async function getActiveAssignment(user: CurrentUser, assignmentId: string) {
   const rows = await db()<AssignmentRow[]>`
-    select a.id, a.tutee_id, a.title, a.due_date::text, a.archived_at
+    select a.id, a.tutee_id, a.title, a.due_date::text, a.archived_at, a.mode, a.time_limit_minutes
     from assignments a
     where a.id = ${assignmentId} and a.tutee_id = ${user.id} and a.archived_at is null
     limit 1
@@ -202,5 +206,10 @@ export async function getActiveAssignment(user: CurrentUser, assignmentId: strin
     select id, assignment_id as parent_id, word, pos, meanings
     from assignment_entries where assignment_id = ${assignment.id} order by position
   `;
-  return { ...assignment, entries: entriesFor(assignment.id, entries) };
+  return {
+    ...assignment,
+    mode: assignment.mode as 'practice' | 'test',
+    timeLimitMinutes: assignment.time_limit_minutes,
+    entries: entriesFor(assignment.id, entries),
+  };
 }

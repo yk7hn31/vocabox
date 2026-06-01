@@ -59,7 +59,6 @@ export default async function Home() {
       <main>
         <section className="hero" aria-label="VocaBox 소개">
           <div className="hero-copy">
-            <p className="eyebrow">VOCABULARY PRACTICE, MADE SIMPLE</p>
             <h1>
               외운 단어를
               <br />
@@ -123,7 +122,6 @@ export default async function Home() {
 
         <section className="feature-section" id="features">
           <div className="section-heading">
-            <p className="eyebrow">WHY VOCABOX</p>
             <h2>외우는 과정에 필요한 것만 담았습니다</h2>
           </div>
           <div className="feature-grid">
@@ -139,7 +137,6 @@ export default async function Home() {
 
         <section className="workflow" id="how">
           <div className="workflow-copy">
-            <p className="eyebrow">HOW IT WORKS</p>
             <h2>파일 하나면, 복습이 시작됩니다</h2>
             <p>
               이미 가진 단어장을 버리지 마세요. VocaBox가 학습 가능한 질문 세트로
@@ -170,7 +167,6 @@ novel,명사,소설`}</code>
         </section>
 
         <section className="final-cta">
-          <p className="eyebrow">READY TO PRACTICE?</p>
           <h2>오늘 외울 단어를 VocaBox에 담아보세요.</h2>
           <Link className="button button--primary" href="/practice">
             무료로 학습 시작
