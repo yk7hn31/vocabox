@@ -1681,7 +1681,6 @@ select {
 
 .tutor-tabs button:hover {
   background: #f3f8fc;
-  transform: translateY(-1px);
 }
 
 .tutor-tabs button.is-active {
@@ -2139,7 +2138,7 @@ select {
    CSV EDITOR SHEET
    ────────────────────────────────────────────── */
 
-.csv-editor-layer {
+.bottom-sheet-layer {
   position: fixed;
   inset: 0;
   z-index: 30;
@@ -2148,17 +2147,17 @@ select {
   justify-content: center;
 }
 
-.csv-editor-backdrop {
+.bottom-sheet-backdrop {
   position: absolute;
   inset: 0;
   width: 100%;
+  height: 100%;
   border: 0;
-  background: rgba(10, 13, 18, .35);
-  backdrop-filter: blur(4px);
-  cursor: pointer;
+  background: rgba(10, 13, 18, .4);
+  cursor: default;
 }
 
-.csv-editor-sheet {
+.bottom-sheet {
   position: relative;
   z-index: 1;
   display: flex;
@@ -2171,13 +2170,20 @@ select {
   overflow: hidden;
 }
 
-.csv-editor-grabber {
-  width: 36px;
+.bottom-sheet-grabber {
+  width: 38px;
   height: 4px;
   border-radius: 99px;
   background: #d5dbe2;
-  margin: 10px auto 0;
+  margin: 11px auto 0;
   flex-shrink: 0;
+}
+
+.bottom-sheet-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .csv-editor-header {
@@ -2334,15 +2340,16 @@ select {
 
 .assign-mode-toggle {
   display: flex;
+  gap: 2px;
   border: 1px solid #dfeaf3;
   border-radius: 10px;
-  overflow: hidden;
   background: #f4f8fc;
+  padding: 3px;
 }
 
 .assign-mode-toggle button {
   flex: 1;
-  height: 34px;
+  height: 30px;
   border: none;
   background: transparent;
   color: var(--ash);
@@ -2350,7 +2357,7 @@ select {
   font-weight: 600;
   cursor: pointer;
   transition: background .15s, color .15s;
-  border-radius: 0;
+  border-radius: 7px;
   padding: 0;
   width: auto;
 }
@@ -2358,9 +2365,7 @@ select {
 .assign-mode-toggle button.is-active {
   background: var(--white);
   color: var(--obs);
-  box-shadow: 0 1px 4px rgba(10, 13, 18, .08);
-  border-radius: 8px;
-  margin: 2px;
+  box-shadow: 0 1px 3px rgba(10, 13, 18, .1);
 }
 
 .assignment-form input[type="number"] {
@@ -2826,7 +2831,6 @@ select {
 
 .tutee-tabs button:hover {
   background: #f3f8fc;
-  transform: translateY(-1px);
 }
 
 .tutee-tabs button.is-active {
@@ -3197,45 +3201,8 @@ select {
   font-size: 13px;
 }
 
-.tutee-sheet-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.tutee-sheet-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  background: rgba(10, 13, 18, .42);
-  cursor: default;
-}
-
-.tutee-sheet {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  width: min(760px, 100%);
-  max-height: 88dvh;
-  background: var(--white);
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 40px rgba(10, 13, 18, .14);
-  overflow: hidden;
-}
-
-.tutee-sheet-grabber {
-  width: 40px;
-  height: 5px;
-  border-radius: 99px;
-  background: #d5dbe2;
-  margin: 12px auto 0;
-  flex-shrink: 0;
+.bottom-sheet--wide {
+  width: min(720px, 100%);
 }
 
 .tutee-sheet-header {
@@ -3295,43 +3262,36 @@ select {
 }
 
 .tutee-sheet-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  padding: 0 20px 12px;
+  padding: 8px 16px 10px;
+  margin: 0 16px;
   border-bottom: 1px solid #edf3f8;
   flex-shrink: 0;
 }
 
 .tutee-sheet-tabs button {
-  height: 34px;
-  padding: 0 14px;
-  border: 1px solid transparent;
+  height: 36px;
+  border: 0;
   border-radius: 10px;
   background: transparent;
-  color: var(--ash);
+  color: var(--pine);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
-  width: auto;
+  transition: background .15s, color .15s;
 }
 
 .tutee-sheet-tabs button.is-active {
-  background: #f0f7ff;
-  color: var(--elec);
-  border-color: #d0e7fa;
+  background: #eef6fd;
+  color: var(--obs);
+  box-shadow: inset 0 0 0 1px #cfe3f4;
 }
 
 .tutee-sheet-tabs button:hover:not(.is-active) {
   background: var(--card);
   color: var(--obs);
-}
-
-.tutee-sheet-scroll {
-  flex: 1;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 .tutee-sheet-section {
@@ -3434,39 +3394,6 @@ select {
   transition: width .28s cubic-bezier(.22, 1, .36, 1);
 }
 
-.assigned-words-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-}
-
-.assigned-words-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  border: 0;
-  background: rgba(10, 13, 18, .28);
-  backdrop-filter: blur(4px);
-}
-
-.assigned-words-sheet {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  width: min(520px, 100%);
-  max-height: min(82dvh, 760px);
-  overflow: hidden;
-  border: 1px solid rgba(223, 234, 244, .92);
-  border-radius: 24px;
-  background: var(--white);
-  box-shadow: 0 22px 60px rgba(10, 13, 18, .18);
-  padding-top: 10px;
-}
 
 .assigned-sheet-grabber {
   width: 36px;
@@ -3882,17 +3809,6 @@ select {
 
   .session-preview strong {
     font-size: 21px;
-  }
-
-  .assigned-words-layer {
-    padding: 12px;
-  }
-
-  .assigned-words-sheet {
-    width: 100%;
-    max-height: 84dvh;
-    border-radius: 22px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   .assigned-sheet-close {
@@ -4537,11 +4453,6 @@ select {
     padding: 12px;
   }
 
-  .assigned-words-layer {
-    padding: 10px;
-  }
-
-  .assigned-words-sheet,
   .mobile-detail-sheet {
     border-radius: 20px 20px 0 0;
   }

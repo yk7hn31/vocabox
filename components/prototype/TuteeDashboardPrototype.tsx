@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
@@ -123,6 +124,8 @@ function AssignmentLibrary({ assignments, selected, onSelect }: { assignments: T
 
 function AssignedWordsSheet({ assignments, selected, open, onClose }: { assignments: TuteeAssignment[]; selected: TuteeAssignment; open: boolean; onClose: () => void }) {
   const [expandedIds, setExpandedIds] = useState([selected.id]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     if (!open) return;
     const before = document.body.style.overflow;
@@ -131,29 +134,32 @@ function AssignedWordsSheet({ assignments, selected, open, onClose }: { assignme
     window.addEventListener('keydown', close);
     return () => { document.body.style.overflow = before; window.removeEventListener('keydown', close); };
   }, [onClose, open]);
-  return (
-    <AnimatePresence initial={false}>
+  if (!mounted) return null;
+  return createPortal(
+    <AnimatePresence>
       {open && (
-        <motion.div
-          className="assigned-words-layer"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: .18, ease: 'easeOut' }}
-        >
-          <button className="assigned-words-backdrop" type="button" aria-label="닫기" onClick={onClose} />
-          <motion.section
-            className="assigned-words-sheet"
-            role="dialog"
-            aria-modal="true"
-            initial={{ opacity: 0, y: 16, scale: .985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: .99 }}
-            transition={{ duration: .22, ease: [0.22, 1, 0.36, 1] }}
+        <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="배정된 단어">
+          <motion.button
+            className="bottom-sheet-backdrop"
+            type="button"
+            onClick={onClose}
+            aria-label="닫기"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+          <motion.div
+            className="bottom-sheet"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
           >
-            <div className="assigned-sheet-grabber" /><button className="assigned-sheet-close" type="button" onClick={onClose}><X /></button>
-            <header className="assigned-sheet-header"><p className="auth-kicker">ASSIGNED VOCABULARY</p><h2>튜터가 배정한 단어</h2><p>단어장 {assignments.length}개 · 총 {assignments.reduce((sum, item) => sum + item.entries.length, 0)}개</p></header>
-            <div className="assigned-sheet-scroll">
+            <div className="bottom-sheet-grabber" aria-hidden="true" />
+            <button className="assigned-sheet-close" type="button" onClick={onClose} aria-label="닫기"><X /></button>
+            <header className="assigned-sheet-header"><h2>튜터가 배정한 단어</h2><p>단어장 {assignments.length}개 · 총 {assignments.reduce((sum, item) => sum + item.entries.length, 0)}개</p></header>
+            <div className="bottom-sheet-scroll assigned-sheet-scroll">
               {assignments.map(assignment => {
                 const expanded = expandedIds.includes(assignment.id);
                 return (
@@ -167,10 +173,11 @@ function AssignedWordsSheet({ assignments, selected, open, onClose }: { assignme
                 );
               })}
             </div>
-          </motion.section>
-        </motion.div>
+          </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 

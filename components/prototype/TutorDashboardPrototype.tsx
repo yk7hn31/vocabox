@@ -187,9 +187,9 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
       {mounted && createPortal(
         <AnimatePresence>
           {sheetOpen && (
-        <div className="csv-editor-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
+        <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
           <motion.button
-            className="csv-editor-backdrop"
+            className="bottom-sheet-backdrop"
             type="button"
             onClick={() => setSheetOpen(false)}
             aria-label="닫기"
@@ -199,13 +199,13 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
             transition={{ duration: 0.2 }}
           />
           <motion.div
-            className="csv-editor-sheet"
+            className="bottom-sheet"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
           >
-            <div className="csv-editor-grabber" aria-hidden="true" />
+            <div className="bottom-sheet-grabber" aria-hidden="true" />
             <div className="csv-editor-header">
               <div>
                 <h3>단어 편집</h3>
@@ -350,9 +350,9 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
   ];
 
   return (
-    <div className="tutee-sheet-layer" role="dialog" aria-modal="true" aria-label={`${student.displayName} 상세 정보`}>
+    <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={`${student.displayName} 상세 정보`}>
       <motion.button
-        className="tutee-sheet-backdrop"
+        className="bottom-sheet-backdrop"
         type="button"
         onClick={onClose}
         aria-label="닫기"
@@ -362,13 +362,13 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
         transition={{ duration: 0.2 }}
       />
       <motion.div
-        className="tutee-sheet"
+        className="bottom-sheet bottom-sheet--wide"
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
       >
-        <div className="tutee-sheet-grabber" aria-hidden="true" />
+        <div className="bottom-sheet-grabber" aria-hidden="true" />
         <div className="tutee-sheet-header">
           <div className="tutee-sheet-identity">
             <p className="tutee-sheet-username">@{student.username}{student.archived ? ' · 읽기 전용' : ''}</p>
@@ -395,7 +395,7 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
           ))}
         </div>
 
-        <div className="tutee-sheet-scroll">
+        <div className="bottom-sheet-scroll">
           {activeTab === 'overview' && (
             <div className="tutee-sheet-section">
               <div className="detail-metrics">
