@@ -42,7 +42,7 @@ const statusLabel: Record<TuteeStatus, string> = { attention: '확인 필요', s
 
 function StatusBadge({ status }: { status: TuteeStatus }) {
   const icon = status === 'attention' ? <AlertCircle /> : status === 'steady' ? <Activity /> : <CheckCircle />;
-  return <motion.span layout className={`status-pill status-pill--${status}`}>{icon}{statusLabel[status]}</motion.span>;
+  return <span className={`status-pill status-pill--${status}`}>{icon}{statusLabel[status]}</span>;
 }
 
 function Header({ username }: { username: string }) {
@@ -293,9 +293,11 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
     <article className="assignment-record">
       <div className="assignment-record-header">
         <div>
-          <strong>{assignment.title}{assignment.archived ? ' · 보관됨' : ''}</strong>
-          <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
-          <span>최근 {latest?.percent ?? '-'}% · 최고 {best}% · {best >= 80 ? '완료' : '진행 중'} · 시도 {assignment.attempts.length}회</span>
+          <p className="assignment-record-title">
+            <strong>{assignment.title}{assignment.archived ? ' · 보관됨' : ''}</strong>
+            <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+          </p>
+          <span className="assignment-record-meta">최근 {latest?.percent ?? '-'}% · 최고 {best}% · {best >= 80 ? '완료' : '진행 중'} · 시도 {assignment.attempts.length}회</span>
         </div>
       </div>
       <form className="assignment-due-form" action={updateAssignmentDueDateAction}>
