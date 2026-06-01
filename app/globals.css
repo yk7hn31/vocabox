@@ -38,6 +38,7 @@
   --leading-body-lg: 1.33;
   --tracking-body-lg: -0.14px;
   --form-control-font-size: 16px;
+  --button-font-size: 14px;
   --text-heading-sm: 18px;
   --leading-heading-sm: 1.5;
   --tracking-heading-sm: -0.18px;
@@ -1142,7 +1143,7 @@ select {
   border-radius: 28px;
   background: var(--ink);
   color: var(--white);
-  font-size: var(--form-control-font-size);
+  font-size: var(--button-font-size);
   font-weight: 600;
   cursor: pointer;
   margin-top: 4px;
@@ -1960,7 +1961,7 @@ select {
   color: var(--white);
   cursor: pointer;
   padding: 10px 14px;
-  font-size: var(--form-control-font-size);
+  font-size: var(--button-font-size);
   font-weight: 600;
   transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
 }
