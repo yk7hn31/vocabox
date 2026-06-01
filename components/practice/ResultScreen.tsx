@@ -50,10 +50,10 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
         <div style={{ fontFamily: "var(--font-pretendard)", fontSize: 52, fontWeight: 700, color: 'var(--obs)', letterSpacing: '-.04em', lineHeight: 1, marginBottom: 4 }}>
           {percent}<span style={{ fontSize: 22, fontWeight: 600 }}>점</span>
         </div>
-        <p style={{ color: 'var(--pine)', fontSize: 15, fontWeight: 600, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 4 }}>
+        <p style={{ color: 'var(--pine)', fontSize: 16, fontWeight: 600, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 4 }}>
           {message}
         </p>
-        <p style={{ color: 'var(--ash)', fontSize: 13, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 20 }}>
+        <p style={{ color: 'var(--ash)', fontSize: 14, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 20 }}>
           객관식 <strong style={{ color: 'var(--obs)' }}>{score}/{mcqTotal}</strong> 정답
           {selfCheckTotal > 0 && <span style={{ color: 'var(--ash)' }}> / 셀프체크 {selfCheckTotal}개</span>}
         </p>
@@ -70,7 +70,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
 
       {wrongItems.length > 0 && (
         <div style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--coral-b)', fontFamily: "var(--font-pretendard)", letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 8, paddingLeft: 4 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--coral-b)', fontFamily: "var(--font-pretendard)", letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 8, paddingLeft: 4 }}>
             틀린 문제 ({wrongItems.length}개)
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -94,13 +94,13 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
                 <Icon name="x" size={14} color="var(--coral-b)" sw={2.5} />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                    <span style={{ fontFamily: "var(--font-pretendard)", fontSize: 15, fontWeight: 700, color: 'var(--obs)', letterSpacing: '-.02em' }}>{entry.word}</span>
+                    <span style={{ fontFamily: "var(--font-pretendard)", fontSize: 16, fontWeight: 700, color: 'var(--obs)', letterSpacing: '-.02em' }}>{entry.word}</span>
                     {entry.pos && <PosBadge>{entry.pos}</PosBadge>}
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
                     정답: <strong style={{ color: 'var(--obs)' }}>{entry.allMeanings.join(' / ')}</strong>
                   </p>
-                  <p style={{ fontSize: 11, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 1 }}>
+                  <p style={{ fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 1 }}>
                     내 답: {entry.userAnswer}
                   </p>
                 </div>
@@ -111,7 +111,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
       )}
 
       <div>
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 8, paddingLeft: 4 }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 8, paddingLeft: 4 }}>
           전체 풀이 내역
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -146,11 +146,11 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
                     {entry.pos && <PosBadge>{entry.pos}</PosBadge>}
                     <QuestionTypeBadge type={entry.qType} />
                   </div>
-                  <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
                     정답: <strong style={{ color: 'var(--obs)' }}>{entry.allMeanings.join(' / ')}</strong>
                   </p>
                   {(isWrong || entry.qType === 'type') && entry.userAnswer && (
-                    <p style={{ fontSize: 11, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 1 }}>
+                    <p style={{ fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 1 }}>
                       내 답: {entry.userAnswer}
                     </p>
                   )}

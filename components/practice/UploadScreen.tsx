@@ -39,7 +39,7 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
         <div style={{ fontFamily: "var(--font-pretendard)", fontSize: 26, fontWeight: 700, color: 'var(--obs)', letterSpacing: '-.04em', marginBottom: 5 }}>
           나만의 단어로 시작
         </div>
-        <p style={{ color: 'var(--pine)', fontSize: 13, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
+        <p style={{ color: 'var(--pine)', fontSize: 14, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
           CSV 단어장을 올리거나 샘플로 VocaBox를 체험하세요
         </p>
       </div>
@@ -76,15 +76,15 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
           <Icon name={items ? 'file' : 'cup'} size={28} color={items ? 'var(--elec)' : 'var(--ash)'} sw={1.5} />
         </div>
         {items
-          ? <p style={{ color: 'var(--elec)', fontSize: 13, fontWeight: 600, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
+          ? <p style={{ color: 'var(--elec)', fontSize: 14, fontWeight: 600, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
               {fname} — {items.length}개 항목 로드됨
             </p>
-          : <p style={{ color: 'var(--pine)', fontSize: 13, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
+          : <p style={{ color: 'var(--pine)', fontSize: 14, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
               CSV 드래그 또는 클릭해서 업로드
             </p>
         }
         {err && (
-          <p style={{ color: 'var(--coral-b)', fontSize: 12, marginTop: 6, fontFamily: "var(--font-pretendard)" }}>
+          <p style={{ color: 'var(--coral-b)', fontSize: 13, marginTop: 6, fontFamily: "var(--font-pretendard)" }}>
             {err}
           </p>
         )}
@@ -93,7 +93,7 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
       {/* Format hint */}
       <div style={{ background: 'var(--ghostly)', borderRadius: 10, padding: '10px 13px', marginBottom: 13, display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         <div style={{ marginTop: 1 }}><Icon name="info" size={13} color="var(--elec)" /></div>
-        <p style={{ fontSize: 11, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
+        <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
           형식: <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>word,pos,meanings</code>
           {' '}— 뜻이 여러 개면 세미콜론(;)으로 구분.{' '}
           <code style={{ background: 'rgba(0,0,0,.07)', borderRadius: 4, padding: '1px 5px', fontSize: 10 }}>pos</code> 컬럼은 선택사항.
@@ -110,7 +110,7 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
           border: '1.5px solid var(--ghostly)',
           borderRadius: 12,
           padding: '11px',
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 500,
           color: 'var(--pine)',
           cursor: 'pointer',
@@ -125,10 +125,10 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
 
       {/* Mode info */}
       <div style={{ background: 'var(--card)', border: '1.5px solid var(--ghostly)', borderRadius: 12, padding: '11px 14px', marginBottom: 18 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--elec)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 3 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--elec)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 3 }}>
           퀴즈 방식 안내
         </p>
-        <p style={{ fontSize: 11, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
+        <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
           객관식(채점) + 주관식(셀프체크)이 단어마다 랜덤으로 배정됩니다. 같은 단어의 여러 뜻은 연속으로 출제돼요.
         </p>
       </div>
