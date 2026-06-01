@@ -18,11 +18,15 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
   const [saveMessage, setSaveMessage] = useState('');
   const startedAt = useRef(Date.now());
   const persisted = useRef(false);
+  const activeQuestions = useRef(questions);
 
   useEffect(() => {
+    activeQuestions.current = questions;
+    persisted.current = false;
+    setSaveMessage('');
     dispatch({ type: 'start', questions });
     startedAt.current = Date.now();
-  }, [questions]);
+  }, [assignmentId]);
 
   useEffect(() => {
     if (session.screen !== 'result' || persisted.current) return;
@@ -59,6 +63,7 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
                   quiz={quiz}
                   onExit={() => router.push('/tutee')}
                   onSelectOption={answer => dispatch({ type: 'select-answer', answer })}
+                  onToggleOption={answer => dispatch({ type: 'toggle-answer', answer })}
                   onType={answer => dispatch({ type: 'type-answer', answer })}
                   onSubmit={() => dispatch({ type: 'submit-answer' })}
                   onContinue={() => dispatch({ type: 'continue' })}
@@ -70,7 +75,7 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
                     persisted.current = false;
                     startedAt.current = Date.now();
                     setSaveMessage('');
-                    dispatch({ type: 'start', questions });
+                    dispatch({ type: 'start', questions: activeQuestions.current });
                   }} />
                   {saving && <p className="practice-save-message">결과 저장 중...</p>}
                   {!saving && saveMessage && <p className="practice-save-message">{saveMessage}</p>}

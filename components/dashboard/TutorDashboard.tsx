@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import type { SavedList, TutorAssignment, TutorDashboardData, TutorTutee } from '@/lib/models';
-import type { WordItem } from '@/components/practice/types';
+import type { ResultEntry, WordItem } from '@/components/practice/types';
 import { importVocabularyCsv, POS_CODE_HINTS } from '@/components/practice/preparation';
 import { changeTutorPasswordAction, logoutAction } from '@/app/actions/auth';
 import {
@@ -14,6 +14,7 @@ import {
   createPasscodeResetAction,
   deleteAssignmentAction,
   deleteListAction,
+  reviewSelfCheckResponseAction,
   deleteTuteeAction,
   revokeInviteAction,
   saveListAction,
@@ -22,7 +23,7 @@ import {
   toggleTuteeArchiveAction,
   updateAssignmentDueDateAction,
 } from '@/app/actions/tutor';
-import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/prototype/FeatherIcons';
+import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/AppIcons';
 import { AppSelect, AppDateInput, AppNumberInput } from '@/components/FormControls';
 import { SubmitButton } from '@/components/SubmitButton';
 
@@ -56,7 +57,7 @@ function Header({ username }: { username: string }) {
           <span className="tutor-avatar"><User /></span>
           <span className="tutor-account-name">{username}</span>
         </span>
-        <form action={logoutAction}><SubmitButton className="prototype-account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
+        <form action={logoutAction}><SubmitButton className="account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
       </nav>
     </motion.header>
   );
@@ -291,6 +292,33 @@ function Trend({ student }: { student: TutorTutee }) {
   );
 }
 
+function ReviewResponseLine({ response }: { response: ResultEntry }) {
+  if (response.qType !== 'type') {
+    return <p>오답 · {response.word}: {response.userAnswer} / {response.allMeanings.join(', ')}</p>;
+  }
+
+  const status = response.isRight === null ? '채점 대기' : response.isRight ? '정답 처리됨' : '오답 처리됨';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '7px 0' }}>
+      <p>셀프체크 · {response.word}: {response.userAnswer} / {response.allMeanings.join(', ')} · {status}</p>
+      {response.responseId && (
+        <div className="record-actions" style={{ gap: 6 }}>
+          <form action={reviewSelfCheckResponseAction}>
+            <input name="responseId" type="hidden" value={response.responseId} />
+            <input name="isRight" type="hidden" value="1" />
+            <SubmitButton>{response.isRight === true ? '정답 유지' : '정답'}</SubmitButton>
+          </form>
+          <form action={reviewSelfCheckResponseAction}>
+            <input name="responseId" type="hidden" value={response.responseId} />
+            <input name="isRight" type="hidden" value="0" />
+            <SubmitButton>{response.isRight === false ? '오답 유지' : '오답'}</SubmitButton>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
   const best = Math.max(0, ...assignment.attempts.map(item => item.percent));
   const latest = assignment.attempts[0];
@@ -326,7 +354,7 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
             {' · '}{Math.max(1, Math.round(attempt.durationMs / 60000))}분{attempt.late ? ' · 지각' : ''}
           </summary>
           {attempt.responses.filter(item => item.isRight === false || item.qType === 'type').map((response, index) => (
-            <p key={index}>{response.qType === 'type' ? '셀프체크' : '오답'} · {response.word}: {response.userAnswer} / {response.allMeanings.join(', ')}</p>
+            <ReviewResponseLine key={index} response={response} />
           ))}
         </details>
       ))}
@@ -493,7 +521,7 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
   );
 }
 
-export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
+export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
   const [sheetStudentId, setSheetStudentId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TutorTab>('students');
   const [mounted, setMounted] = useState(false);

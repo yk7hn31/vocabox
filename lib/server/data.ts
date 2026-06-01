@@ -22,7 +22,7 @@ interface AttemptRow {
   duration_ms: number; completed_at: Date; is_late: boolean;
 }
 interface ResponseRow {
-  attempt_id: string; assignment_entry_id: string; question_type: 'mcq' | 'type';
+  id: string; attempt_id: string; assignment_entry_id: string; question_type: 'mcq' | 'multi' | 'type';
   user_answer: string; is_right: boolean | null; word: string; pos: string; meanings: string[];
 }
 
@@ -37,11 +37,13 @@ function entriesFor(parentId: string, rows: EntryRow[]): WordItem[] {
 
 function responsesFor(attemptId: string, rows: ResponseRow[]): ResultEntry[] {
   return rows.filter(row => row.attempt_id === attemptId).map(row => ({
+    responseId: row.id,
     sourceEntryId: row.assignment_entry_id,
     word: row.word,
     pos: row.pos,
     qType: row.question_type,
     correct: row.meanings[0],
+    correctAnswers: row.meanings,
     allMeanings: row.meanings,
     userAnswer: row.user_answer,
     isRight: row.is_right,
@@ -81,7 +83,7 @@ async function readAssignments(tuteeIds: string[]) {
   `;
   const attemptIds = attempts.map(item => item.id);
   const responses = attemptIds.length ? await sql<ResponseRow[]>`
-    select r.attempt_id, r.assignment_entry_id, r.question_type, r.user_answer, r.is_right,
+    select r.id, r.attempt_id, r.assignment_entry_id, r.question_type, r.user_answer, r.is_right,
       e.word, e.pos, e.meanings
     from attempt_responses r join assignment_entries e on e.id = r.assignment_entry_id
     where r.attempt_id in ${sql(attemptIds)} order by r.created_at

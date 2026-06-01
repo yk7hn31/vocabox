@@ -1,12 +1,15 @@
 import type { QuestionType, QuizItem, WordItem } from './types';
 
 type RandomSource = () => number;
+type PreparedEntry = { item: WordItem; wordIdx: number; wordTotal: number };
 
 export type VocabularyImport =
   | { status: 'ready'; items: WordItem[] }
   | { status: 'error'; error: string };
 
 const FALLBACK_DISTRACTORS = ['없다', '있다', '하다', '되다', '보다', '주다', '오다', '가다'];
+const SINGLE_CHOICE_OPTION_COUNT = 4;
+const MULTI_CHOICE_OPTION_COUNT = 6;
 
 export const POS_CODE_HINTS = [
   { code: 'n', label: '명사' },
@@ -81,6 +84,10 @@ function shuffle<T>(items: T[], random: RandomSource): T[] {
   return result;
 }
 
+function unique(values: string[]): string[] {
+  return [...new Set(values)];
+}
+
 function parseRow(line: string): string[] {
   const columns: string[] = [];
   let cell = '';
@@ -133,7 +140,7 @@ export function prepareTestQuestionSet(items: WordItem[], random: RandomSource =
 }
 
 function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boolean, testMode: boolean): QuizItem[] {
-  const meaningPool = items.map(item => item.meanings[0]);
+  const meaningPool = unique(items.flatMap(item => item.meanings));
   const groups = new Map<string, WordItem[]>();
 
   items.forEach(item => {
@@ -142,45 +149,48 @@ function prepareQuestions(items: WordItem[], random: RandomSource, assigned: boo
     groups.set(key, [...group, item]);
   });
 
-  const ordered = shuffle([...groups.values()], random).flatMap(group => shuffle(group, random));
-  const prompted = testMode
-    ? ordered.map(item => ({ item, qType: 'mcq' as const }))
-    : assigned
-    ? shuffle(ordered.flatMap(item => [
-      { item, qType: 'mcq' as const },
-      ...(random() < 0.4 ? [{ item, qType: 'type' as const }] : []),
-    ]), random)
-    : ordered.map(item => ({ item, qType: (random() < 0.4 ? 'type' : 'mcq') as QuestionType }));
-  const wordTotal = new Map<string, number>();
-  const wordPosition = new Map<string, number>();
-
-  prompted.forEach(({ item }) => {
-    const key = item.word.toLowerCase();
-    wordTotal.set(key, (wordTotal.get(key) ?? 0) + 1);
+  const ordered: PreparedEntry[] = shuffle([...groups.values()], random).flatMap(group => {
+    const shuffledGroup = shuffle(group, random);
+    return shuffledGroup.map((item, index) => ({
+      item,
+      wordIdx: index + 1,
+      wordTotal: shuffledGroup.length,
+    }));
   });
+  const prompted = ordered.map(entry => ({
+    entry,
+    qType: entry.item.meanings.length > 1
+      ? 'multi' as const
+      : testMode
+      ? 'mcq' as const
+      : (random() < 0.4 ? 'type' : 'mcq') as QuestionType,
+  }));
+  const shuffledPrompted = assigned ? shuffle(prompted, random) : prompted;
 
-  return prompted.map(({ item, qType }) => {
-    const key = item.word.toLowerCase();
-    const wordIdx = (wordPosition.get(key) ?? 0) + 1;
-    wordPosition.set(key, wordIdx);
-
+  return shuffledPrompted.map(({ entry, qType }) => {
+    const { item, wordIdx, wordTotal } = entry;
     const correct = item.meanings[0];
-    const distractors = shuffle([...new Set(meaningPool.filter(meaning => meaning !== correct))], random).slice(0, 3);
+    const correctAnswers = item.meanings;
+    const optionCount = qType === 'multi'
+      ? Math.max(MULTI_CHOICE_OPTION_COUNT, correctAnswers.length)
+      : SINGLE_CHOICE_OPTION_COUNT;
+    const distractors = shuffle(meaningPool.filter(meaning => !correctAnswers.includes(meaning)), random).slice(0, optionCount - correctAnswers.length);
     let fallbackIndex = 0;
 
-    while (distractors.length < 3) {
+    while (correctAnswers.length + distractors.length < optionCount) {
       const fallback = FALLBACK_DISTRACTORS[fallbackIndex % FALLBACK_DISTRACTORS.length];
       fallbackIndex += 1;
-      if (!distractors.includes(fallback) && fallback !== correct) distractors.push(fallback);
+      if (!distractors.includes(fallback) && !correctAnswers.includes(fallback)) distractors.push(fallback);
     }
 
     return {
       ...item,
       correct,
-      opts: shuffle([correct, ...distractors], random),
+      correctAnswers,
+      opts: shuffle([...correctAnswers, ...distractors], random),
       qType,
       wordIdx,
-      wordTotal: wordTotal.get(key) ?? 1,
+      wordTotal,
     };
   });
 }

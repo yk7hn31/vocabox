@@ -16,6 +16,7 @@ interface QuizScreenProps {
   quiz: QuizView;
   onExit: () => void;
   onSelectOption: (answer: string) => void;
+  onToggleOption: (answer: string) => void;
   onType: (answer: string) => void;
   onSubmit: () => void;
   onContinue: () => void;
@@ -26,6 +27,7 @@ export function QuizScreen({
   quiz,
   onExit,
   onSelectOption,
+  onToggleOption,
   onType,
   onSubmit,
   onContinue,
@@ -37,6 +39,7 @@ export function QuizScreen({
     total,
     phase,
     selectedAnswer,
+    selectedAnswers,
     typedAnswer,
     lives,
     maxLives,
@@ -50,17 +53,28 @@ export function QuizScreen({
     if (item.qType === 'type' && !answered) inputRef.current?.focus();
   }, [index, answered, item.qType]);
 
+  const sameAnswers = (left: string[], right: string[]) => {
+    if (left.length !== right.length) return false;
+    const rightSet = new Set(right);
+    return left.every(answer => rightSet.has(answer));
+  };
+
   const optionStyle = (option: string) => {
-    if (phase === 'selected' && option === selectedAnswer) {
+    const selected = item.qType === 'multi' ? selectedAnswers.includes(option) : option === selectedAnswer;
+    const correct = item.correctAnswers.includes(option);
+
+    if (!answered && selected) {
       return { bg: 'rgba(0,105,224,.08)', border: 'var(--elec)', color: 'var(--obs)', opacity: 1 };
     }
     if (!answered) return { bg: 'var(--card)', border: 'var(--ghostly)', color: 'var(--obs)', opacity: 1 };
-    if (option === item.correct) return { bg: 'var(--mint)', border: 'var(--mint-b)', color: 'var(--obs)', opacity: 1 };
-    if (option === selectedAnswer) return { bg: 'var(--coral)', border: 'var(--coral-b)', color: 'var(--obs)', opacity: 1 };
+    if (correct) return { bg: 'var(--mint)', border: 'var(--mint-b)', color: 'var(--obs)', opacity: 1 };
+    if (selected) return { bg: 'var(--coral)', border: 'var(--coral-b)', color: 'var(--obs)', opacity: 1 };
     return { bg: 'var(--card)', border: 'var(--ghostly)', color: 'var(--ash)', opacity: 0.4 };
   };
 
   const mcqCorrect = selectedAnswer === item.correct;
+  const multiCorrect = sameAnswers(selectedAnswers, item.correctAnswers);
+  const scoredCorrect = item.qType === 'multi' ? multiCorrect : mcqCorrect;
 
   return (
     <div style={{ width: '100%', maxWidth: 460 }}>
@@ -116,7 +130,7 @@ export function QuizScreen({
       </div>
 
       <p style={{ color: 'var(--pine)', fontSize: 14, fontWeight: 500, letterSpacing: '-.01em', marginBottom: 11, fontFamily: "var(--font-pretendard)" }}>
-        다음 단어의 뜻은?
+        {item.qType === 'multi' ? '해당하는 뜻을 모두 고르세요' : '다음 단어의 뜻은?'}
       </p>
 
       <AnimatePresence mode="wait">
@@ -135,25 +149,27 @@ export function QuizScreen({
             <div style={{ fontFamily: "var(--font-pretendard)", fontSize: 38, fontWeight: 700, color: 'var(--obs)', letterSpacing: '-.04em', lineHeight: 1.06 }}>
               {item.word}
             </div>
-            {item.qType === 'type' && item.meanings.length > 1 && (
+            {item.qType === 'multi' && (
               <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)" }}>
-                뜻이 {item.meanings.length}개 - 어떤 뜻이든 입력
+                뜻이 {item.meanings.length}개 - 정답을 모두 선택
               </div>
             )}
           </div>
 
-          {item.qType === 'mcq' && (
+          {(item.qType === 'mcq' || item.qType === 'multi') && (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
                 {item.opts.map((option, optionIndex) => {
                   const style = optionStyle(option);
+                  const selected = item.qType === 'multi' ? selectedAnswers.includes(option) : option === selectedAnswer;
+                  const correct = item.correctAnswers.includes(option);
                   return (
                     <button
                       key={`${index}${option}`}
                       type="button"
                       className="opt"
                       disabled={answered}
-                      onClick={() => onSelectOption(option)}
+                      onClick={() => item.qType === 'multi' ? onToggleOption(option) : onSelectOption(option)}
                       style={{
                         background: style.bg,
                         borderWidth: 2,
@@ -175,9 +191,9 @@ export function QuizScreen({
                       }}
                     >
                       <span>{option}</span>
-                      {answered && option === item.correct && <Icon name="check" size={15} color="var(--mint-b)" />}
-                      {answered && option === selectedAnswer && option !== item.correct && <Icon name="x" size={15} color="var(--coral-b)" />}
-                      {phase === 'selected' && option === selectedAnswer && (
+                      {answered && correct && <Icon name="check" size={15} color="var(--mint-b)" />}
+                      {answered && selected && !correct && <Icon name="x" size={15} color="var(--coral-b)" />}
+                      {!answered && selected && (
                         <span style={{ width: 8, height: 8, borderRadius: 99, background: 'var(--elec)' }} />
                       )}
                     </button>
@@ -185,14 +201,14 @@ export function QuizScreen({
                 })}
               </div>
 
-              {phase === 'selected' && (
+              {phase === 'selected' && (!testMode || item.qType === 'multi') && (
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.16 }}
                   style={{ marginBottom: 12 }}
                 >
-                  <PrimaryAction onClick={onSubmit}>제출</PrimaryAction>
+                  <PrimaryAction onClick={onSubmit}>{item.qType === 'multi' ? '선택 완료' : '제출'}</PrimaryAction>
                 </motion.div>
               )}
             </>
@@ -243,10 +259,10 @@ export function QuizScreen({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
           >
-            {item.qType === 'mcq' ? (
+            {item.qType === 'mcq' || item.qType === 'multi' ? (
               <div style={{
-                background: mcqCorrect ? 'var(--mint)' : 'var(--coral)',
-                border: `1.5px solid ${mcqCorrect ? 'var(--mint-b)' : 'var(--coral-b)'}`,
+                background: scoredCorrect ? 'var(--mint)' : 'var(--coral)',
+                border: `1.5px solid ${scoredCorrect ? 'var(--mint-b)' : 'var(--coral-b)'}`,
                 borderRadius: 18,
                 padding: '14px 17px',
                 display: 'flex',
@@ -255,13 +271,18 @@ export function QuizScreen({
                 gap: 12,
               }}>
                 <div>
-                  <p style={{ fontWeight: 700, fontSize: 14, color: mcqCorrect ? 'var(--mint-t)' : 'var(--coral-b)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 3 }}>
-                    {mcqCorrect ? '정답이에요!' : '틀렸어요'}
+                  <p style={{ fontWeight: 700, fontSize: 14, color: scoredCorrect ? 'var(--mint-t)' : 'var(--coral-b)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 3 }}>
+                    {scoredCorrect ? '정답이에요!' : '틀렸어요'}
                   </p>
-                  {(!mcqCorrect || item.meanings.length > 1) && (
+                  {(!scoredCorrect || item.meanings.length > 1) && (
                     <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
-                      {mcqCorrect ? '모든 뜻: ' : '정답: '}
+                      {scoredCorrect ? '모든 뜻: ' : '정답: '}
                       <strong style={{ color: 'var(--obs)' }}>{item.meanings.join(' / ')}</strong>
+                    </p>
+                  )}
+                  {item.qType === 'multi' && !scoredCorrect && selectedAnswers.length > 0 && (
+                    <p style={{ fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 2 }}>
+                      내 답: {selectedAnswers.join(' / ')}
                     </p>
                   )}
                 </div>
@@ -280,7 +301,7 @@ export function QuizScreen({
               }}>
                 <div>
                   <p style={{ fontWeight: 600, fontSize: 13, color: 'var(--deep-violet)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 4 }}>
-                    셀프체크 - 채점 없음
+                    셀프체크 - 튜터 확인 예정
                   </p>
                   <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
                     정답: <strong style={{ color: 'var(--obs)' }}>{item.meanings.join(' / ')}</strong>

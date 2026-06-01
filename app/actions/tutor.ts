@@ -14,6 +14,22 @@ function text(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim();
 }
 
+async function recalculateAttemptScore(sql: any, attemptId: string) {
+  const responses = await sql<{ is_right: boolean | null; question_type: string }[]>`
+    select is_right, question_type from attempt_responses where attempt_id = ${attemptId}
+  `;
+  const scored = responses.filter((response: { is_right: boolean | null; question_type: string }) => response.question_type !== 'type' || response.is_right !== null);
+  const score = scored.filter((response: { is_right: boolean | null }) => response.is_right === true).length;
+  const total = scored.length;
+  const percent = total ? Math.round((score / total) * 100) : 0;
+
+  await sql`
+    update attempts
+    set score = ${score}, mcq_total = ${total}, percent = ${percent}, completes_assignment = ${percent >= 80}
+    where id = ${attemptId}
+  `;
+}
+
 function entriesFromForm(formData: FormData): WordItem[] | null {
   try {
     const entries = JSON.parse(text(formData, 'entries')) as WordItem[];
@@ -178,6 +194,33 @@ export async function updateAssignmentDueDateAction(formData: FormData) {
     update assignments set due_date = ${dueDate}
     where id = ${text(formData, 'assignmentId')} and tutor_id = ${tutor.id}
   `;
+  revalidatePath('/tutor');
+  revalidatePath('/tutee');
+}
+
+export async function reviewSelfCheckResponseAction(formData: FormData) {
+  const tutor = await requireUser('tutor');
+  const responseId = text(formData, 'responseId');
+  const isRight = text(formData, 'isRight') === '1';
+  const sql = db();
+  const rows = await sql<{ attempt_id: string }[]>`
+    select r.attempt_id
+    from attempt_responses r
+    join attempts att on att.id = r.attempt_id
+    join assignments a on a.id = att.assignment_id
+    where r.id = ${responseId}
+      and r.question_type = 'type'
+      and a.tutor_id = ${tutor.id}
+    limit 1
+  `;
+  const response = rows[0];
+  if (!response) return;
+
+  await sql.begin(async tx => {
+    await tx`update attempt_responses set is_right = ${isRight} where id = ${responseId}`;
+    await recalculateAttemptScore(tx, response.attempt_id);
+  });
+
   revalidatePath('/tutor');
   revalidatePath('/tutee');
 }

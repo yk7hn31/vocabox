@@ -56,6 +56,7 @@ export function PracticeApp({ startWithSample = false }: PracticeAppProps) {
         quiz={quiz}
         onExit={() => dispatch({ type: 'exit' })}
         onSelectOption={answer => dispatch({ type: 'select-answer', answer })}
+        onToggleOption={answer => dispatch({ type: 'toggle-answer', answer })}
         onType={answer => dispatch({ type: 'type-answer', answer })}
         onSubmit={() => dispatch({ type: 'submit-answer' })}
         onContinue={() => dispatch({ type: 'continue' })}

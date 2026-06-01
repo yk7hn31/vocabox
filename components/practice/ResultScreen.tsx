@@ -54,7 +54,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
           {message}
         </p>
         <p style={{ color: 'var(--ash)', fontSize: 14, fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 20 }}>
-          객관식 <strong style={{ color: 'var(--obs)' }}>{score}/{mcqTotal}</strong> 정답
+          채점 문항 <strong style={{ color: 'var(--obs)' }}>{score}/{mcqTotal}</strong> 정답
           {selfCheckTotal > 0 && <span style={{ color: 'var(--ash)' }}> / 셀프체크 {selfCheckTotal}개</span>}
         </p>
         <div style={{ display: 'flex', gap: 5, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
@@ -116,8 +116,9 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {history.map((entry, index) => {
-            const isRight = entry.qType === 'mcq' && entry.isRight === true;
-            const isWrong = entry.qType === 'mcq' && entry.isRight === false;
+            const isScored = entry.qType !== 'type';
+            const isRight = isScored && entry.isRight === true;
+            const isWrong = isScored && entry.isRight === false;
             return (
               <motion.div
                 key={index}

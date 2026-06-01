@@ -62,9 +62,13 @@ export async function currentUser(): Promise<CurrentUser | null> {
   };
 }
 
+export function dashboardPathFor(user: Pick<CurrentUser, 'role'>) {
+  return user.role === 'tutor' ? '/tutor' : '/tutee';
+}
+
 export async function requireUser(role?: UserRole) {
   const user = await currentUser();
   if (!user) redirect('/auth');
-  if (role && user.role !== role) redirect(user.role === 'tutor' ? '/tutor' : '/tutee');
+  if (role && user.role !== role) redirect(dashboardPathFor(user));
   return user;
 }

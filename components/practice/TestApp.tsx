@@ -33,9 +33,14 @@ export function TestApp({ assignmentId, title, questions, timeLimitMinutes }: {
   const persisted = useRef(false);
 
   useEffect(() => {
+    persisted.current = false;
+    setSaving(false);
+    setSaveMessage('');
+    setTimedOut(false);
+    setTimeLeft(timeLimitMinutes * 60);
     dispatch({ type: 'start', questions });
     startedAt.current = Date.now();
-  }, [questions]);
+  }, [assignmentId, timeLimitMinutes]);
 
   useEffect(() => {
     if (session.screen === 'result' || timedOut) return;
@@ -110,8 +115,9 @@ export function TestApp({ assignmentId, title, questions, timeLimitMinutes }: {
                   testMode
                   onExit={() => router.push('/tutee')}
                   onSelectOption={answer => dispatch({ type: 'test-submit', answer })}
+                  onToggleOption={answer => dispatch({ type: 'toggle-answer', answer })}
                   onType={() => {}}
-                  onSubmit={() => {}}
+                  onSubmit={() => dispatch({ type: 'test-submit-selection' })}
                   onContinue={() => {}}
                 />
               )}

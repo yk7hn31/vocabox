@@ -113,7 +113,7 @@ create table public.attempts (
   assignment_id uuid not null references public.assignments(id) on delete cascade,
   tutee_id uuid not null references public.users(id) on delete cascade,
   score integer not null,
-  mcq_total integer not null check (mcq_total > 0),
+  mcq_total integer not null check (mcq_total >= 0),
   percent integer not null check (percent between 0 and 100),
   duration_ms integer not null check (duration_ms >= 0),
   completes_assignment boolean not null,
@@ -128,7 +128,7 @@ create table public.attempt_responses (
   id uuid primary key default gen_random_uuid(),
   attempt_id uuid not null references public.attempts(id) on delete cascade,
   assignment_entry_id uuid not null references public.assignment_entries(id) on delete cascade,
-  question_type text not null check (question_type in ('mcq', 'type')),
+  question_type text not null check (question_type in ('mcq', 'multi', 'type')),
   user_answer text not null check (length(user_answer) <= 500),
   is_right boolean,
   created_at timestamptz not null default now()

@@ -304,6 +304,11 @@ select {
   color: var(--deep-violet);
   padding: 2px 9px;
 }
+.practice-badge--multi {
+  background: var(--mint);
+  color: var(--mint-t);
+  padding: 2px 9px;
+}
 .practice-badge--pos {
   background: var(--ghostly);
   color: var(--elec);
@@ -969,7 +974,7 @@ select {
 }
 
 /* ──────────────────────────────────────────────
-   ACCOUNT + DASHBOARD PROTOTYPE SCREENS
+   ACCOUNT + DASHBOARD SCREENS
    ────────────────────────────────────────────── */
 .feather-icon {
   display: inline-block;
@@ -979,13 +984,13 @@ select {
   vertical-align: -.125em;
 }
 
-.prototype-account-link {
+.account-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.prototype-account-link .feather-icon {
+.account-link .feather-icon {
   width: 13px;
   height: 13px;
 }
@@ -1400,7 +1405,7 @@ select {
   line-height: 1.5;
 }
 
-/* Tutor dashboard prototypes */
+/* Tutor dashboard */
 .tutor-page {
   min-height: 100dvh;
   background: #f6f9fc;
@@ -2012,8 +2017,8 @@ select {
   display: inline-flex;
 }
 
-.tutor-header button.prototype-account-link,
-.tutee-header button.prototype-account-link {
+.tutor-header button.account-link,
+.tutee-header button.account-link {
   height: 36px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -2025,28 +2030,28 @@ select {
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.tutor-header button.prototype-account-link:hover,
-.tutee-header button.prototype-account-link:hover {
+.tutor-header button.account-link:hover,
+.tutee-header button.account-link:hover {
   border-color: #dce9f4;
   background: var(--white);
   color: var(--obs);
 }
 
-.tutor-header button.prototype-account-link:active,
-.tutee-header button.prototype-account-link:active {
+.tutor-header button.account-link:active,
+.tutee-header button.account-link:active {
   border-color: #dce9f4;
   background: var(--white);
   color: var(--obs);
 }
 
-.tutor-header button.prototype-account-link:focus-visible,
-.tutee-header button.prototype-account-link:focus-visible {
+.tutor-header button.account-link:focus-visible,
+.tutee-header button.account-link:focus-visible {
   outline: 2px solid var(--form-control-border-focus);
   outline-offset: 3px;
 }
 
-.tutor-header button.prototype-account-link:disabled,
-.tutee-header button.prototype-account-link:disabled {
+.tutor-header button.account-link:disabled,
+.tutee-header button.account-link:disabled {
   border-color: transparent;
   background: var(--form-control-bg-disabled);
   color: var(--form-control-text-disabled);
@@ -2083,10 +2088,10 @@ select {
   margin-bottom: 14px;
 }
 
-.manage-card input,
+.manage-card input:not(.app-number-field),
 .manage-card textarea,
-.assignment-form input,
-.assignment-record input {
+.assignment-form input:not(.app-number-field),
+.assignment-record input:not(.app-number-field) {
   width: 100%;
   border: 1px solid var(--form-control-border);
   border-radius: var(--form-control-radius);
@@ -2098,28 +2103,28 @@ select {
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
-.manage-card input:hover,
+.manage-card input:not(.app-number-field):hover,
 .manage-card textarea:hover,
-.assignment-form input:hover,
-.assignment-record input:hover {
+.assignment-form input:not(.app-number-field):hover,
+.assignment-record input:not(.app-number-field):hover {
   border-color: var(--form-control-border-hover);
   background: var(--form-control-bg-hover);
 }
 
-.manage-card input:focus,
+.manage-card input:not(.app-number-field):focus,
 .manage-card textarea:focus,
-.assignment-form input:focus,
-.assignment-record input:focus {
+.assignment-form input:not(.app-number-field):focus,
+.assignment-record input:not(.app-number-field):focus {
   outline: none;
   border-color: var(--form-control-border-focus);
   box-shadow: var(--form-control-focus-ring);
   background: var(--form-control-bg-hover);
 }
 
-.manage-card input:disabled,
+.manage-card input:not(.app-number-field):disabled,
 .manage-card textarea:disabled,
-.assignment-form input:disabled,
-.assignment-record input:disabled {
+.assignment-form input:not(.app-number-field):disabled,
+.assignment-record input:not(.app-number-field):disabled {
   border-color: var(--form-control-border);
   background: var(--form-control-bg-disabled);
   color: var(--form-control-text-disabled);
@@ -3028,7 +3033,6 @@ select {
   border: 0;
   border-left: 1px solid #e2e8f0;
   border-right: 1px solid #e2e8f0;
-  border-radius: 0;
   background: transparent;
   text-align: center;
   font: inherit;
@@ -3279,7 +3283,7 @@ select {
   display: none;
 }
 
-/* Tutee dashboard prototype */
+/* Tutee dashboard */
 .tutee-page {
   min-height: 100dvh;
   padding-bottom: calc(30px + env(safe-area-inset-bottom));
@@ -3398,7 +3402,6 @@ select {
   align-items: center;
   gap: 7px;
   color: var(--obs);
-  font-size: 23px;
   line-height: 1;
   letter-spacing: -.05em;
   margin-bottom: 0;
@@ -3703,7 +3706,6 @@ select {
 .word-preview-more {
   display: block;
   padding: 9px 12px;
-  text-align: center;
   color: var(--ash);
   font-size: 11px;
   font-weight: 600;
@@ -4413,7 +4415,6 @@ select {
     gap: 14px;
     align-items: center;
     justify-content: flex-start;
-    padding: 15px 17px;
   }
 
   .streak-card strong,
@@ -4906,8 +4907,8 @@ select {
     height: 28px;
   }
 
-  .tutor-header button.prototype-account-link,
-  .tutee-header button.prototype-account-link {
+  .tutor-header button.account-link,
+  .tutee-header button.account-link {
     height: 36px;
     padding: 0 10px;
   }
@@ -4971,10 +4972,10 @@ select {
     gap: 9px;
   }
 
-  .manage-card input,
+  .manage-card input:not(.app-number-field),
   .manage-card textarea,
-  .assignment-form input,
-  .assignment-record input,
+  .assignment-form input:not(.app-number-field),
+  .assignment-record input:not(.app-number-field),
   .assignment-form select,
   .assignment-form input[type="date"],
   .assignment-record input[type="date"] {

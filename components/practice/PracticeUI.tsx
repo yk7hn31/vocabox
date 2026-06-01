@@ -42,7 +42,7 @@ export function RestartAction({ onClick, bottom = false }: { onClick: () => void
 export function QuestionTypeBadge({ type }: { type: QuestionType }) {
   return (
     <span className={`practice-badge practice-badge--${type}`}>
-      {type === 'mcq' ? '객관식' : '셀프체크'}
+      {type === 'mcq' ? '객관식' : type === 'multi' ? '복수선택' : '셀프체크'}
     </span>
   );
 }

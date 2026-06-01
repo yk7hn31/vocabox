@@ -9,6 +9,7 @@ export interface PracticeSession {
   index: number;
   phase: QuestionPhase;
   selectedAnswer: string | null;
+  selectedAnswers: string[];
   typedAnswer: string;
   lives: number;
   streak: number;
@@ -21,6 +22,7 @@ export interface QuizView {
   total: number;
   phase: QuestionPhase;
   selectedAnswer: string | null;
+  selectedAnswers: string[];
   typedAnswer: string;
   lives: number;
   maxLives: number;
@@ -42,11 +44,13 @@ export interface ResultSummary {
 export type PracticeAction =
   | { type: 'start'; questions: QuizItem[] }
   | { type: 'select-answer'; answer: string }
+  | { type: 'toggle-answer'; answer: string }
   | { type: 'type-answer'; answer: string }
   | { type: 'submit-answer' }
   | { type: 'continue' }
   | { type: 'exit' }
-  | { type: 'test-submit'; answer: string };
+  | { type: 'test-submit'; answer: string }
+  | { type: 'test-submit-selection' };
 
 export const MAX_LIVES = 5;
 
@@ -56,6 +60,7 @@ export const INITIAL_PRACTICE_SESSION: PracticeSession = {
   index: 0,
   phase: 'answering',
   selectedAnswer: null,
+  selectedAnswers: [],
   typedAnswer: '',
   lives: MAX_LIVES,
   streak: 0,
@@ -66,6 +71,12 @@ function activeQuestion(session: PracticeSession): QuizItem | undefined {
   return session.questions[session.index];
 }
 
+function sameAnswers(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) return false;
+  const rightSet = new Set(right);
+  return left.every(answer => rightSet.has(answer));
+}
+
 function toAttempt(question: QuizItem, answer: string, isRight: boolean | null): ResultEntry {
   return {
     sourceEntryId: question.sourceEntryId,
@@ -73,9 +84,33 @@ function toAttempt(question: QuizItem, answer: string, isRight: boolean | null):
     pos: question.pos,
     qType: question.qType,
     correct: question.correct,
+    correctAnswers: question.correctAnswers,
     allMeanings: question.meanings,
     userAnswer: answer,
     isRight,
+  };
+}
+
+function advanceTestSession(session: PracticeSession, attempt: ResultEntry): PracticeSession {
+  const newHistory = [...session.history, attempt];
+  if (session.index + 1 >= session.questions.length) {
+    return {
+      ...session,
+      screen: 'result',
+      history: newHistory,
+      phase: 'answered',
+      selectedAnswer: null,
+      selectedAnswers: [],
+    };
+  }
+  return {
+    ...session,
+    index: session.index + 1,
+    phase: 'answering',
+    selectedAnswer: null,
+    selectedAnswers: [],
+    typedAnswer: '',
+    history: newHistory,
   };
 }
 
@@ -93,6 +128,13 @@ export function reducePracticeSession(session: PracticeSession, action: Practice
     case 'select-answer':
       if (!question || question.qType !== 'mcq' || session.phase === 'answered') return session;
       return { ...session, selectedAnswer: action.answer, phase: 'selected' };
+    case 'toggle-answer': {
+      if (!question || question.qType !== 'multi' || session.phase === 'answered') return session;
+      const selectedAnswers = session.selectedAnswers.includes(action.answer)
+        ? session.selectedAnswers.filter(answer => answer !== action.answer)
+        : [...session.selectedAnswers, action.answer];
+      return { ...session, selectedAnswers, phase: selectedAnswers.length ? 'selected' : 'answering' };
+    }
     case 'type-answer':
       if (!question || question.qType !== 'type' || session.phase === 'answered') return session;
       return { ...session, typedAnswer: action.answer };
@@ -111,6 +153,18 @@ export function reducePracticeSession(session: PracticeSession, action: Practice
         };
       }
 
+      if (question.qType === 'multi') {
+        if (!session.selectedAnswers.length) return session;
+        const isRight = sameAnswers(session.selectedAnswers, question.correctAnswers);
+        return {
+          ...session,
+          phase: 'answered',
+          lives: isRight ? session.lives : Math.max(0, session.lives - 1),
+          streak: isRight ? session.streak + 1 : 0,
+          history: [...session.history, toAttempt(question, session.selectedAnswers.join(' / '), isRight)],
+        };
+      }
+
       if (!session.typedAnswer.trim()) return session;
       return {
         ...session,
@@ -126,25 +180,20 @@ export function reducePracticeSession(session: PracticeSession, action: Practice
         index: session.index + 1,
         phase: 'answering',
         selectedAnswer: null,
+        selectedAnswers: [],
         typedAnswer: '',
       };
     case 'exit':
       return INITIAL_PRACTICE_SESSION;
     case 'test-submit': {
-      if (!question || session.screen !== 'quiz') return session;
+      if (!question || session.screen !== 'quiz' || question.qType !== 'mcq') return session;
       const isRight = action.answer === question.correct;
-      const newHistory = [...session.history, toAttempt(question, action.answer, isRight)];
-      if (session.index + 1 >= session.questions.length) {
-        return { ...session, screen: 'result', history: newHistory, phase: 'answered', selectedAnswer: action.answer };
-      }
-      return {
-        ...session,
-        index: session.index + 1,
-        phase: 'answering',
-        selectedAnswer: null,
-        typedAnswer: '',
-        history: newHistory,
-      };
+      return advanceTestSession(session, toAttempt(question, action.answer, isRight));
+    }
+    case 'test-submit-selection': {
+      if (!question || session.screen !== 'quiz' || question.qType !== 'multi' || !session.selectedAnswers.length) return session;
+      const isRight = sameAnswers(session.selectedAnswers, question.correctAnswers);
+      return advanceTestSession(session, toAttempt(question, session.selectedAnswers.join(' / '), isRight));
     }
   }
 }
@@ -159,6 +208,7 @@ export function toQuizView(session: PracticeSession): QuizView | null {
     total: session.questions.length,
     phase: session.phase,
     selectedAnswer: session.selectedAnswer,
+    selectedAnswers: session.selectedAnswers,
     typedAnswer: session.typedAnswer,
     lives: session.lives,
     maxLives: MAX_LIVES,
@@ -168,7 +218,7 @@ export function toQuizView(session: PracticeSession): QuizView | null {
 }
 
 export function summariseResults(history: ResultEntry[]): ResultSummary {
-  const mcqItems = history.filter(entry => entry.qType === 'mcq');
+  const mcqItems = history.filter(entry => entry.qType !== 'type');
   const wrongItems = mcqItems.filter(entry => entry.isRight === false);
   const score = mcqItems.filter(entry => entry.isRight === true).length;
   const mcqTotal = mcqItems.length;

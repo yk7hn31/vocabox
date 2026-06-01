@@ -4,7 +4,7 @@ import { useActionState, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
-import { Check } from '@/components/prototype/FeatherIcons';
+import { Check } from '@/components/AppIcons';
 import { OtpInput } from '@/components/OtpInput';
 import {
   acceptInviteAction,
@@ -16,7 +16,7 @@ import {
 
 type AuthFlow = 'login' | 'tutor-register' | 'invite' | 'reset' | 'reset-complete';
 
-interface AuthPrototypeProps {
+interface AuthViewProps {
   flow?: AuthFlow;
   token?: string;
   displayName?: string;
@@ -34,7 +34,7 @@ function Success({ title, body }: { title: string; body: string }) {
   );
 }
 
-export function AuthPrototype({ flow = 'login', token = '', displayName, valid = true }: AuthPrototypeProps) {
+export function AuthView({ flow = 'login', token = '', displayName, valid = true }: AuthViewProps) {
   const nonLoginAction =
     flow === 'tutor-register' ? tutorRegisterAction :
     flow === 'invite' ? acceptInviteAction :

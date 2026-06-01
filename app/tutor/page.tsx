@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { TutorDashboardPrototype } from '@/components/prototype/TutorDashboardPrototype';
+import { TutorDashboard } from '@/components/dashboard/TutorDashboard';
 import { requireUser } from '@/lib/server/auth';
 import { getTutorDashboard } from '@/lib/server/data';
 
@@ -10,5 +10,5 @@ export default async function TutorPage({ searchParams }: { searchParams: Promis
   const user = await requireUser('tutor');
   const data = await getTutorDashboard(user);
   const params = await searchParams;
-  return <TutorDashboardPrototype data={data} sharedLink={params.share} />;
+  return <TutorDashboard data={data} sharedLink={params.share} />;
 }

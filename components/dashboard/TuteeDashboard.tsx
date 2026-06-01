@@ -9,7 +9,7 @@ import type { TuteeAssignment, TuteeDashboardData } from '@/lib/models';
 import { changeTuteePasscodeAction, logoutAction } from '@/app/actions/auth';
 import { SubmitButton } from '@/components/SubmitButton';
 import { OtpInput } from '@/components/OtpInput';
-import { ArrowRight, Award, BookOpen, CheckSquare, ChevronDown, Clipboard, Settings, User, X } from '@/components/prototype/FeatherIcons';
+import { ArrowRight, Award, BookOpen, CheckSquare, ChevronDown, Clipboard, Settings, User, X } from '@/components/AppIcons';
 
 type LearningMode = 'assigned' | 'history';
 type TuteeTab = 'study' | 'words' | 'history' | 'settings';
@@ -27,14 +27,14 @@ function Header({ username }: { username: string }) {
           <span className="tutee-avatar"><User /></span>
           <span className="tutor-account-name">@{username}</span>
         </span>
-        <form action={logoutAction}><SubmitButton className="prototype-account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
+        <form action={logoutAction}><SubmitButton className="account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
       </nav>
     </motion.header>
   );
 }
 
 function wordStatus(assignment: TuteeAssignment, entryId?: string) {
-  const response = assignment.attempts[0]?.responses.find(item => item.sourceEntryId === entryId && item.qType === 'mcq');
+  const response = assignment.attempts[0]?.responses.find(item => item.sourceEntryId === entryId && item.qType !== 'type');
   if (response?.isRight === false) return { value: 'review', label: '복습' };
   if (assignment.complete) return { value: 'done', label: '완료' };
   return { value: 'new', label: '신규' };
@@ -96,9 +96,12 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
               {assignment.attempts.map(attempt => (
                 <details key={attempt.id}>
                   <summary>{new Date(attempt.completedAt).toLocaleDateString('ko-KR')} · {attempt.percent}점{attempt.late ? ' · 지각' : ''}</summary>
-                  {attempt.responses.filter(item => item.isRight === false || item.qType === 'type').map((item, index) => (
-                    <p key={index}>{item.qType === 'type' ? '셀프체크' : '오답'} · {item.word}: {item.userAnswer} / {item.allMeanings.join(' / ')}</p>
-                  ))}
+                  {attempt.responses.filter(item => item.isRight === false || item.qType === 'type').map((item, index) => {
+                    const label = item.qType === 'type'
+                      ? item.isRight === null ? '셀프체크 채점 대기' : item.isRight ? '셀프체크 정답' : '셀프체크 오답'
+                      : '오답';
+                    return <p key={index}>{label} · {item.word}: {item.userAnswer} / {item.allMeanings.join(' / ')}</p>;
+                  })}
                 </details>
               ))}
               {!assignment.attempts.length && <p>아직 완료한 학습이 없습니다.</p>}
@@ -201,7 +204,7 @@ function SecurityPanel() {
   );
 }
 
-export function TuteeDashboardPrototype({ data }: { data: TuteeDashboardData }) {
+export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
   const assignments = data.assignments.filter(item => !item.archived);
   const [activeTab, setActiveTab] = useState<TuteeTab>('study');
   const [selectedId, setSelectedId] = useState(assignments[0]?.id ?? '');

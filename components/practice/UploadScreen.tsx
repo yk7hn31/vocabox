@@ -154,7 +154,7 @@ export function UploadScreen({ onStart }: UploadScreenProps) {
           퀴즈 방식 안내
         </p>
         <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.55 }}>
-          객관식(채점) + 주관식(셀프체크)이 단어마다 랜덤으로 배정됩니다. 같은 단어의 여러 뜻은 연속으로 출제돼요.
+          뜻이 하나면 객관식 또는 셀프체크 중 하나가 나오고, 뜻이 여러 개면 복수선택 문제로 출제됩니다.
         </p>
       </div>
 
