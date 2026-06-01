@@ -3263,19 +3263,22 @@ select {
   margin-bottom: 12px;
 }
 
-.assigned-set-heading strong,
-.assigned-set-heading span {
+.assigned-set-heading span:not(.assignment-mode-badge) {
   display: block;
-}
-
-.assigned-set-heading strong {
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-
-.assigned-set-heading span {
   color: var(--pine);
   font-size: 11px;
+}
+
+.assigned-heading-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.assigned-heading-title strong {
+  font-size: 14px;
 }
 
 .assigned-set-heading small {
@@ -3305,8 +3308,19 @@ select {
   font-size: 12px;
 }
 
-.word-preview > div:last-child {
+.word-preview > div:last-child,
+.word-preview-more {
   border-bottom: 0;
+}
+
+.word-preview-more {
+  padding: 9px 12px;
+  text-align: center;
+  color: var(--ash);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  border-top: 1px dashed #e7eff6;
 }
 
 .word-preview strong {

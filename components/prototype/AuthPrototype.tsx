@@ -70,7 +70,6 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                       <Link className={register ? 'is-selected' : ''} href="/auth?role=tutor&mode=register">튜터 회원가입</Link>
                     </div>
                   )}
-                  <p className="auth-kicker">{invited ? 'INVITED TUTEE' : reset ? 'PASSCODE RESET' : register ? 'TUTOR ACCOUNT' : 'VOCABOX ACCOUNT'}</p>
                   <h1>{heading}</h1>
                   <p className="auth-lead">
                     {invited

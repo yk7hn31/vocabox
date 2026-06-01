@@ -46,13 +46,14 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
       <motion.section className="tutee-focus" key={`${mode}-${assignment.id}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
         {mode === 'assigned' ? (
           <>
-            <p className="auth-kicker">ASSIGNED WORDS</p>
             <h2>튜터가 배정한 단어</h2>
             <p className="tutee-focus-description">목록을 미리 보고, 준비되면 혼합형 퀴즈를 시작하세요.</p>
             <div className="assigned-set-heading">
               <div>
-                <strong>{assignment.title}</strong>
-                <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+                <div className="assigned-heading-title">
+                  <strong>{assignment.title}</strong>
+                  <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+                </div>
                 <span>{dueLabel(assignment.dueDate)}</span>
               </div>
               <small>{assignment.entries.length}개</small>
@@ -67,6 +68,9 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
                   </div>
                 );
               })}
+              {assignment.entries.length > 4 && (
+                <div className="word-preview-more">외 {assignment.entries.length - 4}개</div>
+              )}
             </div>
             <button className="tutee-secondary-action" type="button" onClick={openWords}><BookOpen />배정 단어 전체 보기</button>
             {!readOnly && (
@@ -81,7 +85,6 @@ function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: Tut
           </>
         ) : (
           <>
-            <p className="auth-kicker">ATTEMPT HISTORY</p>
             <h2>{assignment.title} 결과</h2>
             <div className="session-preview">
               <article><strong>{assignment.attempts.length}</strong><span>시도</span></article>
@@ -218,7 +221,7 @@ export function TuteeDashboardPrototype({ data }: { data: TuteeDashboardData }) 
         <Header username={data.user.username} />
         <motion.main className="tutee-main" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <section className="tutee-welcome">
-            <div><p className="auth-kicker">HELLO, {data.user.displayName}</p><h1>오늘도 한 세트 해볼까요?</h1><p>@{data.tutorUsername} 튜터가 보낸 과제를 확인하세요.</p></div>
+            <div><h1>오늘도 한 세트 해볼까요?</h1><p>@{data.tutorUsername} 튜터가 보낸 과제를 확인하세요.</p></div>
             <div className="streak-card"><strong><Award />{completed}개</strong><span>완료 과제</span><small>80점 이상 완료</small></div>
           </section>
           <div className="tutee-tabs" role="tablist" aria-label="학습자 대시보드">
