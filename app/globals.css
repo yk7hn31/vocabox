@@ -2058,6 +2058,14 @@ select {
   box-shadow: 0 8px 16px rgba(0, 105, 224, .06);
 }
 
+.csv-upload-target.is-parsing {
+  border-color: var(--elec);
+  background: #f6fbff;
+  cursor: wait;
+  pointer-events: none;
+  opacity: .75;
+}
+
 .csv-upload-target input {
   position: absolute;
   inset: 0;

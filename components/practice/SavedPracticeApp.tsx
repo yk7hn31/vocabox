@@ -14,6 +14,7 @@ import { INITIAL_PRACTICE_SESSION, reducePracticeSession, summariseResults, toQu
 export function SavedPracticeApp({ assignmentId, title, questions }: { assignmentId: string; title: string; questions: QuizItem[] }) {
   const router = useRouter();
   const [session, dispatch] = useReducer(reducePracticeSession, INITIAL_PRACTICE_SESSION);
+  const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const startedAt = useRef(Date.now());
   const persisted = useRef(false);
@@ -26,11 +27,12 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
   useEffect(() => {
     if (session.screen !== 'result' || persisted.current) return;
     persisted.current = true;
+    setSaving(true);
     void submitAttemptAction({
       assignmentId,
       durationMs: Date.now() - startedAt.current,
       responses: session.history,
-    }).then(result => setSaveMessage(result.error ?? '학습 결과를 저장했습니다.'));
+    }).then(result => { setSaving(false); setSaveMessage(result.error ?? '학습 결과를 저장했습니다.'); });
   }, [assignmentId, session.history, session.screen]);
 
   const quiz = toQuizView(session);
@@ -70,7 +72,8 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
                     setSaveMessage('');
                     dispatch({ type: 'start', questions });
                   }} />
-                  {saveMessage && <p className="practice-save-message">{saveMessage}</p>}
+                  {saving && <p className="practice-save-message">결과 저장 중...</p>}
+                  {!saving && saveMessage && <p className="practice-save-message">{saveMessage}</p>}
                 </>
               )}
             </motion.div>

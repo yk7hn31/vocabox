@@ -24,6 +24,7 @@ import {
 } from '@/app/actions/tutor';
 import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/prototype/FeatherIcons';
 import { AppSelect, AppDateInput } from '@/components/FormControls';
+import { SubmitButton } from '@/components/SubmitButton';
 
 type TuteeStatus = 'attention' | 'steady' | 'excellent';
 type TutorTab = 'students' | 'lists' | 'settings';
@@ -55,7 +56,7 @@ function Header({ username }: { username: string }) {
           <span className="tutor-avatar"><User /></span>
           <span className="tutor-account-name">{username}</span>
         </span>
-        <form action={logoutAction}><button className="prototype-account-link" type="submit">로그아웃</button></form>
+        <form action={logoutAction}><SubmitButton className="prototype-account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
       </nav>
     </motion.header>
   );
@@ -83,7 +84,7 @@ function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sharedLin
               {active && (
                 <form action={revokeInviteAction}>
                   <input name="inviteId" type="hidden" value={invite.id} />
-                  <button type="submit">취소</button>
+                  <SubmitButton>취소</SubmitButton>
                 </form>
               )}
             </div>
@@ -103,7 +104,7 @@ function TutorSecurityPanel() {
         <input name="currentPassword" placeholder="현재 비밀번호" type="password" required />
         <input name="newPassword" placeholder="새 비밀번호 (12자 이상)" type="password" minLength={12} required />
         {state.error && <p className="form-error">{state.error}</p>}
-        <button disabled={pending} type="submit">비밀번호 변경</button>
+        <SubmitButton pendingText="변경 중...">비밀번호 변경</SubmitButton>
       </form>
     </section>
   );
@@ -117,6 +118,7 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
   const [entries, setEntries] = useState<WordItem[]>([]);
   const [error, setError] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [parsing, setParsing] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -126,15 +128,17 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
       setError('CSV 파일만 업로드할 수 있습니다.');
       return;
     }
+    setParsing(true);
     const reader = new FileReader();
     reader.onload = () => {
+      setParsing(false);
       const text = typeof reader.result === 'string' ? reader.result : '';
       setCsvFileName(file.name);
       const parsed = importVocabularyCsv(text);
       if (parsed.status === 'error') { setError(parsed.error); setEntries([]); }
       else { setEntries(parsed.items); setError(''); setSheetOpen(true); }
     };
-    reader.onerror = () => setError('CSV 파일을 읽지 못했습니다.');
+    reader.onerror = () => { setParsing(false); setError('CSV 파일을 읽지 못했습니다.'); };
     reader.readAsText(file);
   };
 
@@ -154,10 +158,10 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
         <input name="listId" type="hidden" value={listId} />
         <input name="entries" type="hidden" value={JSON.stringify(entries)} />
         <input name="title" value={title} onChange={event => setTitle(event.target.value)} placeholder="단어장 제목" maxLength={100} required />
-        <label className="csv-upload-target">
-          <input accept=".csv,text/csv" type="file" onChange={event => uploadCsv(event.target.files?.[0])} />
-          <span>{csvFileName || 'CSV 파일 업로드'}</span>
-          <small>{entries.length ? `${entries.length}개 단어 검토됨` : 'word,pos,meanings 형식'}</small>
+        <label className={`csv-upload-target${parsing ? ' is-parsing' : ''}`}>
+          <input accept=".csv,text/csv" type="file" disabled={parsing} onChange={event => uploadCsv(event.target.files?.[0])} />
+          <span>{parsing ? '파일 분석 중...' : csvFileName || 'CSV 파일 업로드'}</span>
+          <small>{parsing ? '' : entries.length ? `${entries.length}개 단어 검토됨` : 'word,pos,meanings 형식'}</small>
         </label>
         {entries.length > 0 && (
           <div className="csv-entries-bar">
@@ -176,10 +180,10 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
             <button type="button" onClick={() => edit(list)}>편집</button>
             <form action={toggleListArchiveAction}>
               <input name="listId" type="hidden" value={list.id} /><input name="restore" type="hidden" value={list.archived ? '1' : '0'} />
-              <button type="submit">{list.archived ? '복원' : '보관'}</button>
+              <SubmitButton>{list.archived ? '복원' : '보관'}</SubmitButton>
             </form>
             <form action={deleteListAction} onSubmit={event => { if (!window.confirm('이 단어장을 삭제할까요? 기존 과제 기록은 유지됩니다.')) event.preventDefault(); }}>
-              <input name="listId" type="hidden" value={list.id} /><button type="submit">삭제</button>
+              <input name="listId" type="hidden" value={list.id} /><SubmitButton>삭제</SubmitButton>
             </form>
           </div>
         ))}
@@ -304,15 +308,15 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
       <form className="assignment-due-form" action={updateAssignmentDueDateAction}>
         <input name="assignmentId" type="hidden" value={assignment.id} />
         <label><span>마감일</span><AppDateInput name="dueDate" defaultValue={assignment.dueDate ?? ''} /></label>
-        <button type="submit">저장</button>
+        <SubmitButton>저장</SubmitButton>
       </form>
       <div className="record-actions">
         <form action={toggleAssignmentArchiveAction}>
           <input name="assignmentId" type="hidden" value={assignment.id} /><input name="restore" type="hidden" value={assignment.archived ? '1' : '0'} />
-          <button type="submit">{assignment.archived ? '복원' : '보관'}</button>
+          <SubmitButton>{assignment.archived ? '복원' : '보관'}</SubmitButton>
         </form>
         <form action={deleteAssignmentAction} onSubmit={event => { if (!window.confirm('과제와 모든 결과를 영구 삭제할까요?')) event.preventDefault(); }}>
-          <input name="assignmentId" type="hidden" value={assignment.id} /><button className="danger" type="submit">삭제</button>
+          <input name="assignmentId" type="hidden" value={assignment.id} /><SubmitButton className="danger">삭제</SubmitButton>
         </form>
       </div>
       {assignment.attempts.map(attempt => (
@@ -470,15 +474,15 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
                 <form action={toggleTuteeArchiveAction}>
                   <input name="tuteeId" type="hidden" value={student.id} />
                   <input name="restore" type="hidden" value={student.archived ? '1' : '0'} />
-                  <button type="submit" style={{ width: '100%' }}>{student.archived ? '학습자 복원' : '학습자 보관'}</button>
+                  <SubmitButton style={{ width: '100%' }}>{student.archived ? '학습자 복원' : '학습자 보관'}</SubmitButton>
                 </form>
                 <form action={createPasscodeResetAction}>
                   <input name="tuteeId" type="hidden" value={student.id} />
-                  <button type="submit" style={{ width: '100%' }}>비밀번호 재설정 링크</button>
+                  <SubmitButton style={{ width: '100%' }} pendingText="링크 생성 중...">비밀번호 재설정 링크</SubmitButton>
                 </form>
                 <form action={deleteTuteeAction} onSubmit={event => { if (!window.confirm('학습자와 모든 학습 기록을 영구 삭제할까요?')) event.preventDefault(); }}>
                   <input name="tuteeId" type="hidden" value={student.id} />
-                  <button className="danger" type="submit" style={{ width: '100%' }}>영구 삭제</button>
+                  <SubmitButton className="danger" style={{ width: '100%' }}>영구 삭제</SubmitButton>
                 </form>
               </div>
             </div>

@@ -7,6 +7,7 @@ import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import type { TuteeAssignment, TuteeDashboardData } from '@/lib/models';
 import { changeTuteePasscodeAction, logoutAction } from '@/app/actions/auth';
+import { SubmitButton } from '@/components/SubmitButton';
 import { ArrowRight, Award, BookOpen, CheckSquare, ChevronDown, Clipboard, Settings, User, X } from '@/components/prototype/FeatherIcons';
 
 type LearningMode = 'assigned' | 'history';
@@ -25,7 +26,7 @@ function Header({ username }: { username: string }) {
           <span className="tutee-avatar"><User /></span>
           <span className="tutor-account-name">@{username}</span>
         </span>
-        <form action={logoutAction}><button className="prototype-account-link" type="submit">로그아웃</button></form>
+        <form action={logoutAction}><SubmitButton className="prototype-account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
       </nav>
     </motion.header>
   );
