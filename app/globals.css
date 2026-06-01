@@ -2101,18 +2101,6 @@ select {
   max-width: none;
 }
 
-.list-composer textarea {
-  width: 100%;
-  resize: vertical;
-  font-family: ui-monospace, monospace;
-  font-size: var(--form-control-font-size);
-}
-
-.list-composer .outline-button {
-  background: var(--white);
-  color: var(--elec);
-  border: 1px solid #d9eaf7;
-}
 
 .csv-entries-bar {
   display: flex;

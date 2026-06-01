@@ -106,29 +106,16 @@ function TutorSecurityPanel() {
   );
 }
 
-function csvFromList(list: SavedList) {
-  return ['word,pos,meanings', ...list.entries.map(item => `${item.word},${item.pos},${item.meanings.join(';')}`)].join('\n');
-}
-
 function ListComposer({ lists }: { lists: SavedList[] }) {
   const [state, action, pending] = useActionState(saveListAction, {});
   const [listId, setListId] = useState('');
   const [title, setTitle] = useState('');
-  const [csv, setCsv] = useState('word,pos,meanings\n');
   const [csvFileName, setCsvFileName] = useState('');
   const [entries, setEntries] = useState<WordItem[]>([]);
   const [error, setError] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-
-  const applyParsed = (value: string, openSheet: boolean) => {
-    const parsed = importVocabularyCsv(value);
-    if (parsed.status === 'error') { setError(parsed.error); setEntries([]); }
-    else { setEntries(parsed.items); setError(''); if (openSheet) setSheetOpen(true); }
-  };
-
-  const parse = () => applyParsed(csv, true);
 
   const uploadCsv = (file?: File) => {
     if (!file) return;
@@ -139,9 +126,10 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
     const reader = new FileReader();
     reader.onload = () => {
       const text = typeof reader.result === 'string' ? reader.result : '';
-      setCsv(text);
       setCsvFileName(file.name);
-      applyParsed(text, true);
+      const parsed = importVocabularyCsv(text);
+      if (parsed.status === 'error') { setError(parsed.error); setEntries([]); }
+      else { setEntries(parsed.items); setError(''); setSheetOpen(true); }
     };
     reader.onerror = () => setError('CSV 파일을 읽지 못했습니다.');
     reader.readAsText(file);
@@ -150,7 +138,6 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
   const edit = (list: SavedList) => {
     setListId(list.id);
     setTitle(list.title);
-    setCsv(csvFromList(list));
     setCsvFileName('');
     setEntries(list.entries);
     setError('');
@@ -169,8 +156,6 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
           <span>{csvFileName || 'CSV 파일 업로드'}</span>
           <small>{entries.length ? `${entries.length}개 단어 검토됨` : 'word,pos,meanings 형식'}</small>
         </label>
-        <textarea value={csv} onChange={event => setCsv(event.target.value)} rows={4} aria-label="CSV 내용" />
-        <button className="outline-button" type="button" onClick={parse}>CSV 검토</button>
         {entries.length > 0 && (
           <div className="csv-entries-bar">
             <span>{entries.length}개 단어 준비됨</span>
