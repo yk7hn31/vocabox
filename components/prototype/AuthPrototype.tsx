@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
@@ -10,6 +10,7 @@ import {
   acceptInviteAction,
   completePasscodeResetAction,
   loginAction,
+  lookupUsernameAction,
   tutorRegisterAction,
 } from '@/app/actions/auth';
 
@@ -34,21 +35,47 @@ function Success({ title, body }: { title: string; body: string }) {
 }
 
 export function AuthPrototype({ flow = 'login', token = '', displayName, valid = true }: AuthPrototypeProps) {
-  const action = flow === 'tutor-register'
-    ? tutorRegisterAction
-    : flow === 'invite'
-      ? acceptInviteAction
-      : flow === 'reset'
-        ? completePasscodeResetAction
-        : loginAction;
-  const [state, formAction, pending] = useActionState(action, {});
-  const [loginAs, setLoginAs] = useState<'tutee' | 'tutor'>('tutee');
+  const nonLoginAction =
+    flow === 'tutor-register' ? tutorRegisterAction :
+    flow === 'invite' ? acceptInviteAction :
+    flow === 'reset' ? completePasscodeResetAction :
+    loginAction;
+
+  const [state, formAction, pending] = useActionState(nonLoginAction, {});
+  const [lookupPending, startLookup] = useTransition();
+  const [stage, setStage] = useState<'username' | 'secret'>('username');
+  const [identifiedRole, setIdentifiedRole] = useState<'tutor' | 'tutee' | null>(null);
+  const [identifiedUsername, setIdentifiedUsername] = useState('');
+  const [lookupError, setLookupError] = useState('');
+
   const register = flow === 'tutor-register';
   const invited = flow === 'invite';
   const reset = flow === 'reset';
   const login = flow === 'login';
-  const useOtp = invited || reset || (login && loginAs === 'tutee');
   const heading = invited ? `${displayName ?? '학습자'} 계정 만들기` : reset ? '비밀번호 재설정' : register ? '튜터 회원가입' : '로그인';
+
+  const handleUsernameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLookupError('');
+    const fd = new FormData(e.currentTarget);
+    startLookup(async () => {
+      const result = await lookupUsernameAction({}, fd);
+      if (result.role) {
+        setIdentifiedRole(result.role);
+        setIdentifiedUsername(String(fd.get('username') ?? '').trim());
+        setStage('secret');
+      } else {
+        setLookupError(result.error ?? '아이디를 확인하세요.');
+      }
+    });
+  };
+
+  const resetToUsername = () => {
+    setStage('username');
+    setIdentifiedRole(null);
+    setIdentifiedUsername('');
+    setLookupError('');
+  };
 
   return (
     <MotionConfig reducedMotion="user">
@@ -74,12 +101,6 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                       <Link className={register ? 'is-selected' : ''} href="/auth?role=tutor&mode=register">튜터 회원가입</Link>
                     </div>
                   )}
-                  {login && (
-                    <div className="auth-role-toggle" role="group" aria-label="로그인 유형">
-                      <button type="button" className={loginAs === 'tutee' ? 'is-active' : ''} onClick={() => setLoginAs('tutee')}>학습자</button>
-                      <button type="button" className={loginAs === 'tutor' ? 'is-active' : ''} onClick={() => setLoginAs('tutor')}>튜터</button>
-                    </div>
-                  )}
                   <h1>{heading}</h1>
                   <p className="auth-lead">
                     {invited
@@ -92,6 +113,48 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                   </p>
                   {!valid ? (
                     <p className="auth-error">링크가 만료되었거나 이미 사용되었습니다.</p>
+                  ) : login ? (
+                    <>
+                      {stage === 'username' && (
+                        <form className="auth-form" onSubmit={handleUsernameSubmit} style={{ marginTop: 16 }}>
+                          <label>
+                            아이디
+                            <input autoComplete="username" name="username" required placeholder="아이디" />
+                          </label>
+                          {lookupError && <p className="auth-error">{lookupError}</p>}
+                          <button className="auth-primary" disabled={lookupPending} type="submit">
+                            {lookupPending ? '확인 중...' : '다음'}
+                          </button>
+                        </form>
+                      )}
+                      {stage === 'secret' && identifiedRole && (
+                        <form className="auth-form" action={formAction} style={{ marginTop: 16 }}>
+                          <input type="hidden" name="username" value={identifiedUsername} />
+                          <div className="auth-identified">
+                            <span className="auth-identified-name">{identifiedUsername}</span>
+                            <button type="button" className="auth-identified-change" onClick={resetToUsername}>변경</button>
+                          </div>
+                          <label>
+                            {identifiedRole === 'tutee' ? '숫자 비밀번호 (6자리)' : '비밀번호'}
+                            {identifiedRole === 'tutee' ? (
+                              <OtpInput name="secret" required />
+                            ) : (
+                              <input
+                                autoComplete="current-password"
+                                name="secret"
+                                placeholder="비밀번호"
+                                required
+                                type="password"
+                              />
+                            )}
+                          </label>
+                          {state.error && <p className="auth-error">{state.error}</p>}
+                          <button className="auth-primary" disabled={pending} type="submit">
+                            {pending ? '로그인 중...' : '로그인'}
+                          </button>
+                        </form>
+                      )}
+                    </>
                   ) : (
                     <form className="auth-form" action={formAction} style={{ marginTop: 16 }}>
                       {(invited || reset) && <input name="token" type="hidden" value={token} />}
@@ -102,15 +165,15 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                         </label>
                       )}
                       <label>
-                        {register ? '비밀번호' : useOtp ? '숫자 비밀번호 (6자리)' : '비밀번호'}
-                        {useOtp ? (
+                        {register ? '비밀번호' : '숫자 비밀번호 (6자리)'}
+                        {(invited || reset) ? (
                           <OtpInput name="secret" required />
                         ) : (
                           <input
-                            autoComplete={register ? 'new-password' : 'current-password'}
-                            minLength={register ? 12 : undefined}
+                            autoComplete="new-password"
+                            minLength={12}
                             name="secret"
-                            placeholder={register ? '12자 이상' : '비밀번호'}
+                            placeholder="12자 이상"
                             required
                             type="password"
                           />
@@ -118,7 +181,7 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                       </label>
                       {state.error && <p className="auth-error">{state.error}</p>}
                       <button className="auth-primary" disabled={pending} type="submit">
-                        {pending ? '처리 중...' : reset ? '비밀번호 변경' : invited ? '계정 만들기' : register ? '튜터 계정 만들기' : '로그인'}
+                        {pending ? '처리 중...' : reset ? '비밀번호 변경' : invited ? '계정 만들기' : '튜터 계정 만들기'}
                       </button>
                     </form>
                   )}

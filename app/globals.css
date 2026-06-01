@@ -1071,32 +1071,32 @@ select {
   box-shadow: 0 2px 9px rgba(24, 29, 39, .07);
 }
 
-.auth-role-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.auth-identified {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   background: var(--card);
   border-radius: 10px;
-  padding: 3px;
-  gap: 3px;
-  margin-bottom: 20px;
+  padding: 10px 14px;
 }
 
-.auth-role-toggle button {
-  height: 36px;
+.auth-identified-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--obs);
+  letter-spacing: -.01em;
+}
+
+.auth-identified-change {
   border: 0;
-  border-radius: 8px;
   background: transparent;
-  color: var(--ash);
-  cursor: pointer;
+  color: var(--elec);
+  font: inherit;
   font-size: 13px;
   font-weight: 600;
-  transition: color .15s, background .15s;
-}
-
-.auth-role-toggle button.is-active {
-  background: var(--white);
-  color: var(--obs);
-  box-shadow: 0 1px 4px rgba(10, 13, 18, .09);
+  cursor: pointer;
+  padding: 0;
 }
 
 .auth-progress {

@@ -18,6 +18,7 @@ import {
 } from '@/lib/server/security';
 
 export interface AuthState { error?: string }
+export interface UsernameState { role?: 'tutor' | 'tutee'; error?: string }
 
 function text(formData: FormData, name: string) {
   return String(formData.get(name) ?? '').trim();
@@ -52,6 +53,16 @@ async function failLogin(ip: string) {
         else null end,
       updated_at = now()
   `;
+}
+
+export async function lookupUsernameAction(_: UsernameState, formData: FormData): Promise<UsernameState> {
+  const username = normalizeUsername(text(formData, 'username'));
+  if (!username) return { error: '아이디를 입력하세요.' };
+  const rows = await db()<{ role: string }[]>`
+    select role from users where username_normalized = ${username} limit 1
+  `;
+  if (!rows[0]) return { error: '등록된 아이디가 없습니다.' };
+  return { role: rows[0].role as 'tutor' | 'tutee' };
 }
 
 export async function loginAction(_: AuthState, formData: FormData): Promise<AuthState> {
