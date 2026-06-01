@@ -433,10 +433,12 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
                   <div className="assignment-fields">
                     <label>
                       <span>단어장</span>
-                      <AppSelect name="listId" required defaultValue="">
-                        <option value="" disabled>단어장 선택</option>
-                        {lists.filter(list => !list.archived).map(list => <option key={list.id} value={list.id}>{list.title}</option>)}
-                      </AppSelect>
+                      <AppSelect
+                        name="listId"
+                        required
+                        placeholder="단어장 선택"
+                        options={lists.filter(list => !list.archived).map(list => ({ value: list.id, label: list.title }))}
+                      />
                     </label>
                     <label>
                       <span>마감일</span>
