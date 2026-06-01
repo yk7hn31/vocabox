@@ -21,7 +21,7 @@ import {
   toggleTuteeArchiveAction,
   updateAssignmentDueDateAction,
 } from '@/app/actions/tutor';
-import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User } from '@/components/prototype/FeatherIcons';
+import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/prototype/FeatherIcons';
 
 type TuteeStatus = 'attention' | 'steady' | 'excellent';
 type TutorTab = 'students' | 'lists' | 'settings';
@@ -117,33 +117,33 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
   const [csvFileName, setCsvFileName] = useState('');
   const [entries, setEntries] = useState<WordItem[]>([]);
   const [error, setError] = useState('');
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  const parseCsv = (value: string) => {
+  const applyParsed = (value: string, openSheet: boolean) => {
     const parsed = importVocabularyCsv(value);
-    if (parsed.status === 'error') setError(parsed.error);
-    else {
-      setEntries(parsed.items);
-      setError('');
-    }
+    if (parsed.status === 'error') { setError(parsed.error); setEntries([]); }
+    else { setEntries(parsed.items); setError(''); if (openSheet) setSheetOpen(true); }
   };
-  const parse = () => parseCsv(csv);
+
+  const parse = () => applyParsed(csv, true);
+
   const uploadCsv = (file?: File) => {
     if (!file) return;
     if (!file.name.toLowerCase().endsWith('.csv') && file.type && file.type !== 'text/csv') {
       setError('CSV 파일만 업로드할 수 있습니다.');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => {
       const text = typeof reader.result === 'string' ? reader.result : '';
       setCsv(text);
       setCsvFileName(file.name);
-      parseCsv(text);
+      applyParsed(text, true);
     };
     reader.onerror = () => setError('CSV 파일을 읽지 못했습니다.');
     reader.readAsText(file);
   };
+
   const edit = (list: SavedList) => {
     setListId(list.id);
     setTitle(list.title);
@@ -151,6 +151,7 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
     setCsvFileName('');
     setEntries(list.entries);
     setError('');
+    setSheetOpen(true);
   };
 
   return (
@@ -161,25 +162,16 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
         <input name="entries" type="hidden" value={JSON.stringify(entries)} />
         <input name="title" value={title} onChange={event => setTitle(event.target.value)} placeholder="단어장 제목" maxLength={100} required />
         <label className="csv-upload-target">
-          <input
-            accept=".csv,text/csv"
-            type="file"
-            onChange={event => uploadCsv(event.target.files?.[0])}
-          />
+          <input accept=".csv,text/csv" type="file" onChange={event => uploadCsv(event.target.files?.[0])} />
           <span>{csvFileName || 'CSV 파일 업로드'}</span>
           <small>{entries.length ? `${entries.length}개 단어 검토됨` : 'word,pos,meanings 형식'}</small>
         </label>
         <textarea value={csv} onChange={event => setCsv(event.target.value)} rows={4} aria-label="CSV 내용" />
         <button className="outline-button" type="button" onClick={parse}>CSV 검토</button>
         {entries.length > 0 && (
-          <div className="entry-review">
-            {entries.map((entry, index) => (
-              <div key={index}>
-                <input maxLength={120} value={entry.word} onChange={event => setEntries(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, word: event.target.value } : item))} />
-                <input maxLength={40} value={entry.pos} onChange={event => setEntries(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, pos: event.target.value } : item))} />
-                <input value={entry.meanings.join(';')} onChange={event => setEntries(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, meanings: event.target.value.split(';').map(value => value.trim()).filter(Boolean) } : item))} />
-              </div>
-            ))}
+          <div className="csv-entries-bar">
+            <span>{entries.length}개 단어 준비됨</span>
+            <button className="csv-entries-edit" type="button" onClick={() => setSheetOpen(true)}>편집하기</button>
           </div>
         )}
         {(error || state.error) && <p className="form-error">{error || state.error}</p>}
@@ -201,6 +193,71 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
           </div>
         ))}
       </div>
+
+      {sheetOpen && (
+        <div className="csv-editor-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
+          <button className="csv-editor-backdrop" type="button" onClick={() => setSheetOpen(false)} aria-label="닫기" />
+          <div className="csv-editor-sheet">
+            <div className="csv-editor-grabber" aria-hidden="true" />
+            <div className="csv-editor-header">
+              <div>
+                <h3>단어 편집</h3>
+                <span>{entries.length}개</span>
+              </div>
+              <button className="csv-editor-close" type="button" onClick={() => setSheetOpen(false)} aria-label="닫기">
+                <X />
+              </button>
+            </div>
+            <div className="csv-editor-scroll">
+              <div className="csv-editor-table-wrap">
+                <table className="csv-editor-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">단어</th>
+                      <th scope="col">품사</th>
+                      <th scope="col">뜻 (;로 구분)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entries.map((entry, index) => (
+                      <tr key={index}>
+                        <td>
+                          <input
+                            maxLength={120}
+                            value={entry.word}
+                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, word: event.target.value } : item))}
+                            aria-label={`단어 ${index + 1}`}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            maxLength={40}
+                            value={entry.pos}
+                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, pos: event.target.value } : item))}
+                            aria-label={`품사 ${index + 1}`}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            value={entry.meanings.join(';')}
+                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, meanings: event.target.value.split(';').map(v => v.trim()).filter(Boolean) } : item))}
+                            aria-label={`뜻 ${index + 1}`}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="csv-editor-footer">
+              <button className="cta primary-action" type="button" onClick={() => setSheetOpen(false)}>
+                편집 완료
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
