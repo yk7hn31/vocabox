@@ -26,9 +26,10 @@ import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X }
 
 type TuteeStatus = 'attention' | 'steady' | 'excellent';
 type TutorTab = 'students' | 'lists' | 'settings';
+type SheetTab = 'overview' | 'assignments' | 'account';
 
 function latestAttempt(student: TutorTutee) {
-  return student.assignments.flatMap(assignment => assignment.attempts).sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0];
+  return student.assignments.flatMap(a => a.attempts).sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0];
 }
 
 function statusOf(student: TutorTutee): TuteeStatus {
@@ -272,7 +273,7 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
 }
 
 function Trend({ student }: { student: TutorTutee }) {
-  const values = student.assignments.flatMap(assignment => assignment.attempts).sort((a, b) => a.completedAt.localeCompare(b.completedAt)).slice(-4).map(item => item.percent);
+  const values = student.assignments.flatMap(a => a.attempts).sort((a, b) => a.completedAt.localeCompare(b.completedAt)).slice(-4).map(item => item.percent);
   return (
     <div className="trend-card">
       <div><strong>최근 정확도</strong><span>완료한 학습 {values.length}회</span></div>
@@ -282,88 +283,6 @@ function Trend({ student }: { student: TutorTutee }) {
         ))}
       </div>
     </div>
-  );
-}
-
-function StudentDetail({ student, lists }: { student: TutorTutee; lists: SavedList[] }) {
-  const [assignState, assignAction, assigning] = useActionState(createAssignmentAction, {});
-  const [assignMode, setAssignMode] = useState<'practice' | 'test'>('practice');
-  const attempts = student.assignments.flatMap(assignment => assignment.attempts);
-  const latest = latestAttempt(student);
-  const wrongWords = latest?.responses.filter(item => item.isRight === false).map(item => item.word) ?? [];
-  return (
-    <motion.section
-      layout
-      key={student.id}
-      className="student-detail"
-      initial={{ opacity: 0, y: 10, scale: .99 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: .22, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="detail-heading">
-        <div><p>@{student.username}{student.archived ? ' · 읽기 전용' : ''}</p><h2>{student.displayName}</h2></div>
-        <StatusBadge status={statusOf(student)} />
-      </div>
-      <div className="detail-metrics">
-        <article><strong>{latest?.percent ?? 0}%</strong><span>최근 정확도</span></article>
-        <article><strong>{attempts.length}</strong><span>완료 세션</span></article>
-        <article><strong>{student.assignments.length}</strong><span>과제</span></article>
-        <article><strong>{student.archived ? '보관' : '활성'}</strong><span>계정 상태</span></article>
-      </div>
-      <Trend student={student} />
-      <div className="coach-panel live-coach-panel">
-        <div><p>최근 오답</p><div className="weak-words">{wrongWords.length ? wrongWords.slice(0, 5).map(word => <span key={word}>{word}</span>) : <span>없음</span>}</div></div>
-        {!student.archived && (
-          <form className="assignment-form" action={assignAction}>
-            <input name="tuteeId" type="hidden" value={student.id} />
-            <input name="mode" type="hidden" value={assignMode} />
-            <p className="assignment-form-title">새 과제</p>
-            <div className="assign-mode-toggle">
-              <button type="button" className={assignMode === 'practice' ? 'is-active' : ''} onClick={() => setAssignMode('practice')}>학습</button>
-              <button type="button" className={assignMode === 'test' ? 'is-active' : ''} onClick={() => setAssignMode('test')}>시험</button>
-            </div>
-            <div className="assignment-fields">
-              <label>
-                <span>단어장</span>
-                <select name="listId" required defaultValue="">
-                  <option value="" disabled>단어장 선택</option>
-                  {lists.filter(list => !list.archived).map(list => <option key={list.id} value={list.id}>{list.title}</option>)}
-                </select>
-              </label>
-              <label>
-                <span>마감일</span>
-                <input name="dueDate" type="date" />
-              </label>
-              {assignMode === 'test' && (
-                <label>
-                  <span>시험 시간 (분)</span>
-                  <input name="timeLimitMinutes" type="number" min="1" max="180" placeholder="예: 20" required />
-                </label>
-              )}
-            </div>
-            <button className="assignment-submit" disabled={assigning} type="submit"><Plus />배정</button>
-            {assignState.error && <p className="form-error">{assignState.error}</p>}
-          </form>
-        )}
-        <div className="record-actions student-account-actions">
-          <form action={toggleTuteeArchiveAction}>
-            <input name="tuteeId" type="hidden" value={student.id} /><input name="restore" type="hidden" value={student.archived ? '1' : '0'} />
-            <button type="submit">{student.archived ? '학습자 복원' : '학습자 보관'}</button>
-          </form>
-          <form action={createPasscodeResetAction}>
-            <input name="tuteeId" type="hidden" value={student.id} /><button type="submit">비밀번호 재설정 링크</button>
-          </form>
-          <form action={deleteTuteeAction} onSubmit={event => { if (!window.confirm('학습자와 모든 학습 기록을 영구 삭제할까요?')) event.preventDefault(); }}>
-            <input name="tuteeId" type="hidden" value={student.id} /><button className="danger" type="submit">영구 삭제</button>
-          </form>
-        </div>
-      </div>
-      <section className="assignment-records">
-        <h3>과제 및 결과</h3>
-        {student.assignments.map(assignment => <AssignmentRecord key={assignment.id} assignment={assignment} />)}
-        {!student.assignments.length && <p>배정된 과제가 없습니다.</p>}
-      </section>
-    </motion.section>
   );
 }
 
@@ -408,10 +327,170 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
   );
 }
 
+function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists: SavedList[]; onClose: () => void }) {
+  const [activeTab, setActiveTab] = useState<SheetTab>('overview');
+  const [assignState, assignAction, assigning] = useActionState(createAssignmentAction, {});
+  const [assignMode, setAssignMode] = useState<'practice' | 'test'>('practice');
+  const attempts = student.assignments.flatMap(a => a.attempts);
+  const latest = latestAttempt(student);
+  const wrongWords = latest?.responses.filter(r => r.isRight === false).map(r => r.word) ?? [];
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const before = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handler);
+    return () => { document.body.style.overflow = before; window.removeEventListener('keydown', handler); };
+  }, [onClose]);
+
+  const tabs: Array<{ id: SheetTab; label: string }> = [
+    { id: 'overview', label: '개요' },
+    { id: 'assignments', label: '과제' },
+    { id: 'account', label: '계정' },
+  ];
+
+  return (
+    <div className="tutee-sheet-layer" role="dialog" aria-modal="true" aria-label={`${student.displayName} 상세 정보`}>
+      <motion.button
+        className="tutee-sheet-backdrop"
+        type="button"
+        onClick={onClose}
+        aria-label="닫기"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      />
+      <motion.div
+        className="tutee-sheet"
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
+      >
+        <div className="tutee-sheet-grabber" aria-hidden="true" />
+        <div className="tutee-sheet-header">
+          <div className="tutee-sheet-identity">
+            <p className="tutee-sheet-username">@{student.username}{student.archived ? ' · 읽기 전용' : ''}</p>
+            <h2 className="tutee-sheet-name">{student.displayName}</h2>
+          </div>
+          <div className="tutee-sheet-header-right">
+            <StatusBadge status={statusOf(student)} />
+            <button type="button" className="tutee-sheet-close" onClick={onClose} aria-label="닫기"><X /></button>
+          </div>
+        </div>
+
+        <div className="tutee-sheet-tabs" role="tablist" aria-label="학습자 정보 탭">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              type="button"
+              aria-selected={activeTab === tab.id}
+              className={activeTab === tab.id ? 'is-active' : ''}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="tutee-sheet-scroll">
+          {activeTab === 'overview' && (
+            <div className="tutee-sheet-section">
+              <div className="detail-metrics">
+                <article><strong>{latest?.percent ?? 0}%</strong><span>최근 정확도</span></article>
+                <article><strong>{attempts.length}</strong><span>완료 세션</span></article>
+                <article><strong>{student.assignments.length}</strong><span>과제</span></article>
+                <article><strong>{student.archived ? '보관' : '활성'}</strong><span>계정 상태</span></article>
+              </div>
+              <Trend student={student} />
+              <div className="coach-panel" style={{ marginTop: 14 }}>
+                <div>
+                  <p>최근 오답</p>
+                  <div className="weak-words">
+                    {wrongWords.length ? wrongWords.slice(0, 8).map(word => <span key={word}>{word}</span>) : <span>없음</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'assignments' && (
+            <div className="tutee-sheet-section">
+              {!student.archived && (
+                <form className="assignment-form" action={assignAction}>
+                  <input name="tuteeId" type="hidden" value={student.id} />
+                  <input name="mode" type="hidden" value={assignMode} />
+                  <p className="assignment-form-title">새 과제</p>
+                  <div className="assign-mode-toggle">
+                    <button type="button" className={assignMode === 'practice' ? 'is-active' : ''} onClick={() => setAssignMode('practice')}>학습</button>
+                    <button type="button" className={assignMode === 'test' ? 'is-active' : ''} onClick={() => setAssignMode('test')}>시험</button>
+                  </div>
+                  <div className="assignment-fields">
+                    <label>
+                      <span>단어장</span>
+                      <select name="listId" required defaultValue="">
+                        <option value="" disabled>단어장 선택</option>
+                        {lists.filter(list => !list.archived).map(list => <option key={list.id} value={list.id}>{list.title}</option>)}
+                      </select>
+                    </label>
+                    <label>
+                      <span>마감일</span>
+                      <input name="dueDate" type="date" />
+                    </label>
+                    {assignMode === 'test' && (
+                      <label>
+                        <span>시험 시간 (분)</span>
+                        <input name="timeLimitMinutes" type="number" min="1" max="180" placeholder="예: 20" required />
+                      </label>
+                    )}
+                  </div>
+                  <button className="assignment-submit" disabled={assigning} type="submit"><Plus />배정</button>
+                  {assignState.error && <p className="form-error">{assignState.error}</p>}
+                  {assignState.message && <p className="form-success">{assignState.message}</p>}
+                </form>
+              )}
+              <section className="assignment-records">
+                <h3>과제 및 결과</h3>
+                {student.assignments.map(assignment => <AssignmentRecord key={assignment.id} assignment={assignment} />)}
+                {!student.assignments.length && <p style={{ color: 'var(--pine)', fontSize: 13 }}>배정된 과제가 없습니다.</p>}
+              </section>
+            </div>
+          )}
+
+          {activeTab === 'account' && (
+            <div className="tutee-sheet-section">
+              <div className="record-actions student-account-actions" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                <form action={toggleTuteeArchiveAction}>
+                  <input name="tuteeId" type="hidden" value={student.id} />
+                  <input name="restore" type="hidden" value={student.archived ? '1' : '0'} />
+                  <button type="submit" style={{ width: '100%' }}>{student.archived ? '학습자 복원' : '학습자 보관'}</button>
+                </form>
+                <form action={createPasscodeResetAction}>
+                  <input name="tuteeId" type="hidden" value={student.id} />
+                  <button type="submit" style={{ width: '100%' }}>비밀번호 재설정 링크</button>
+                </form>
+                <form action={deleteTuteeAction} onSubmit={event => { if (!window.confirm('학습자와 모든 학습 기록을 영구 삭제할까요?')) event.preventDefault(); }}>
+                  <input name="tuteeId" type="hidden" value={student.id} />
+                  <button className="danger" type="submit" style={{ width: '100%' }}>영구 삭제</button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
-  const [selectedId, setSelectedId] = useState(data.tutees[0]?.id ?? '');
+  const [sheetStudentId, setSheetStudentId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TutorTab>('students');
-  const selected = useMemo(() => data.tutees.find(tutee => tutee.id === selectedId) ?? data.tutees[0], [data.tutees, selectedId]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const sheetStudent = useMemo(() => data.tutees.find(t => t.id === sheetStudentId) ?? null, [data.tutees, sheetStudentId]);
   const attention = data.tutees.filter(student => statusOf(student) === 'attention');
   const progressing = data.tutees.filter(student => statusOf(student) !== 'attention');
   const tabs: Array<{ id: TutorTab; label: string; count?: number; icon: ReactNode }> = [
@@ -425,7 +504,7 @@ export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashb
       <div className="tutor-page tutor-b">
         <Header username={data.user.username} />
         <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="dashboard-title"><div><p className="auth-kicker">TUTOR WORKSPACE</p><h1>학습자와 단어장 관리</h1></div></div>
+          <div className="dashboard-title"><div><h1>학습자와 단어장 관리</h1></div></div>
           <div className="tutor-tabs" role="tablist" aria-label="튜터 대시보드">
             {tabs.map(tab => (
               <button
@@ -455,7 +534,7 @@ export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashb
               <section className="queue-column queue-column--care">
                 <h2>먼저 확인 <b>{attention.length}</b></h2>
                 {attention.map(student => (
-                  <motion.button layout className={selected?.id === student.id ? 'is-selected' : ''} key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSelectedId(student.id)}>
+                  <motion.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
                     <StatusBadge status={statusOf(student)} /><strong>{student.displayName} <small>@{student.username}</small></strong>
                     <p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
                   </motion.button>
@@ -465,14 +544,16 @@ export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashb
               <section className="queue-column">
                 <h2>잘 진행 중 <b>{progressing.length}</b></h2>
                 {progressing.map(student => (
-                  <motion.button layout className={selected?.id === student.id ? 'is-selected' : ''} key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSelectedId(student.id)}>
+                  <motion.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
                     <StatusBadge status={statusOf(student)} /><strong>{student.displayName}</strong><p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
                   </motion.button>
                 ))}
                 {!progressing.length && <p className="empty-list-copy">진행 중인 학습자가 없습니다.</p>}
               </section>
-              {selected ? <StudentDetail student={selected} lists={data.lists} /> : <section className="student-detail empty-detail">초대 링크를 만들어 첫 학습자를 추가하세요.</section>}
             </div>
+            {!data.tutees.length && (
+              <p className="empty-list-copy" style={{ padding: '12px 4px' }}>초대 링크를 만들어 첫 학습자를 추가하세요.</p>
+            )}
           </section>
           <section
             aria-labelledby="tutor-tab-lists"
@@ -495,6 +576,20 @@ export function TutorDashboardPrototype({ data, sharedLink }: { data: TutorDashb
           </section>
         </motion.main>
       </div>
+
+      {mounted && createPortal(
+        <AnimatePresence>
+          {sheetStudent && (
+            <StudentSheet
+              key={sheetStudent.id}
+              student={sheetStudent}
+              lists={data.lists}
+              onClose={() => setSheetStudentId(null)}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </MotionConfig>
   );
 }

@@ -1755,7 +1755,7 @@ select {
 
 .coach-board {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: start;
   gap: 11px;
 }
@@ -3197,6 +3197,147 @@ select {
   font-size: 13px;
 }
 
+.tutee-sheet-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tutee-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(10, 13, 18, .42);
+  cursor: default;
+}
+
+.tutee-sheet {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: 88dvh;
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 40px rgba(10, 13, 18, .14);
+  overflow: hidden;
+}
+
+.tutee-sheet-grabber {
+  width: 40px;
+  height: 5px;
+  border-radius: 99px;
+  background: #d5dbe2;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.tutee-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.tutee-sheet-identity {
+  min-width: 0;
+}
+
+.tutee-sheet-username {
+  color: var(--ash);
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.tutee-sheet-name {
+  font-size: 20px;
+  letter-spacing: -.04em;
+  margin: 0;
+}
+
+.tutee-sheet-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.tutee-sheet-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--pine);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+
+.tutee-sheet-close:hover {
+  background: #e8eff6;
+}
+
+.tutee-sheet-close .feather-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tutee-sheet-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px 12px;
+  border-bottom: 1px solid #edf3f8;
+  flex-shrink: 0;
+}
+
+.tutee-sheet-tabs button {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ash);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  width: auto;
+}
+
+.tutee-sheet-tabs button.is-active {
+  background: #f0f7ff;
+  color: var(--elec);
+  border-color: #d0e7fa;
+}
+
+.tutee-sheet-tabs button:hover:not(.is-active) {
+  background: var(--card);
+  color: var(--obs);
+}
+
+.tutee-sheet-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tutee-sheet-section {
+  padding: 18px 20px 28px;
+}
+
 @media (max-width: 900px) {
   .management-grid {
     grid-template-columns: 1fr;
@@ -3507,10 +3648,6 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .coach-board .student-detail {
-    grid-column: auto;
-  }
-
   .tutee-board {
     grid-template-columns: 1fr;
   }
@@ -3792,14 +3929,6 @@ select {
 
   .dashboard-title h1 {
     font-size: 26px;
-  }
-
-  .student-detail {
-    padding: 20px 15px;
-  }
-
-  .student-detail--inline {
-    display: none;
   }
 
   .detail-metrics {
