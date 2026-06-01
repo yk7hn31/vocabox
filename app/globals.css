@@ -3028,6 +3028,7 @@ select {
   border: 0;
   border-left: 1px solid #e2e8f0;
   border-right: 1px solid #e2e8f0;
+  border-radius: 0;
   background: transparent;
   text-align: center;
   font: inherit;
