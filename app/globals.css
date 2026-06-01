@@ -1071,6 +1071,34 @@ select {
   box-shadow: 0 2px 9px rgba(24, 29, 39, .07);
 }
 
+.auth-role-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+
+.auth-role-toggle button {
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ash);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color .15s, background .15s;
+}
+
+.auth-role-toggle button.is-active {
+  background: var(--white);
+  color: var(--obs);
+  box-shadow: 0 1px 4px rgba(10, 13, 18, .09);
+}
+
 .auth-progress {
   display: flex;
   gap: 10px;

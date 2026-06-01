@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
@@ -42,9 +42,12 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
         ? completePasscodeResetAction
         : loginAction;
   const [state, formAction, pending] = useActionState(action, {});
+  const [loginAs, setLoginAs] = useState<'tutee' | 'tutor'>('tutee');
   const register = flow === 'tutor-register';
   const invited = flow === 'invite';
   const reset = flow === 'reset';
+  const login = flow === 'login';
+  const useOtp = invited || reset || (login && loginAs === 'tutee');
   const heading = invited ? `${displayName ?? '학습자'} 계정 만들기` : reset ? '비밀번호 재설정' : register ? '튜터 회원가입' : '로그인';
 
   return (
@@ -71,6 +74,12 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                       <Link className={register ? 'is-selected' : ''} href="/auth?role=tutor&mode=register">튜터 회원가입</Link>
                     </div>
                   )}
+                  {login && (
+                    <div className="auth-role-toggle" role="group" aria-label="로그인 유형">
+                      <button type="button" className={loginAs === 'tutee' ? 'is-active' : ''} onClick={() => setLoginAs('tutee')}>학습자</button>
+                      <button type="button" className={loginAs === 'tutor' ? 'is-active' : ''} onClick={() => setLoginAs('tutor')}>튜터</button>
+                    </div>
+                  )}
                   <h1>{heading}</h1>
                   <p className="auth-lead">
                     {invited
@@ -93,8 +102,8 @@ export function AuthPrototype({ flow = 'login', token = '', displayName, valid =
                         </label>
                       )}
                       <label>
-                        {register ? '비밀번호' : invited || reset ? '숫자 비밀번호 (6자리)' : '비밀번호'}
-                        {(invited || reset) ? (
+                        {register ? '비밀번호' : useOtp ? '숫자 비밀번호 (6자리)' : '비밀번호'}
+                        {useOtp ? (
                           <OtpInput name="secret" required />
                         ) : (
                           <input

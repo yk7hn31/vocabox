@@ -52,9 +52,10 @@ export function OtpInput({ name, length = 6, required }: OtpInputProps) {
         <input
           key={i}
           ref={el => { refs.current[i] = el; }}
-          type="text"
+          type="password"
           inputMode="numeric"
           maxLength={2}
+          autoComplete="off"
           value={d}
           className={`otp-box${d ? ' has-value' : ''}`}
           aria-label={`${i + 1}번째 자리`}
