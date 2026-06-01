@@ -85,7 +85,7 @@ export function QuizScreen({
         </div>
         <div style={{
           fontFamily: "var(--font-pretendard)",
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 600,
           color: lives <= 1 ? 'var(--coral-b)' : 'var(--obs)',
           letterSpacing: '-.01em',
@@ -98,13 +98,13 @@ export function QuizScreen({
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 11 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em' }}>
           {index + 1} / {total}
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <QuestionTypeBadge type={item.qType} />
           {streak >= 2 && (
-            <span style={{ background: '#fffaeb', border: '1px solid #fcd34d', borderRadius: 99, padding: '2px 9px', fontSize: 12, fontWeight: 600, color: '#92400e', fontFamily: "var(--font-pretendard)", display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ background: '#fffaeb', border: '1px solid #fcd34d', borderRadius: 99, padding: '2px 9px', fontSize: 13, fontWeight: 600, color: '#92400e', fontFamily: "var(--font-pretendard)", display: 'flex', alignItems: 'center', gap: 4 }}>
               <Icon name="zap" size={11} color="#92400e" sw={2} />{streak} 연속
             </span>
           )}
@@ -132,7 +132,7 @@ export function QuizScreen({
               {item.word}
             </div>
             {item.qType === 'type' && item.meanings.length > 1 && (
-              <div style={{ marginTop: 8, fontSize: 11, color: 'var(--ash)', fontFamily: "var(--font-pretendard)" }}>
+              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)" }}>
                 뜻이 {item.meanings.length}개 - 어떤 뜻이든 입력
               </div>
             )}
@@ -255,7 +255,7 @@ export function QuizScreen({
                     {mcqCorrect ? '정답이에요!' : '틀렸어요'}
                   </p>
                   {(!mcqCorrect || item.meanings.length > 1) && (
-                    <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
+                    <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
                       {mcqCorrect ? '모든 뜻: ' : '정답: '}
                       <strong style={{ color: 'var(--obs)' }}>{item.meanings.join(' / ')}</strong>
                     </p>
@@ -275,14 +275,14 @@ export function QuizScreen({
                 gap: 12,
               }}>
                 <div>
-                  <p style={{ fontWeight: 600, fontSize: 12, color: 'var(--deep-violet)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 4 }}>
+                  <p style={{ fontWeight: 600, fontSize: 13, color: 'var(--deep-violet)', fontFamily: "var(--font-pretendard)", letterSpacing: '-.01em', marginBottom: 4 }}>
                     셀프체크 - 채점 없음
                   </p>
-                  <p style={{ fontSize: 12, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: 'var(--pine)', fontFamily: "var(--font-pretendard)", lineHeight: 1.5 }}>
                     정답: <strong style={{ color: 'var(--obs)' }}>{item.meanings.join(' / ')}</strong>
                   </p>
                   {typedAnswer && (
-                    <p style={{ fontSize: 11, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 2 }}>
+                    <p style={{ fontSize: 12, color: 'var(--ash)', fontFamily: "var(--font-pretendard)", marginTop: 2 }}>
                       내 답: {typedAnswer}
                     </p>
                   )}
