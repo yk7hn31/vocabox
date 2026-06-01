@@ -1600,17 +1600,17 @@ select {
   transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
-.coach-panel button:hover,
+.coach-panel button:not(.app-select-trigger):not(.app-date-trigger):hover,
 .new-assignment:hover,
-.manage-card button:hover,
-.assignment-record button:hover {
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):hover,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):hover {
   box-shadow: 0 8px 16px rgba(10, 13, 18, .12);
 }
 
-.coach-panel button:active,
+.coach-panel button:not(.app-select-trigger):not(.app-date-trigger):active,
 .new-assignment:active,
-.manage-card button:active,
-.assignment-record button:active {
+.manage-card button:not(.app-select-trigger):not(.app-date-trigger):active,
+.assignment-record button:not(.app-select-trigger):not(.app-date-trigger):active {
   box-shadow: none;
   transform: scale(.99);
 }
