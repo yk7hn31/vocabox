@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState, useMemo, useState, type ReactNode } from 'react';
+import { useActionState, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import type { SavedList, TutorAssignment, TutorDashboardData, TutorTutee } from '@/lib/models';
@@ -118,6 +119,8 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
   const [entries, setEntries] = useState<WordItem[]>([]);
   const [error, setError] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const applyParsed = (value: string, openSheet: boolean) => {
     const parsed = importVocabularyCsv(value);
@@ -194,7 +197,7 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
         ))}
       </div>
 
-      {sheetOpen && (
+      {mounted && sheetOpen && createPortal(
         <div className="csv-editor-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
           <button className="csv-editor-backdrop" type="button" onClick={() => setSheetOpen(false)} aria-label="닫기" />
           <div className="csv-editor-sheet">
@@ -256,7 +259,8 @@ function ListComposer({ lists }: { lists: SavedList[] }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
