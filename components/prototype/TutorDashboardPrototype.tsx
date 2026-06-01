@@ -23,6 +23,7 @@ import {
   updateAssignmentDueDateAction,
 } from '@/app/actions/tutor';
 import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/prototype/FeatherIcons';
+import { AppSelect, AppDateInput } from '@/components/FormControls';
 
 type TuteeStatus = 'attention' | 'steady' | 'excellent';
 type TutorTab = 'students' | 'lists' | 'settings';
@@ -302,7 +303,7 @@ function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
       </div>
       <form className="assignment-due-form" action={updateAssignmentDueDateAction}>
         <input name="assignmentId" type="hidden" value={assignment.id} />
-        <label><span>마감일</span><input name="dueDate" type="date" defaultValue={assignment.dueDate ?? ''} /></label>
+        <label><span>마감일</span><AppDateInput name="dueDate" defaultValue={assignment.dueDate ?? ''} /></label>
         <button type="submit">저장</button>
       </form>
       <div className="record-actions">
@@ -432,14 +433,14 @@ function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists:
                   <div className="assignment-fields">
                     <label>
                       <span>단어장</span>
-                      <select name="listId" required defaultValue="">
+                      <AppSelect name="listId" required defaultValue="">
                         <option value="" disabled>단어장 선택</option>
                         {lists.filter(list => !list.archived).map(list => <option key={list.id} value={list.id}>{list.title}</option>)}
-                      </select>
+                      </AppSelect>
                     </label>
                     <label>
                       <span>마감일</span>
-                      <input name="dueDate" type="date" />
+                      <AppDateInput name="dueDate" />
                     </label>
                     {assignMode === 'test' && (
                       <label>
