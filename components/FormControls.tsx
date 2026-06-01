@@ -6,11 +6,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // ── shared portal dropdown behaviour ──────────────────────────────────────
 
-function useDropdown(open: boolean, setOpen: (v: boolean) => void, triggerRef: React.RefObject<HTMLElement | null>) {
+function useDropdown(
+  open: boolean,
+  setOpen: (v: boolean) => void,
+  triggerRef: React.RefObject<HTMLElement | null>,
+  dropdownRef: React.RefObject<HTMLElement | null>,
+) {
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!triggerRef.current?.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      if (!triggerRef.current?.contains(t) && !dropdownRef.current?.contains(t)) {
+        setOpen(false);
+      }
     };
     document.addEventListener('click', handler, true);
     const escape = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
@@ -19,7 +27,26 @@ function useDropdown(open: boolean, setOpen: (v: boolean) => void, triggerRef: R
       document.removeEventListener('click', handler, true);
       document.removeEventListener('keydown', escape);
     };
-  }, [open, setOpen, triggerRef]);
+  }, [open, setOpen, triggerRef, dropdownRef]);
+}
+
+// ── viewport-aware positioning ─────────────────────────────────────────────
+
+function calcPos(trigger: DOMRect, popupW: number, popupH: number) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const gap = 4;
+  const margin = 8;
+
+  let top = trigger.bottom + gap;
+  let left = trigger.left;
+
+  if (top + popupH > vh - margin) top = trigger.top - popupH - gap;
+  if (top < margin) top = margin;
+  if (left + popupW > vw - margin) left = vw - popupW - margin;
+  if (left < margin) left = margin;
+
+  return { top, left };
 }
 
 // ── AppSelect ──────────────────────────────────────────────────────────────
@@ -41,17 +68,23 @@ interface AppSelectProps {
 export function AppSelect({ name, options, placeholder = '선택', defaultValue = '', required }: AppSelectProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue);
-  const [rect, setRect] = useState<DOMRect | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; minWidth: number } | null>(null);
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
-  useDropdown(open, setOpen, triggerRef);
+  useDropdown(open, setOpen, triggerRef, dropdownRef);
 
   const selected = options.find(o => o.value === value);
 
   const toggle = () => {
-    if (!open && triggerRef.current) setRect(triggerRef.current.getBoundingClientRect());
+    if (!open && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      const dropH = Math.min(options.length * 34 + 8, 220);
+      const { top, left } = calcPos(r, Math.max(r.width, 180), dropH);
+      setPos({ top, left, minWidth: r.width });
+    }
     setOpen(v => !v);
   };
 
@@ -73,11 +106,12 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
       </button>
       {mounted && createPortal(
         <AnimatePresence>
-          {open && rect && (
+          {open && pos && (
             <motion.ul
+              ref={dropdownRef}
               className="app-select-dropdown"
               role="listbox"
-              style={{ top: rect.bottom + 4, left: rect.left, minWidth: rect.width }}
+              style={{ top: pos.top, left: pos.left, minWidth: pos.minWidth }}
               initial={{ opacity: 0, y: -6, scale: .97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: .97 }}
@@ -123,6 +157,9 @@ function formatKorean(iso: string) {
   return `${y}년 ${parseInt(m, 10)}월 ${parseInt(d, 10)}일`;
 }
 
+const CAL_W = 256;
+const CAL_H = 290;
+
 interface AppDateInputProps {
   name: string;
   defaultValue?: string;
@@ -133,18 +170,20 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
   const today = new Date();
   const [value, setValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
-  const [rect, setRect] = useState<DOMRect | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [mounted, setMounted] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
-  useDropdown(open, setOpen, triggerRef);
+  useDropdown(open, setOpen, triggerRef, calendarRef);
 
   const toggle = () => {
-    if (!open) {
-      if (triggerRef.current) setRect(triggerRef.current.getBoundingClientRect());
+    if (!open && triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setPos(calcPos(r, CAL_W, CAL_H));
       if (value) {
         const [y, m] = value.split('-').map(Number);
         setYear(y); setMonth(m - 1);
@@ -183,12 +222,13 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
       </button>
       {mounted && createPortal(
         <AnimatePresence>
-          {open && rect && (
+          {open && pos && (
             <motion.div
+              ref={calendarRef}
               className="app-calendar"
               role="dialog"
               aria-label="날짜 선택"
-              style={{ top: rect.bottom + 4, left: rect.left }}
+              style={{ top: pos.top, left: pos.left }}
               initial={{ opacity: 0, y: -6, scale: .97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: .97 }}
