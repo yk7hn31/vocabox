@@ -239,7 +239,7 @@ select {
   border: none;
   border-radius: var(--radius-buttons);
   padding: 13px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -.01em;
   display: flex;
@@ -254,7 +254,7 @@ select {
 .primary-action--compact {
   width: auto;
   padding: 10px 17px;
-  font-size: 13px;
+  font-size: 14px;
   flex-shrink: 0;
   gap: 5px;
 }
@@ -264,7 +264,7 @@ select {
   align-items: center;
   border-radius: var(--radius-badges);
   font-family: var(--font-pretendard);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -441,7 +441,7 @@ select {
 
 .eyebrow {
   color: var(--elec);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1;
   font-weight: 700;
   letter-spacing: .12em;
@@ -531,7 +531,7 @@ select {
   display: flex;
   gap: 22px;
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -578,7 +578,7 @@ select {
 .preview-top {
   gap: 16px;
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   margin-bottom: 21px;
 }
@@ -614,7 +614,7 @@ select {
   justify-content: space-between;
   margin-bottom: 13px;
   color: var(--ash);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -623,7 +623,7 @@ select {
   color: var(--elec);
   background: var(--ghostly);
   border-radius: 99px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .preview-word {
@@ -637,7 +637,7 @@ select {
 .preview-word small {
   display: block;
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 13px;
 }
 
@@ -656,7 +656,7 @@ select {
   border-radius: 90px;
   padding: 3px 10px;
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -673,7 +673,7 @@ select {
   border-radius: 12px;
   color: var(--pine);
   padding: 12px 14px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -692,7 +692,7 @@ select {
   border-radius: 13px;
   background: var(--mint);
   color: var(--mint-t);
-  font-size: 12px;
+  font-size: 13px;
   padding: 11px 14px;
 }
 
@@ -818,7 +818,7 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -831,7 +831,7 @@ select {
 
 .step p {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.55;
 }
 
@@ -843,7 +843,7 @@ select {
 
 .format-label {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 17px;
 }
@@ -852,7 +852,7 @@ select {
   background: var(--white);
   border-radius: 18px;
   color: var(--obs);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 2.15;
   overflow-x: auto;
   padding: 22px 23px;
@@ -861,7 +861,7 @@ select {
 
 .format-hint {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .final-cta {
@@ -890,7 +890,7 @@ select {
   align-items: center;
   justify-content: space-between;
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* ──────────────────────────────────────────────
@@ -914,7 +914,7 @@ select {
 
 .practice-back {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   padding: 8px 12px;
 }
@@ -1016,7 +1016,7 @@ select {
 
 .auth-kicker {
   color: var(--elec);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   font-weight: 700;
   letter-spacing: .14em;
@@ -1075,7 +1075,7 @@ select {
   gap: 10px;
   align-items: center;
   color: #a4afba;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   margin: 25px 0 25px;
 }
@@ -1107,7 +1107,7 @@ select {
 
 .auth-form label {
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -1156,7 +1156,7 @@ select {
   border: 0;
   background: transparent;
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   padding: 5px;
 }
@@ -1167,7 +1167,7 @@ select {
   border-radius: 90px;
   background: var(--white);
   color: var(--obs);
-  font-size: 13px;
+  font-size: 14px;
   padding: 9px 13px;
   margin-bottom: 3px;
   cursor: pointer;
@@ -1231,7 +1231,7 @@ select {
 
 .auth-success p {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   margin-bottom: 23px;
 }
@@ -1242,7 +1242,7 @@ select {
 
 .auth-role-switch {
   color: var(--pine);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   text-align: center;
   padding-top: 21px;
@@ -1259,7 +1259,7 @@ select {
 
 .auth-error {
   color: var(--coral-b);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -1375,7 +1375,7 @@ select {
   gap: 5px;
   width: max-content;
   border-radius: 90px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   padding: 5px 9px;
   transition: background .2s ease, color .2s ease, transform .2s ease;
@@ -1435,7 +1435,7 @@ select {
 
 .detail-heading p {
   color: var(--ash);
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 5px;
 }
 
@@ -1477,7 +1477,7 @@ select {
 
 .detail-metrics span {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .trend-card {
@@ -1503,13 +1503,13 @@ select {
 }
 
 .trend-card strong {
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 6px;
 }
 
 .trend-card > div:first-child span {
   color: var(--ash);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .trend-bars {
@@ -1535,7 +1535,7 @@ select {
   left: 50%;
   transform: translateX(-50%);
   color: var(--pine);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .coach-panel {
@@ -1551,7 +1551,7 @@ select {
 .coach-panel p,
 .coach-panel label {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   margin-bottom: 9px;
 }
@@ -1567,7 +1567,7 @@ select {
   background: var(--sky-wash);
   border-radius: 90px;
   padding: 6px 9px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .coach-panel select {
@@ -1594,7 +1594,7 @@ select {
   border-radius: 12px;
   background: var(--ink);
   color: var(--white);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   padding: 0 17px;
@@ -1632,7 +1632,7 @@ select {
   color: var(--white);
   border-radius: 12px;
   padding: 14px 18px;
-  font-size: 12px;
+  font-size: 13px;
   box-shadow: 0 15px 30px rgba(10, 13, 18, .17);
 }
 
@@ -1673,7 +1673,7 @@ select {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
@@ -1722,7 +1722,7 @@ select {
   padding: 0 5px;
   color: var(--elec);
   background: var(--ghostly);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .tutor-tabs button.is-active b {
@@ -1770,7 +1770,7 @@ select {
 }
 
 .queue-column h2 {
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: -.02em;
   margin: 2px 4px 14px;
 }
@@ -1781,7 +1781,7 @@ select {
   border-radius: 99px;
   padding: 3px 8px;
   margin-left: 5px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .queue-column button {
@@ -1812,7 +1812,7 @@ select {
 
 .queue-column button > strong {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   margin: 10px 0 7px;
 }
 
@@ -1825,7 +1825,7 @@ select {
 .queue-column button > span:last-child {
   display: block;
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -1836,7 +1836,7 @@ select {
 
 .empty-list-copy {
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
   padding: 7px 5px 2px;
 }
@@ -1922,7 +1922,7 @@ select {
 
 .manage-card h2,
 .assignment-records h3 {
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: -.02em;
   margin-bottom: 14px;
 }
@@ -1980,7 +1980,7 @@ select {
   padding: 10px;
   background: #f7fbff;
   margin-bottom: 12px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .share-link code {
@@ -2004,7 +2004,7 @@ select {
   align-items: center;
   border-top: 1px solid #edf3f8;
   padding-top: 7px;
-  font-size: 12px;
+  font-size: 13px;
   animation: tutor-row-in .22s ease both;
 }
 
@@ -2078,13 +2078,13 @@ select {
 
 .csv-upload-target span {
   color: var(--obs);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .csv-upload-target small {
   color: var(--ash);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .compact-security-form {
@@ -2153,7 +2153,7 @@ select {
 
 .assignment-form-title {
   color: var(--obs) !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   margin: 0 !important;
 }
@@ -2174,7 +2174,7 @@ select {
 .assignment-fields label > span,
 .assignment-due-form label > span {
   color: var(--ash);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -2235,7 +2235,7 @@ select {
   background: #f7fbff;
   color: var(--pine);
   padding: 0 12px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   box-shadow: none;
 }
@@ -2264,7 +2264,7 @@ select {
   padding: 14px;
   margin-bottom: 10px;
   background: #fbfdff;
-  font-size: 11px;
+  font-size: 12px;
   transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
@@ -2314,14 +2314,14 @@ select {
 
 .assignment-record-header strong {
   color: var(--obs);
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: -.02em;
   margin-bottom: 6px;
 }
 
 .assignment-record-header span {
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.45;
 }
 
@@ -2539,7 +2539,7 @@ select {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
@@ -2587,7 +2587,7 @@ select {
   padding: 0 5px;
   color: var(--elec);
   background: var(--ghostly);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .tutee-tabs button.is-active b {
@@ -2821,7 +2821,7 @@ select {
   border-radius: 12px;
   color: var(--elec);
   background: var(--white);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -2858,7 +2858,7 @@ select {
 
 .session-preview span {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .tutee-start-action {
@@ -2873,7 +2873,7 @@ select {
   color: var(--white);
   width: 100%;
   padding: 0 18px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -2890,7 +2890,7 @@ select {
 .read-only-note {
   margin-top: 15px;
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .attempt-history {
@@ -2904,18 +2904,18 @@ select {
   border-radius: 10px;
   padding: 10px 12px;
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .attempt-history p {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .practice-save-message {
   color: var(--pine);
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 @media (max-width: 900px) {
@@ -2936,7 +2936,7 @@ select {
 }
 
 .assignment-library-title h2 {
-  font-size: 16px;
+  font-size: 17px;
   letter-spacing: -.035em;
 }
 
@@ -2945,7 +2945,7 @@ select {
   background: var(--card);
   border-radius: 99px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .assignment-library button {
@@ -2983,18 +2983,18 @@ select {
 }
 
 .assignment-library button strong {
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 6px;
 }
 
 .assignment-library button small {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .assignment-library button > span {
   color: var(--elec);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -3096,7 +3096,7 @@ select {
 
 .assigned-sheet-header > p:last-child {
   color: var(--pine);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .assigned-sheet-scroll {
@@ -3135,14 +3135,14 @@ select {
 }
 
 .assigned-group-heading h3 {
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: -.02em;
   margin-bottom: 5px;
 }
 
 .assigned-group-heading p {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .assigned-group-meta {
@@ -3158,7 +3158,7 @@ select {
   background: var(--white);
   border-radius: 90px;
   padding: 6px 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -3206,13 +3206,13 @@ select {
 }
 
 .assigned-word-row strong {
-  font-size: 12px;
+  font-size: 13px;
   margin-bottom: 4px;
 }
 
 .assigned-word-row span {
   color: var(--pine);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 @media (max-width: 1120px) {
