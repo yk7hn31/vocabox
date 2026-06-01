@@ -3845,11 +3845,11 @@ select {
     font-size: 24px !important;
   }
 
-  .setup-card [style*="font-size: 13px"] {
-    font-size: 14px !important;
+  .setup-card [style*="font-size: 14px"] {
+    font-size: 15px !important;
   }
 
-  .setup-card [style*="font-size: 11px"] {
+  .setup-card [style*="font-size: 12px"] {
     font-size: 13px !important;
   }
 
@@ -4169,21 +4169,14 @@ select {
   /* ── Mobile typography floor: normalize minimum sizes ─────────── */
 
   /* Raise floor: 10px → 11px */
-  .practice-badge { font-size: 11px; padding: 3px 10px; }
-  .status-pill { font-size: 11px; }
+  .practice-badge { padding: 3px 10px; }
   .word-status { font-size: 11px; padding: 5px 9px; }
-  .tutor-tabs b, .tutee-tabs b { font-size: 11px; }
-  .trend-card > div:first-child span { font-size: 11px; }
-  .trend-bars small { font-size: 11px; }
-  .session-preview span { font-size: 12px; }
 
   /* Raise secondary labels: 11px → 12px */
   .queue-column button small,
   .queue-column button p { font-size: 12px; }
-  .detail-metrics span { font-size: 12px; }
   .word-preview strong { font-size: 13px; }
   .word-preview span { font-size: 12px; }
-  .assigned-word-row strong { font-size: 13px; }
   .assigned-word-row span { font-size: 12px; }
   .assigned-group-heading h3 { font-size: 14px; }
   .assigned-group-heading p { font-size: 12px; }
