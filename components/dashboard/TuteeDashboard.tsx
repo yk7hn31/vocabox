@@ -10,7 +10,7 @@ import { changeTuteePasscodeAction, logoutAction } from '@/app/actions/auth';
 import { SubmitButton } from '@/components/SubmitButton';
 import { OtpInput } from '@/components/OtpInput';
 import { StudyAssignmentSelect } from '@/components/dashboard/StudyAssignmentSelect';
-import { ArrowRight, Award, BookOpen, ChevronDown, Clipboard, Settings, User, X } from '@/components/AppIcons';
+import { ArrowRight, Award, BookOpen, ChevronDown, Clipboard, RefreshCw, Settings, User, X } from '@/components/AppIcons';
 
 type TuteeTab = 'study' | 'words' | 'settings';
 
@@ -94,12 +94,22 @@ function FocusPanel({
         </div>
         <button className="tutee-secondary-action" type="button" onClick={openWords}><BookOpen />배정 단어 전체 보기</button>
         {!readOnly && (
-          <Link
-            className="tutee-start-action"
-            href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
-          >
-            {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
-          </Link>
+          <>
+            <Link
+              className="tutee-start-action"
+              href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
+            >
+              {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
+            </Link>
+            {assignment.mode === 'practice' && (
+              <Link
+                className="tutee-flashcard-action"
+                href={`/tutee/assignments/${assignment.id}/flashcards`}
+              >
+                플래쉬카드로 암기하기 <RefreshCw />
+              </Link>
+            )}
+          </>
         )}
         {readOnly && <p className="read-only-note">보관된 계정입니다. 이전 기록만 볼 수 있습니다.</p>}
       </motion.section>

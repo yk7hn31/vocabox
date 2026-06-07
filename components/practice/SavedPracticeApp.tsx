@@ -4,8 +4,8 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Brand } from '@/components/Brand';
 import { submitAttemptAction } from '@/app/actions/attempt';
+import { ChevronLeft } from '@/components/AppIcons';
 import type { QuizItem } from './types';
 import { QuizScreen } from './QuizScreen';
 import { ResultScreen } from './ResultScreen';
@@ -44,8 +44,8 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
   return (
     <div className="practice-page">
       <header className="practice-header">
-        <Brand compact />
-        <Link className="practice-back" href="/tutee">{title} · 대시보드</Link>
+        <Link className="practice-dashboard-back" href="/tutee"><ChevronLeft />대시보드</Link>
+        <span className="practice-context">{title}</span>
       </header>
       <div className="practice-frame">
         <div style={{ width: '100%', maxWidth: 460, display: 'flex', justifyContent: 'center' }}>

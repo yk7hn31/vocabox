@@ -382,7 +382,8 @@ select {
 
 .brand:focus-visible,
 .site-nav a:focus-visible,
-.practice-back:focus-visible {
+.practice-back:focus-visible,
+.practice-dashboard-back:focus-visible {
   outline: 2px solid var(--elec);
   outline-offset: 4px;
   border-radius: 8px;
@@ -951,6 +952,42 @@ select {
 
 .practice-back:hover {
   color: var(--obs);
+}
+
+.practice-dashboard-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid #d9eaf7;
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--pine);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.practice-dashboard-back:hover {
+  background: #eef7ff;
+  color: var(--obs);
+}
+
+.practice-dashboard-back .feather-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.practice-context {
+  min-width: 0;
+  max-width: min(58vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--pine);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
 }
 
 .practice-frame {
@@ -3961,6 +3998,34 @@ select {
   margin-top: 13px;
 }
 
+.tutee-flashcard-action {
+  display: inline-flex;
+  height: 46px;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #cfe2f1;
+  border-radius: 14px;
+  align-items: center;
+  background: #f7fbff;
+  color: var(--elec);
+  width: 100%;
+  padding: 0 18px;
+  margin-top: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tutee-flashcard-action:hover {
+  background: #eef7ff;
+  color: var(--obs);
+}
+
+.tutee-flashcard-action .feather-icon {
+  width: 15px;
+  height: 15px;
+}
+
 .read-only-note {
   margin-top: 15px;
   color: var(--pine);
@@ -4100,6 +4165,190 @@ select {
   color: var(--pine);
   text-align: center;
   font-size: 13px;
+}
+
+.flashcard-shell {
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.flashcard-status {
+  display: grid;
+  gap: 9px;
+  border: 1px solid #e4eef6;
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 16px 36px rgba(25, 60, 90, .08);
+  padding: 14px 16px;
+}
+
+.flashcard-status > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.flashcard-status strong {
+  color: var(--obs);
+  font-size: 16px;
+}
+
+.flashcard-status span {
+  color: var(--pine);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.flashcard-status i {
+  height: 7px;
+  border-radius: 99px;
+  background: #edf4fa;
+  overflow: hidden;
+}
+
+.flashcard-status b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--elec);
+  transition: width .22s ease;
+}
+
+.flashcard {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 310px;
+  border: 1px solid #dcebf6;
+  border-radius: 24px;
+  background: transparent;
+  color: var(--obs);
+  cursor: pointer;
+  perspective: 1200px;
+}
+
+.flashcard::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 24px 60px rgba(25, 60, 90, .14);
+}
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 32px 30px;
+  border-radius: inherit;
+  background: var(--white);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transition: transform .32s ease;
+}
+
+.flashcard-back {
+  background: #f7fbff;
+  transform: rotateY(180deg);
+}
+
+.flashcard.is-flipped .flashcard-front {
+  transform: rotateY(180deg);
+}
+
+.flashcard.is-flipped .flashcard-back {
+  transform: rotateY(360deg);
+}
+
+.flashcard.is-known .flashcard-face {
+  border: 2px solid rgba(27, 179, 111, .34);
+}
+
+.flashcard-face small {
+  color: var(--pine);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.flashcard-face strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+  color: var(--obs);
+  font-size: 34px;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.flashcard-face em {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 99px;
+  background: var(--ghostly);
+  color: var(--elec);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.flashcard-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.flashcard-actions button,
+.flashcard-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 46px;
+  border: 1px solid #d9eaf7;
+  border-radius: 13px;
+  background: var(--white);
+  color: var(--pine);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.flashcard-actions button:hover:not(:disabled),
+.flashcard-reset:hover {
+  background: #eef7ff;
+  color: var(--obs);
+}
+
+.flashcard-actions button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+}
+
+.flashcard-actions button.is-active {
+  border-color: rgba(27, 179, 111, .4);
+  background: var(--mint);
+  color: var(--mint-t);
+}
+
+.flashcard-actions .feather-icon,
+.flashcard-reset .feather-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.flashcard-reset {
+  width: 100%;
 }
 
 .bottom-sheet--wide {
@@ -5060,6 +5309,7 @@ select {
   .auth-primary,
   .tutee-start-action,
   .tutee-secondary-action,
+  .tutee-flashcard-action,
   .coach-panel button,
   .new-assignment,
   .manage-card button,
@@ -5201,6 +5451,19 @@ select {
 
   .practice-page {
     padding: 0 var(--mobile-gutter) calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .flashcard {
+    min-height: 278px;
+    border-radius: 20px;
+  }
+
+  .flashcard-face {
+    padding: 26px 22px;
+  }
+
+  .flashcard-face strong {
+    font-size: 28px;
   }
 
   .practice-header,
