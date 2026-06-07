@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, type ChangeEvent } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FeatherIcon } from '@/components/FeatherIcon';
@@ -312,12 +312,17 @@ export function AppNumberInput({
   };
 
   const increment = () => {
-    const base = numVal ?? (min ?? 0);
-    setValue(String(clamp(base + step)));
+    if (numVal === null) {
+      setValue(String(clamp(min ?? 0)));
+    } else {
+      setValue(String(clamp(numVal + step)));
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value.replace(/\D/g, ''));
+    const raw = e.target.value;
+    const sign = raw.startsWith('-') && (min === undefined || min < 0) ? '-' : '';
+    setValue(sign + raw.replace(/\D/g, ''));
   };
 
   const handleBlur = () => {
@@ -327,11 +332,13 @@ export function AppNumberInput({
   };
 
   const canDecrement = numVal !== null && (min === undefined || numVal > min);
-  const canIncrement = numVal === null || max === undefined || numVal < max;
+  const canIncrement = numVal === null
+    ? max === undefined || (min ?? 0) <= max
+    : max === undefined || numVal < max;
 
   return (
     <div className="app-number-input">
-      <input type="hidden" name={name} value={value} required={required} />
+      <input type="hidden" name={name} value={value} />
       <button type="button" className="app-number-btn" onClick={decrement} disabled={!canDecrement} aria-label="감소">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="14" height="14" aria-hidden="true">
           <line x1="5" y1="12" x2="19" y2="12" />
@@ -343,6 +350,7 @@ export function AppNumberInput({
         className="app-number-field"
         value={value}
         placeholder={placeholder}
+        required={required}
         onChange={handleChange}
         onBlur={handleBlur}
         aria-label={name}

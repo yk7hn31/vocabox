@@ -173,11 +173,21 @@ export async function createAssignmentAction(_: TutorActionState, formData: Form
       insert into assignments (tutor_id, tutee_id, source_list_id, title, due_date, mode, time_limit_minutes)
       values (${tutor.id}, ${tuteeId}, ${list.id}, ${list.title}, ${dueDate}, ${mode}, ${timeLimitMinutes}) returning id
     `;
-    await sql`
-      insert into assignment_entries (assignment_id, position, word, pos, meanings)
-      select ${created[0].id}, position, word, pos, meanings from vocabulary_entries
+    const srcEntries = await sql<{ position: number; word: string; pos: string; meanings: string[] }[]>`
+      select position, word, pos, meanings from vocabulary_entries
       where list_id = ${list.id} order by position
     `;
+    if (srcEntries.length > 0) {
+      await sql`
+        insert into assignment_entries ${sql(srcEntries.map(e => ({
+          assignment_id: created[0].id,
+          position: e.position,
+          word: e.word,
+          pos: normalizePartOfSpeech(e.pos),
+          meanings: e.meanings,
+        })))}
+      `;
+    }
     return true;
   });
   if (!result) return { error: '활성 단어장을 선택하세요.' };

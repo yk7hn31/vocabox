@@ -11,59 +11,43 @@ const FALLBACK_DISTRACTORS = ['없다', '있다', '하다', '되다', '보다', 
 const SINGLE_CHOICE_OPTION_COUNT = 4;
 const MULTI_CHOICE_OPTION_COUNT = 6;
 
-export const POS_CODE_HINTS = [
-  { code: 'n', label: '명사' },
-  { code: 'adj', label: '형용사' },
-  { code: 'v', label: '동사' },
-  { code: 'adv', label: '부사' },
-  { code: 'prep', label: '전치사' },
-  { code: 'conj', label: '접속사' },
-  { code: 'pron', label: '대명사' },
+// Source of truth for the 8 main POS codes shown in the UI
+const POS_CODE_ENTRIES = [
+  { code: 'n',     label: '명사' },
+  { code: 'adj',   label: '형용사' },
+  { code: 'v',     label: '동사' },
+  { code: 'adv',   label: '부사' },
+  { code: 'prep',  label: '전치사' },
+  { code: 'conj',  label: '접속사' },
+  { code: 'pron',  label: '대명사' },
   { code: 'interj', label: '감탄사' },
 ] as const;
 
+export const POS_CODE_HINTS: readonly { code: string; label: string }[] = POS_CODE_ENTRIES;
+
 const POS_ALIASES: Record<string, string> = {
-  n: '명사',
+  // Derive short-code aliases from canonical list
+  ...Object.fromEntries(POS_CODE_ENTRIES.map(({ code, label }) => [code, label])),
+  // Extended English aliases (Korean values fall back to trimmed input via ??)
   noun: '명사',
-  '명사': '명사',
-  adj: '형용사',
   adjective: '형용사',
-  '형용사': '형용사',
-  v: '동사',
   verb: '동사',
-  '동사': '동사',
-  adv: '부사',
   adverb: '부사',
-  '부사': '부사',
-  prep: '전치사',
   preposition: '전치사',
-  '전치사': '전치사',
-  conj: '접속사',
   conjunction: '접속사',
-  '접속사': '접속사',
-  pron: '대명사',
   pronoun: '대명사',
-  '대명사': '대명사',
-  interj: '감탄사',
   interjection: '감탄사',
-  '감탄사': '감탄사',
   det: '한정사',
   determiner: '한정사',
-  '한정사': '한정사',
   art: '관사',
   article: '관사',
-  '관사': '관사',
   aux: '조동사',
   auxiliary: '조동사',
-  '조동사': '조동사',
   num: '수사',
   numeral: '수사',
-  '수사': '수사',
   phrase: '구',
   phr: '구',
-  '구': '구',
   idiom: '숙어',
-  '숙어': '숙어',
 };
 
 export function normalizePartOfSpeech(value: string): string {

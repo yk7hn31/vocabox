@@ -9,10 +9,10 @@ import type { TuteeAssignment, TuteeDashboardData } from '@/lib/models';
 import { changeTuteePasscodeAction, logoutAction } from '@/app/actions/auth';
 import { SubmitButton } from '@/components/SubmitButton';
 import { OtpInput } from '@/components/OtpInput';
-import { ArrowRight, Award, BookOpen, CheckSquare, ChevronDown, Clipboard, Settings, User, X } from '@/components/AppIcons';
+import { StudyAssignmentSelect } from '@/components/dashboard/StudyAssignmentSelect';
+import { ArrowRight, Award, BookOpen, ChevronDown, Clipboard, Settings, User, X } from '@/components/AppIcons';
 
-type LearningMode = 'assigned' | 'history';
-type TuteeTab = 'study' | 'words' | 'history' | 'settings';
+type TuteeTab = 'study' | 'words' | 'settings';
 
 function dueLabel(value: string | null) {
   return value ? `${value}까지` : '마감 없음';
@@ -34,99 +34,227 @@ function Header({ username }: { username: string }) {
 }
 
 function wordStatus(assignment: TuteeAssignment, entryId?: string) {
-  const response = assignment.attempts[0]?.responses.find(item => item.sourceEntryId === entryId && item.qType !== 'type');
-  if (response?.isRight === false) return { value: 'review', label: '복습' };
+  const hadWrongAttempt = assignment.attempts.some(attempt =>
+    attempt.responses.some(item => item.sourceEntryId === entryId && item.isRight === false)
+  );
+  if (hadWrongAttempt) return { value: 'wrong', label: '오답 기록' };
   if (assignment.complete) return { value: 'done', label: '완료' };
   return { value: 'new', label: '신규' };
 }
 
-function FocusPanel({ assignment, mode, readOnly, openWords }: { assignment: TuteeAssignment; mode: LearningMode; readOnly: boolean; openWords: () => void }) {
-  const best = Math.max(0, ...assignment.attempts.map(attempt => attempt.percent));
+function latestPercent(assignment: TuteeAssignment) {
+  return assignment.attempts[0]?.percent ?? 0;
+}
+
+function bestPercent(assignment: TuteeAssignment) {
+  return Math.max(0, ...assignment.attempts.map(attempt => attempt.percent));
+}
+
+function responseStatus(item: TuteeAssignment['attempts'][number]['responses'][number]) {
+  if (item.qType !== 'type') return { label: '오답', value: 'wrong' };
+  if (item.isRight === null) return { label: '채점 대기', value: 'pending' };
+  return item.isRight ? { label: '정답 처리', value: 'correct' } : { label: '오답 처리', value: 'wrong' };
+}
+
+function FocusPanel({
+  assignment,
+  assignments,
+  readOnly,
+  openWords,
+  onSelectAssignment,
+}: {
+  assignment: TuteeAssignment;
+  assignments: TuteeAssignment[];
+  readOnly: boolean;
+  openWords: () => void;
+  onSelectAssignment: (value: TuteeAssignment) => void;
+}) {
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <motion.section className="tutee-focus" key={`${mode}-${assignment.id}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-        {mode === 'assigned' ? (
-          <>
-            <h2>튜터가 배정한 단어</h2>
-            <p className="tutee-focus-description">목록을 미리 보고, 준비되면 혼합형 퀴즈를 시작하세요.</p>
-            <div className="assigned-set-heading">
-              <div>
-                <div className="assigned-heading-title">
-                  <strong>{assignment.title}</strong>
-                  <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+      <motion.section className="tutee-focus" key={assignment.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+        <h2>튜터가 배정한 단어</h2>
+        <p className="tutee-focus-description">목록을 미리 보고, 준비되면 혼합형 퀴즈를 시작하세요.</p>
+        <StudyAssignmentSelect assignments={assignments} selectedId={assignment.id} onSelect={onSelectAssignment} />
+        <div className="word-preview">
+          {assignment.entries.slice(0, 4).map(word => {
+            const status = wordStatus(assignment, word.sourceEntryId);
+            return (
+              <div key={word.sourceEntryId}>
+                <div className="word-title-line">
+                  <strong>{word.word}</strong>
+                  <small className={`word-status word-status--${status.value}`}>{status.label}</small>
                 </div>
-                <span>{dueLabel(assignment.dueDate)}</span>
+                <span>{word.meanings.join(' / ')}</span>
               </div>
-              <small>{assignment.entries.length}개</small>
-            </div>
-            <div className="word-preview">
-              {assignment.entries.slice(0, 4).map(word => {
-                const status = wordStatus(assignment, word.sourceEntryId);
-                return (
-                  <div key={word.sourceEntryId}>
-                    <strong>{word.word}</strong><span>{word.meanings.join(' / ')}</span>
-                    <small className={`word-status word-status--${status.value}`}>{status.label}</small>
-                  </div>
-                );
-              })}
-              {assignment.entries.length > 4 && (
-                <div className="word-preview-more">외 {assignment.entries.length - 4}개</div>
-              )}
-            </div>
-            <button className="tutee-secondary-action" type="button" onClick={openWords}><BookOpen />배정 단어 전체 보기</button>
-            {!readOnly && (
-              <Link
-                className="tutee-start-action"
-                href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
-              >
-                {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
-              </Link>
-            )}
-            {readOnly && <p className="read-only-note">보관된 계정입니다. 이전 기록만 볼 수 있습니다.</p>}
-          </>
-        ) : (
-          <>
-            <h2>{assignment.title} 결과</h2>
-            <div className="session-preview">
-              <article><strong>{assignment.attempts.length}</strong><span>시도</span></article>
-              <article><strong>{best}%</strong><span>최고 점수</span></article>
-              <article><strong>{assignment.complete ? '완료' : '진행'}</strong><span>80점 기준</span></article>
-            </div>
-            <div className="attempt-history">
-              {assignment.attempts.map(attempt => (
-                <details key={attempt.id}>
-                  <summary>{new Date(attempt.completedAt).toLocaleDateString('ko-KR')} · {attempt.percent}점{attempt.late ? ' · 지각' : ''}</summary>
-                  {attempt.responses.filter(item => item.isRight === false || item.qType === 'type').map((item, index) => {
-                    const label = item.qType === 'type'
-                      ? item.isRight === null ? '셀프체크 채점 대기' : item.isRight ? '셀프체크 정답' : '셀프체크 오답'
-                      : '오답';
-                    return <p key={index}>{label} · {item.word}: {item.userAnswer} / {item.allMeanings.join(' / ')}</p>;
-                  })}
-                </details>
-              ))}
-              {!assignment.attempts.length && <p>아직 완료한 학습이 없습니다.</p>}
-            </div>
-          </>
+            );
+          })}
+          {assignment.entries.length > 4 && (
+            <div className="word-preview-more">외 {assignment.entries.length - 4}개</div>
+          )}
+        </div>
+        <button className="tutee-secondary-action" type="button" onClick={openWords}><BookOpen />배정 단어 전체 보기</button>
+        {!readOnly && (
+          <Link
+            className="tutee-start-action"
+            href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
+          >
+            {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
+          </Link>
         )}
+        {readOnly && <p className="read-only-note">보관된 계정입니다. 이전 기록만 볼 수 있습니다.</p>}
       </motion.section>
     </AnimatePresence>
   );
 }
 
-function AssignmentLibrary({ assignments, selected, onSelect }: { assignments: TuteeAssignment[]; selected: TuteeAssignment; onSelect: (value: TuteeAssignment) => void }) {
+function AssignmentLibrary({ assignments, selectedId, onSelect }: { assignments: TuteeAssignment[]; selectedId: string; onSelect: (value: TuteeAssignment) => void }) {
   return (
     <section className="assignment-library">
       <div className="assignment-library-title"><h2>배정된 단어장</h2><span>{assignments.length}개</span></div>
       {assignments.map(assignment => {
-        const latest = assignment.attempts[0]?.percent ?? 0;
+        const latest = latestPercent(assignment);
         return (
-          <button className={assignment.id === selected.id ? 'is-selected' : ''} key={assignment.id} type="button" onClick={() => onSelect(assignment)}>
+          <button className={assignment.id === selectedId ? 'is-selected' : ''} key={assignment.id} type="button" onClick={() => onSelect(assignment)}>
             <div><strong>{assignment.title}</strong><small>{dueLabel(assignment.dueDate)}</small></div>
             <span>{latest}%</span><i aria-label={`${latest}% 점수`}><b style={{ width: `${latest}%` }} /></i>
           </button>
         );
       })}
     </section>
+  );
+}
+
+function searchText(value: string) {
+  return value.trim().toLocaleLowerCase('ko-KR');
+}
+
+function AssignmentDetail({ assignment, query }: { assignment: TuteeAssignment; query: string }) {
+  const normalizedQuery = searchText(query);
+  const words = normalizedQuery
+    ? assignment.entries.filter(word => searchText(`${word.word} ${word.pos} ${word.meanings.join(' ')}`).includes(normalizedQuery))
+    : assignment.entries;
+  return (
+    <>
+      <div className="assignment-detail-header">
+        <div><h2>{assignment.title}</h2><p>{assignment.entries.length}개 단어 · {dueLabel(assignment.dueDate)}</p></div>
+        <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
+      </div>
+      <div className="session-preview assignment-detail-metrics">
+        <article><strong>{assignment.attempts.length}</strong><span>시도</span></article>
+        <article><strong>{bestPercent(assignment)}%</strong><span>최고 점수</span></article>
+        <article><strong>{assignment.complete ? '완료' : '진행'}</strong><span>80점 기준</span></article>
+      </div>
+      <div className="assignment-detail-section">
+        <div className="assignment-detail-section-heading"><h3>단어</h3>{query && <span>{words.length}/{assignment.entries.length}개</span>}</div>
+        {words.length ? (
+          <div className="assignment-word-list">
+            {words.map(word => {
+              const status = wordStatus(assignment, word.sourceEntryId);
+              return (
+                <div key={word.sourceEntryId}>
+                  <div>
+                    <div className="word-title-line">
+                      <strong>{word.word}</strong>
+                      <small className={`word-status word-status--${status.value}`}>{status.label}</small>
+                    </div>
+                    <span>{word.meanings.join(' / ')}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : <p className="assignment-empty-note">검색 결과가 없습니다.</p>}
+      </div>
+      <div className="assignment-detail-section">
+        <h3>기록</h3>
+        <div className="attempt-history">
+          {assignment.attempts.map(attempt => {
+            const reviewItems = attempt.responses.filter(item => item.isRight === false || item.qType === 'type');
+            return (
+              <details key={attempt.id}>
+                <summary>
+                  <span><strong>{attempt.percent}점</strong><small>{new Date(attempt.completedAt).toLocaleDateString('ko-KR')}</small></span>
+                  <em>{attempt.score}/{attempt.mcqTotal}</em>
+                  {attempt.late && <b>지각</b>}
+                  <ChevronDown />
+                </summary>
+                {reviewItems.map((item, index) => {
+                  const status = responseStatus(item);
+                  return (
+                    <p key={index}>
+                      <span className={`attempt-review-badge attempt-review-badge--${status.value}`}>{status.label}</span>
+                      <strong>{item.word}</strong>
+                      <small>{item.userAnswer} / {item.allMeanings.join(' / ')}</small>
+                    </p>
+                  );
+                })}
+                {!reviewItems.length && <p className="attempt-history-empty">남긴 복습 항목이 없습니다.</p>}
+              </details>
+            );
+          })}
+          {!assignment.attempts.length && <p>아직 완료한 학습이 없습니다.</p>}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function AssignmentDetailSheet({ assignment, open, onClose }: { assignment: TuteeAssignment; open: boolean; onClose: () => void }) {
+  const [query, setQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    if (open) setQuery('');
+  }, [assignment.id, open]);
+  useEffect(() => {
+    if (!open) return;
+    const before = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', close);
+    return () => { document.body.style.overflow = before; window.removeEventListener('keydown', close); };
+  }, [onClose, open]);
+  if (!mounted) return null;
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={`${assignment.title} 상세`}>
+          <motion.button
+            className="bottom-sheet-backdrop"
+            type="button"
+            onClick={onClose}
+            aria-label="닫기"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+          <motion.section
+            className="bottom-sheet assignment-detail assignment-detail--sheet"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
+          >
+            <div className="bottom-sheet-grabber" aria-hidden="true" />
+            <button className="assigned-sheet-close" type="button" onClick={onClose} aria-label="닫기"><X /></button>
+            <div className="bottom-sheet-scroll assignment-detail-scroll">
+              <AssignmentDetail assignment={assignment} query={query} />
+            </div>
+            <div className="assignment-detail-search">
+              <input
+                aria-label={`${assignment.title} 단어 검색`}
+                placeholder="이 단어장에서 검색"
+                type="search"
+                value={query}
+                onChange={event => setQuery(event.target.value)}
+              />
+            </div>
+          </motion.section>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }
 
@@ -209,13 +337,15 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
   const [activeTab, setActiveTab] = useState<TuteeTab>('study');
   const [selectedId, setSelectedId] = useState(assignments[0]?.id ?? '');
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailAssignmentId, setDetailAssignmentId] = useState('');
   const selected = useMemo(() => assignments.find(item => item.id === selectedId) ?? assignments[0], [assignments, selectedId]);
+  const detailAssignment = useMemo(() => assignments.find(item => item.id === detailAssignmentId), [assignments, detailAssignmentId]);
   const completed = assignments.filter(item => item.complete).length;
   const attemptCount = assignments.reduce((sum, item) => sum + item.attempts.length, 0);
-  const tabs: Array<{ id: TuteeTab; label: string; count?: number; icon: ReactNode }> = [
-    { id: 'study', label: '학습', count: assignments.length, icon: <Clipboard /> },
-    { id: 'words', label: '단어장', count: assignments.reduce((sum, item) => sum + item.entries.length, 0), icon: <BookOpen /> },
-    { id: 'history', label: '기록', count: attemptCount, icon: <CheckSquare /> },
+  const tabs: Array<{ id: TuteeTab; label: string; icon: ReactNode }> = [
+    { id: 'study', label: '학습', icon: <Clipboard /> },
+    { id: 'words', label: '단어장', icon: <BookOpen /> },
     { id: 'settings', label: '설정', icon: <Settings /> },
   ];
 
@@ -226,7 +356,11 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
         <motion.main className="tutee-main" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <section className="tutee-welcome">
             <div><h1>오늘도 한 세트 해볼까요?</h1><p>@{data.tutorUsername} 튜터가 보낸 과제를 확인하세요.</p></div>
-            <div className="streak-card"><strong><Award />{completed}개</strong><span>완료 과제</span><small>80점 이상 완료</small></div>
+            <div className="streak-card">
+              <span className="streak-card-icon"><Award /></span>
+              <div className="streak-card-copy"><strong>{completed}/{assignments.length}</strong><span>완료 과제</span></div>
+              <small>{attemptCount}회 학습 기록</small>
+            </div>
           </section>
           <div className="tutee-tabs" role="tablist" aria-label="학습자 대시보드">
             {tabs.map(tab => (
@@ -242,7 +376,6 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
               >
                 {tab.icon}
                 <span>{tab.label}</span>
-                {tab.count !== undefined && <b>{tab.count}</b>}
               </button>
             ))}
           </div>
@@ -253,7 +386,15 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
             id="tutee-panel-study"
             role="tabpanel"
           >
-            {selected ? <FocusPanel assignment={selected} mode="assigned" readOnly={data.user.archived} openWords={() => setOpen(true)} /> : <section className="tutee-focus empty-detail">현재 배정된 단어장이 없습니다.</section>}
+            {selected ? (
+              <FocusPanel
+                assignment={selected}
+                assignments={assignments}
+                readOnly={data.user.archived}
+                openWords={() => setOpen(true)}
+                onSelectAssignment={assignment => setSelectedId(assignment.id)}
+              />
+            ) : <section className="tutee-focus empty-detail">현재 배정된 단어장이 없습니다.</section>}
           </section>
           <section
             aria-labelledby="tutee-tab-words"
@@ -262,16 +403,13 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
             id="tutee-panel-words"
             role="tabpanel"
           >
-            {selected ? <AssignmentLibrary assignments={assignments} selected={selected} onSelect={assignment => setSelectedId(assignment.id)} /> : <section className="assignment-library empty-detail">현재 배정된 단어장이 없습니다.</section>}
-          </section>
-          <section
-            aria-labelledby="tutee-tab-history"
-            className="tutee-tab-panel"
-            hidden={activeTab !== 'history'}
-            id="tutee-panel-history"
-            role="tabpanel"
-          >
-            {selected ? <FocusPanel assignment={selected} mode="history" readOnly={data.user.archived} openWords={() => setOpen(true)} /> : <section className="tutee-focus empty-detail">아직 완료한 학습이 없습니다.</section>}
+            {selected ? (
+              <AssignmentLibrary
+                assignments={assignments}
+                selectedId={detailAssignmentId}
+                onSelect={assignment => { setDetailAssignmentId(assignment.id); setDetailOpen(true); }}
+              />
+            ) : <section className="assignment-library empty-detail">현재 배정된 단어장이 없습니다.</section>}
           </section>
           <section
             aria-labelledby="tutee-tab-settings"
@@ -285,6 +423,7 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
         </motion.main>
       </div>
       {selected && <AssignedWordsSheet assignments={assignments} selected={selected} open={open} onClose={() => setOpen(false)} />}
+      {detailAssignment && <AssignmentDetailSheet assignment={detailAssignment} open={detailOpen} onClose={() => setDetailOpen(false)} />}
     </MotionConfig>
   );
 }

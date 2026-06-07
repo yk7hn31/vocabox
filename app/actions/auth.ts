@@ -18,7 +18,7 @@ import {
 } from '@/lib/server/security';
 
 export interface AuthState { error?: string }
-export interface UsernameState { role?: 'tutor' | 'tutee'; error?: string }
+export interface UsernameState { role?: 'tutor' | 'tutee'; username?: string; error?: string }
 
 function text(formData: FormData, name: string) {
   return String(formData.get(name) ?? '').trim();
@@ -56,13 +56,18 @@ async function failLogin(ip: string) {
 }
 
 export async function lookupUsernameAction(_: UsernameState, formData: FormData): Promise<UsernameState> {
+  const ip = await requestIp();
+  if (await blockedIp(ip)) return { error: '로그인 시도가 많습니다. 15분 후 다시 시도하세요.' };
   const username = normalizeUsername(text(formData, 'username'));
   if (!username) return { error: '아이디를 입력하세요.' };
   const rows = await db()<{ role: string }[]>`
     select role from users where username_normalized = ${username} limit 1
   `;
-  if (!rows[0]) return { error: '등록된 아이디가 없습니다.' };
-  return { role: rows[0].role as 'tutor' | 'tutee' };
+  if (!rows[0]) {
+    await failLogin(ip);
+    return { error: '등록된 아이디가 없습니다.' };
+  }
+  return { role: rows[0].role as 'tutor' | 'tutee', username };
 }
 
 export async function loginAction(_: AuthState, formData: FormData): Promise<AuthState> {

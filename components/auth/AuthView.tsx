@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useTransition } from 'react';
+import { useActionState, useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
@@ -47,6 +47,11 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
   const [identifiedRole, setIdentifiedRole] = useState<'tutor' | 'tutee' | null>(null);
   const [identifiedUsername, setIdentifiedUsername] = useState('');
   const [lookupError, setLookupError] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  useEffect(() => {
+    if (state.error) setLoginError(state.error);
+  }, [state.error]);
 
   const register = flow === 'tutor-register';
   const invited = flow === 'invite';
@@ -62,7 +67,7 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
       const result = await lookupUsernameAction({}, fd);
       if (result.role) {
         setIdentifiedRole(result.role);
-        setIdentifiedUsername(String(fd.get('username') ?? '').trim());
+        setIdentifiedUsername(result.username ?? String(fd.get('username') ?? '').trim());
         setStage('secret');
       } else {
         setLookupError(result.error ?? '아이디를 확인하세요.');
@@ -75,6 +80,7 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
     setIdentifiedRole(null);
     setIdentifiedUsername('');
     setLookupError('');
+    setLoginError('');
   };
 
   return (
@@ -148,7 +154,7 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
                               />
                             )}
                           </label>
-                          {state.error && <p className="auth-error">{state.error}</p>}
+                          {loginError && <p className="auth-error">{loginError}</p>}
                           <button className="auth-primary" disabled={pending} type="submit">
                             {pending ? '로그인 중...' : '로그인'}
                           </button>
