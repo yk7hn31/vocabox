@@ -530,7 +530,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
                     {new Date(selectedAttemptForDetail.completedAt).toLocaleDateString('ko-KR')}
                   </p>
                   <h3 className="attempt-detail-title">
-                    {selectedAssignment.title} · 결과보기
+                    {selectedAssignment?.title} · 결과보기
                   </h3>
                 </div>
                 <button type="button" className="attempt-detail-close" onClick={() => setSelectedAttemptId(null)} aria-label="닫기"><X /></button>

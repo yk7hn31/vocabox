@@ -6,63 +6,6 @@
   background: #f6f9fc;
 }
 
-.tutee-header {
-  width: min(520px, 100%);
-  margin: 0 auto;
-  min-height: 68px;
-  padding: 14px 16px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.tutee-header .brand {
-  min-width: 0;
-  padding: 6px 8px 6px 6px;
-  border-radius: 14px;
-  transition: background .2s ease, transform .2s ease;
-}
-
-.tutee-header .brand:hover {
-  background: rgba(255, 255, 255, .72);
-  transform: translateY(-1px);
-}
-
-.tutee-header .brand--compact {
-  gap: 8px;
-  font-size: 18px;
-  letter-spacing: 0;
-}
-
-.tutee-header .brand--compact .brand-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
-  box-shadow: 0 8px 18px rgba(0, 105, 224, .13);
-}
-
-.tutee-header nav {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: 8px;
-  color: var(--pine);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.tutee-avatar {
-  display: inline-flex;
-  width: 31px;
-  height: 31px;
-  border-radius: 50%;
-  justify-content: center;
-  align-items: center;
-  color: var(--white);
-  background: var(--elec);
-  box-shadow: 0 6px 14px rgba(0, 105, 224, .14);
-}
 
 .tutee-main {
   max-width: 520px;
@@ -163,64 +106,6 @@
   margin-bottom: 18px;
 }
 
-.tutee-tabs {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  padding: 12px 0 calc(16px + env(safe-area-inset-bottom));
-  border: 1px solid rgba(219, 232, 242, .85);
-  border-bottom: none;
-  border-radius: 20px 20px 0 0;
-  background: rgba(255, 255, 255, .97);
-  animation: dock-in .26s cubic-bezier(.22, 1, .36, 1) both;
-  backdrop-filter: blur(20px);
-}
-
-@keyframes dock-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.tutee-tabs button {
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  color: var(--ash);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  padding: 0;
-  cursor: pointer;
-  transition: color .2s ease;
-}
-
-.tutee-tabs button.is-active {
-  color: var(--elec);
-}
-
-.tutee-tabs .feather-icon {
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-}
-
-.tutee-tab-panel {
-  display: grid;
-  gap: 12px;
-  animation: tutor-panel-in .24s cubic-bezier(.22, 1, .36, 1);
-  transform-origin: top center;
-}
-
-.tutee-tab-panel[hidden] {
-  display: none;
-}
 
 .learning-actions button {
   display: grid;

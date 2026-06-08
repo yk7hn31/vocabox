@@ -5,7 +5,8 @@
   padding-bottom: calc(104px + env(safe-area-inset-bottom));
 }
 
-.tutor-header {
+.tutor-header,
+.tutee-header {
   width: min(520px, 100%);
   margin: 0 auto;
   min-height: 68px;
@@ -16,19 +17,22 @@
   gap: 14px;
 }
 
-.tutor-header .brand {
+.tutor-header .brand,
+.tutee-header .brand {
   min-width: 0;
   padding: 6px 8px 6px 6px;
   border-radius: 14px;
   transition: background .2s ease, transform .2s ease;
 }
 
-.tutor-header .brand:hover {
+.tutor-header .brand:hover,
+.tutee-header .brand:hover {
   background: rgba(255, 255, 255, .72);
   transform: translateY(-1px);
 }
 
-.tutor-header .brand--compact {
+.tutor-header .brand--compact,
+.tutee-header .brand--compact {
   gap: 8px;
   font-size: 18px;
   letter-spacing: 0;
@@ -41,14 +45,16 @@
   font-weight: 600;
 }
 
-.tutor-header .brand--compact .brand-mark {
+.tutor-header .brand--compact .brand-mark,
+.tutee-header .brand--compact .brand-mark {
   width: 32px;
   height: 32px;
   border-radius: 12px;
   box-shadow: 0 8px 18px rgba(0, 105, 224, .13);
 }
 
-.tutor-header nav {
+.tutor-header nav,
+.tutee-header nav {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -72,7 +78,8 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 
-.tutor-avatar {
+.tutor-avatar,
+.tutee-avatar {
   display: inline-flex;
   width: 31px;
   height: 31px;
@@ -378,7 +385,8 @@
   padding: 18px 16px calc(88px + env(safe-area-inset-bottom));
 }
 
-.tutor-tabs {
+.tutor-tabs,
+.tutee-tabs {
   position: fixed;
   left: 0;
   right: 0;
@@ -396,7 +404,13 @@
   backdrop-filter: blur(20px);
 }
 
-.tutor-tabs button {
+@keyframes dock-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.tutor-tabs button,
+.tutee-tabs button {
   min-width: 0;
   border: 0;
   background: transparent;
@@ -411,24 +425,28 @@
   transition: color .2s ease;
 }
 
-.tutor-tabs button.is-active {
+.tutor-tabs button.is-active,
+.tutee-tabs button.is-active {
   color: var(--elec);
 }
 
-.tutor-tabs .feather-icon {
+.tutor-tabs .feather-icon,
+.tutee-tabs .feather-icon {
   flex: 0 0 auto;
   width: 24px;
   height: 24px;
 }
 
-.tutor-tab-panel {
+.tutor-tab-panel,
+.tutee-tab-panel {
   display: grid;
   gap: 12px;
   animation: tutor-panel-in .24s cubic-bezier(.22, 1, .36, 1);
   transform-origin: top center;
 }
 
-.tutor-tab-panel[hidden] {
+.tutor-tab-panel[hidden],
+.tutee-tab-panel[hidden] {
   display: none;
 }
 
