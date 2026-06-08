@@ -1,525 +1,18 @@
 'use client';
 
-import { useActionState, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
-import { Brand } from '@/components/Brand';
-import type { SavedList, TutorAssignment, TutorDashboardData, TutorTutee } from '@/lib/models';
-import type { ResultEntry, WordItem } from '@/components/practice/types';
-import { importVocabularyCsv, POS_CODE_HINTS } from '@/components/practice/preparation';
-import { changeTutorPasswordAction, logoutAction } from '@/app/actions/auth';
-import {
-  createAssignmentAction,
-  createInviteAction,
-  createPasscodeResetAction,
-  deleteAssignmentAction,
-  deleteListAction,
-  reviewSelfCheckResponseAction,
-  deleteTuteeAction,
-  revokeInviteAction,
-  saveListAction,
-  toggleAssignmentArchiveAction,
-  toggleListArchiveAction,
-  toggleTuteeArchiveAction,
-  updateAssignmentDueDateAction,
-} from '@/app/actions/tutor';
-import { Activity, AlertCircle, BookOpen, CheckCircle, Plus, Settings, User, X } from '@/components/AppIcons';
-import { AppSelect, AppDateInput, AppNumberInput } from '@/components/FormControls';
-import { SubmitButton } from '@/components/SubmitButton';
-
-type TuteeStatus = 'attention' | 'steady' | 'excellent';
-type TutorTab = 'students' | 'lists' | 'settings';
-type SheetTab = 'overview' | 'assignments' | 'account';
-
-function latestAttempt(student: TutorTutee) {
-  return student.assignments.flatMap(a => a.attempts).sort((a, b) => b.completedAt.localeCompare(a.completedAt))[0];
-}
-
-function statusOf(student: TutorTutee): TuteeStatus {
-  const percent = latestAttempt(student)?.percent;
-  if (student.archived || percent === undefined || percent < 70) return 'attention';
-  return percent >= 90 ? 'excellent' : 'steady';
-}
-
-const statusLabel: Record<TuteeStatus, string> = { attention: '확인 필요', steady: '진행 중', excellent: '우수' };
-
-function StatusBadge({ status }: { status: TuteeStatus }) {
-  const icon = status === 'attention' ? <AlertCircle /> : status === 'steady' ? <Activity /> : <CheckCircle />;
-  return <span className={`status-pill status-pill--${status}`}>{icon}{statusLabel[status]}</span>;
-}
-
-function Header({ username }: { username: string }) {
-  return (
-    <motion.header className="tutor-header" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-      <Brand compact />
-      <nav aria-label="튜터 계정">
-        <span className="tutor-account-pill">
-          <span className="tutor-avatar"><User /></span>
-          <span className="tutor-account-name">{username}</span>
-        </span>
-        <form action={logoutAction}><SubmitButton className="account-link" pendingText="로그아웃 중...">로그아웃</SubmitButton></form>
-      </nav>
-    </motion.header>
-  );
-}
-
-function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
-  const [state, action, pending] = useActionState(createInviteAction, {});
-  const activeLink = state.shareLink ?? sharedLink;
-  return (
-    <section className="manage-card">
-      <h2>학습자 초대</h2>
-      {activeLink && <div className="share-link"><strong>공유할 링크</strong><code>{activeLink}</code></div>}
-      <form className="compact-form" action={action}>
-        <input name="displayName" placeholder="학습자 이름" required maxLength={40} />
-        <button disabled={pending} type="submit">{pending ? '생성 중' : '초대 링크 만들기'}</button>
-      </form>
-      {state.error && <p className="form-error">{state.error}</p>}
-      <div className="mini-list">
-        {data.invites.slice(0, 4).map(invite => {
-          const active = !invite.accepted && !invite.revoked && new Date(invite.expiresAt) > new Date();
-          return (
-            <div key={invite.id}>
-              <span>{invite.displayName}</span>
-              <small>{invite.accepted ? '가입 완료' : invite.revoked ? '취소됨' : active ? '대기 중' : '만료됨'}</small>
-              {active && (
-                <form action={revokeInviteAction}>
-                  <input name="inviteId" type="hidden" value={invite.id} />
-                  <SubmitButton>취소</SubmitButton>
-                </form>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function TutorSecurityPanel() {
-  const [state, action, pending] = useActionState(changeTutorPasswordAction, {});
-  return (
-    <section className="manage-card security-card">
-      <h2>계정 보안</h2>
-      <form className="compact-security-form" action={action}>
-        <input name="currentPassword" placeholder="현재 비밀번호" type="password" required />
-        <input name="newPassword" placeholder="새 비밀번호 (12자 이상)" type="password" minLength={12} required />
-        {state.error && <p className="form-error">{state.error}</p>}
-        <SubmitButton pendingText="변경 중...">비밀번호 변경</SubmitButton>
-      </form>
-    </section>
-  );
-}
-
-function ListComposer({ lists }: { lists: SavedList[] }) {
-  const [state, action, pending] = useActionState(saveListAction, {});
-  const [listId, setListId] = useState('');
-  const [title, setTitle] = useState('');
-  const [csvFileName, setCsvFileName] = useState('');
-  const [entries, setEntries] = useState<WordItem[]>([]);
-  const [error, setError] = useState('');
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [parsing, setParsing] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
-  const uploadCsv = (file?: File) => {
-    if (!file) return;
-    if (!file.name.toLowerCase().endsWith('.csv') && file.type && file.type !== 'text/csv') {
-      setError('CSV 파일만 업로드할 수 있습니다.');
-      return;
-    }
-    setParsing(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setParsing(false);
-      const text = typeof reader.result === 'string' ? reader.result : '';
-      setCsvFileName(file.name);
-      const parsed = importVocabularyCsv(text);
-      if (parsed.status === 'error') { setError(parsed.error); setEntries([]); }
-      else { setEntries(parsed.items); setError(''); setSheetOpen(true); }
-    };
-    reader.onerror = () => { setParsing(false); setError('CSV 파일을 읽지 못했습니다.'); };
-    reader.readAsText(file);
-  };
-
-  const edit = (list: SavedList) => {
-    setListId(list.id);
-    setTitle(list.title);
-    setCsvFileName('');
-    setEntries(list.entries);
-    setError('');
-    setSheetOpen(true);
-  };
-
-  return (
-    <section className="manage-card list-composer">
-      <h2>단어장</h2>
-      <form action={action}>
-        <input name="listId" type="hidden" value={listId} />
-        <input name="entries" type="hidden" value={JSON.stringify(entries)} />
-        <input name="title" value={title} onChange={event => setTitle(event.target.value)} placeholder="단어장 제목" maxLength={100} required />
-        <label className={`csv-upload-target${parsing ? ' is-parsing' : ''}`}>
-          <input accept=".csv,text/csv" type="file" disabled={parsing} onChange={event => uploadCsv(event.target.files?.[0])} />
-          <span>{parsing ? '파일 분석 중...' : csvFileName || 'CSV 파일 업로드'}</span>
-          <small>{parsing ? '' : entries.length ? `${entries.length}개 단어 검토됨` : `word,pos,meanings · ${POS_CODE_HINTS.slice(0, 3).map(({ code, label }) => `${code}=${label}`).join(', ')}`}</small>
-        </label>
-        {entries.length > 0 && (
-          <div className="csv-entries-bar">
-            <span>{entries.length}개 단어 준비됨</span>
-            <button className="csv-entries-edit" type="button" onClick={() => setSheetOpen(true)}>편집하기</button>
-          </div>
-        )}
-        {(error || state.error) && <p className="form-error">{error || state.error}</p>}
-        {state.message && <p className="form-success">{state.message}</p>}
-        <button disabled={pending || !entries.length} type="submit">{listId ? '변경 저장' : '단어장 저장'}</button>
-      </form>
-      <div className="mini-list">
-        {lists.map(list => (
-          <div key={list.id}>
-            <span>{list.title} <small>{list.entries.length}개{list.archived ? ' · 보관됨' : ''}</small></span>
-            <button type="button" onClick={() => edit(list)}>편집</button>
-            <form action={toggleListArchiveAction}>
-              <input name="listId" type="hidden" value={list.id} /><input name="restore" type="hidden" value={list.archived ? '1' : '0'} />
-              <SubmitButton>{list.archived ? '복원' : '보관'}</SubmitButton>
-            </form>
-            <form action={deleteListAction} onSubmit={event => { if (!window.confirm('이 단어장을 삭제할까요? 기존 과제 기록은 유지됩니다.')) event.preventDefault(); }}>
-              <input name="listId" type="hidden" value={list.id} /><SubmitButton>삭제</SubmitButton>
-            </form>
-          </div>
-        ))}
-      </div>
-
-      {mounted && createPortal(
-        <AnimatePresence>
-          {sheetOpen && (
-        <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="단어 편집">
-          <motion.button
-            className="bottom-sheet-backdrop"
-            type="button"
-            onClick={() => setSheetOpen(false)}
-            aria-label="닫기"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          />
-          <motion.div
-            className="bottom-sheet"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
-          >
-            <div className="bottom-sheet-grabber" aria-hidden="true" />
-            <div className="csv-editor-header">
-              <div>
-                <h3>단어 편집</h3>
-                <span>{entries.length}개</span>
-              </div>
-              <button className="csv-editor-close" type="button" onClick={() => setSheetOpen(false)} aria-label="닫기">
-                <X />
-              </button>
-            </div>
-            <div className="csv-editor-scroll">
-              <div className="csv-editor-table-wrap">
-                <table className="csv-editor-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">단어</th>
-                      <th scope="col">품사</th>
-                      <th scope="col">뜻 (;로 구분)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entries.map((entry, index) => (
-                      <tr key={index}>
-                        <td>
-                          <input
-                            maxLength={120}
-                            value={entry.word}
-                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, word: event.target.value } : item))}
-                            aria-label={`단어 ${index + 1}`}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            maxLength={40}
-                            value={entry.pos}
-                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, pos: event.target.value } : item))}
-                            aria-label={`품사 ${index + 1}`}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            value={entry.meanings.join(';')}
-                            onChange={event => setEntries(current => current.map((item, i) => i === index ? { ...item, meanings: event.target.value.split(';').map(v => v.trim()).filter(Boolean) } : item))}
-                            aria-label={`뜻 ${index + 1}`}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className="csv-editor-footer">
-              <button className="cta primary-action" type="button" onClick={() => setSheetOpen(false)}>
-                편집 완료
-              </button>
-            </div>
-          </motion.div>
-        </div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
-    </section>
-  );
-}
-
-function Trend({ student }: { student: TutorTutee }) {
-  const values = student.assignments.flatMap(a => a.attempts).sort((a, b) => a.completedAt.localeCompare(b.completedAt)).slice(-4).map(item => item.percent);
-  return (
-    <div className="trend-card">
-      <div><strong>최근 정확도</strong><span>완료한 학습 {values.length}회</span></div>
-      <div className="trend-bars">
-        {(values.length ? values : [0]).map((value, index) => (
-          <motion.span key={index} initial={{ height: 0 }} animate={{ height: `${Math.max(value, 4)}%` }}><small>{value}</small></motion.span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ReviewResponseLine({ response }: { response: ResultEntry }) {
-  if (response.qType !== 'type') {
-    return <p>오답 · {response.word}: {response.userAnswer} / {response.allMeanings.join(', ')}</p>;
-  }
-
-  const status = response.isRight === null ? '채점 대기' : response.isRight ? '정답 처리됨' : '오답 처리됨';
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '7px 0' }}>
-      <p>셀프체크 · {response.word}: {response.userAnswer} / {response.allMeanings.join(', ')} · {status}</p>
-      {response.responseId && (
-        <div className="record-actions" style={{ gap: 6 }}>
-          <form action={reviewSelfCheckResponseAction}>
-            <input name="responseId" type="hidden" value={response.responseId} />
-            <input name="isRight" type="hidden" value="1" />
-            <SubmitButton>{response.isRight === true ? '정답 유지' : '정답'}</SubmitButton>
-          </form>
-          <form action={reviewSelfCheckResponseAction}>
-            <input name="responseId" type="hidden" value={response.responseId} />
-            <input name="isRight" type="hidden" value="0" />
-            <SubmitButton>{response.isRight === false ? '오답 유지' : '오답'}</SubmitButton>
-          </form>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AssignmentRecord({ assignment }: { assignment: TutorAssignment }) {
-  const best = Math.max(0, ...assignment.attempts.map(item => item.percent));
-  const latest = assignment.attempts[0];
-  return (
-    <article className="assignment-record">
-      <div className="assignment-record-header">
-        <div>
-          <p className="assignment-record-title">
-            <strong>{assignment.title}{assignment.archived ? ' · 보관됨' : ''}</strong>
-            <span className={`assignment-mode-badge assignment-mode-badge--${assignment.mode}`}>{assignment.mode === 'test' ? '시험' : '학습'}</span>
-          </p>
-          <span className="assignment-record-meta">최근 {latest?.percent ?? '-'}% · 최고 {best}% · {best >= 80 ? '완료' : '진행 중'} · 시도 {assignment.attempts.length}회</span>
-        </div>
-      </div>
-      <form className="assignment-due-form" action={updateAssignmentDueDateAction}>
-        <input name="assignmentId" type="hidden" value={assignment.id} />
-        <label><span>마감일</span><AppDateInput name="dueDate" defaultValue={assignment.dueDate ?? ''} /></label>
-        <SubmitButton>저장</SubmitButton>
-      </form>
-      <div className="record-actions">
-        <form action={toggleAssignmentArchiveAction}>
-          <input name="assignmentId" type="hidden" value={assignment.id} /><input name="restore" type="hidden" value={assignment.archived ? '1' : '0'} />
-          <SubmitButton>{assignment.archived ? '복원' : '보관'}</SubmitButton>
-        </form>
-        <form action={deleteAssignmentAction} onSubmit={event => { if (!window.confirm('과제와 모든 결과를 영구 삭제할까요?')) event.preventDefault(); }}>
-          <input name="assignmentId" type="hidden" value={assignment.id} /><SubmitButton className="danger">삭제</SubmitButton>
-        </form>
-      </div>
-      {assignment.attempts.map(attempt => (
-        <details key={attempt.id}>
-          <summary>
-            {new Date(attempt.completedAt).toLocaleString('ko-KR')} · {attempt.score}/{attempt.mcqTotal} ({attempt.percent}%)
-            {' · '}{Math.max(1, Math.round(attempt.durationMs / 60000))}분{attempt.late ? ' · 지각' : ''}
-          </summary>
-          {attempt.responses.filter(item => item.isRight === false || item.qType === 'type').map((response, index) => (
-            <ReviewResponseLine key={index} response={response} />
-          ))}
-        </details>
-      ))}
-    </article>
-  );
-}
-
-function StudentSheet({ student, lists, onClose }: { student: TutorTutee; lists: SavedList[]; onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState<SheetTab>('overview');
-  const [assignState, assignAction, assigning] = useActionState(createAssignmentAction, {});
-  const [assignMode, setAssignMode] = useState<'practice' | 'test'>('practice');
-  const attempts = student.assignments.flatMap(a => a.attempts);
-  const latest = latestAttempt(student);
-  const wrongWords = latest?.responses.filter(r => r.isRight === false).map(r => r.word) ?? [];
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    const before = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handler);
-    return () => { document.body.style.overflow = before; window.removeEventListener('keydown', handler); };
-  }, [onClose]);
-
-  const tabs: Array<{ id: SheetTab; label: string }> = [
-    { id: 'overview', label: '개요' },
-    { id: 'assignments', label: '과제' },
-    { id: 'account', label: '계정' },
-  ];
-
-  return (
-    <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={`${student.displayName} 상세 정보`}>
-      <motion.button
-        className="bottom-sheet-backdrop"
-        type="button"
-        onClick={onClose}
-        aria-label="닫기"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-      />
-      <motion.div
-        className="bottom-sheet bottom-sheet--wide"
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 280, mass: 0.9 }}
-      >
-        <div className="bottom-sheet-grabber" aria-hidden="true" />
-        <div className="tutee-sheet-header">
-          <div className="tutee-sheet-identity">
-            <p className="tutee-sheet-username">@{student.username}{student.archived ? ' · 읽기 전용' : ''}</p>
-            <h2 className="tutee-sheet-name">{student.displayName}</h2>
-          </div>
-          <div className="tutee-sheet-header-right">
-            <StatusBadge status={statusOf(student)} />
-            <button type="button" className="tutee-sheet-close" onClick={onClose} aria-label="닫기"><X /></button>
-          </div>
-        </div>
-
-        <div className="tutee-sheet-tabs" role="tablist" aria-label="학습자 정보 탭">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              role="tab"
-              type="button"
-              aria-selected={activeTab === tab.id}
-              className={activeTab === tab.id ? 'is-active' : ''}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="bottom-sheet-scroll">
-          {activeTab === 'overview' && (
-            <div className="tutee-sheet-section">
-              <div className="detail-metrics">
-                <article><strong>{latest?.percent ?? 0}%</strong><span>최근 정확도</span></article>
-                <article><strong>{attempts.length}</strong><span>완료 세션</span></article>
-                <article><strong>{student.assignments.length}</strong><span>과제</span></article>
-                <article><strong>{student.archived ? '보관' : '활성'}</strong><span>계정 상태</span></article>
-              </div>
-              <Trend student={student} />
-              <div className="coach-panel" style={{ marginTop: 14 }}>
-                <div>
-                  <p>최근 오답</p>
-                  <div className="weak-words">
-                    {wrongWords.length ? wrongWords.slice(0, 8).map(word => <span key={word}>{word}</span>) : <span>없음</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'assignments' && (
-            <div className="tutee-sheet-section">
-              {!student.archived && (
-                <form className="assignment-form" action={assignAction}>
-                  <input name="tuteeId" type="hidden" value={student.id} />
-                  <input name="mode" type="hidden" value={assignMode} />
-                  <p className="assignment-form-title">새 과제</p>
-                  <div className="assign-mode-toggle">
-                    <button type="button" className={assignMode === 'practice' ? 'is-active' : ''} onClick={() => setAssignMode('practice')}>학습</button>
-                    <button type="button" className={assignMode === 'test' ? 'is-active' : ''} onClick={() => setAssignMode('test')}>시험</button>
-                  </div>
-                  <div className="assignment-fields">
-                    <label>
-                      <span>단어장</span>
-                      <AppSelect
-                        name="listId"
-                        required
-                        placeholder="단어장 선택"
-                        options={lists.filter(list => !list.archived).map(list => ({ value: list.id, label: list.title }))}
-                      />
-                    </label>
-                    <label>
-                      <span>마감일</span>
-                      <AppDateInput name="dueDate" />
-                    </label>
-                    {assignMode === 'test' && (
-                      <label>
-                        <span>시험 시간 (분)</span>
-                        <AppNumberInput name="timeLimitMinutes" min={1} max={180} placeholder="예: 20" required />
-                      </label>
-                    )}
-                  </div>
-                  <button className="assignment-submit" disabled={assigning} type="submit"><Plus />배정</button>
-                  {assignState.error && <p className="form-error">{assignState.error}</p>}
-                  {assignState.message && <p className="form-success">{assignState.message}</p>}
-                </form>
-              )}
-              <section className="assignment-records">
-                <h3>과제 및 결과</h3>
-                {student.assignments.map(assignment => <AssignmentRecord key={assignment.id} assignment={assignment} />)}
-                {!student.assignments.length && <p style={{ color: 'var(--pine)', fontSize: 13 }}>배정된 과제가 없습니다.</p>}
-              </section>
-            </div>
-          )}
-
-          {activeTab === 'account' && (
-            <div className="tutee-sheet-section">
-              <div className="record-actions student-account-actions" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-                <form action={toggleTuteeArchiveAction}>
-                  <input name="tuteeId" type="hidden" value={student.id} />
-                  <input name="restore" type="hidden" value={student.archived ? '1' : '0'} />
-                  <SubmitButton style={{ width: '100%' }}>{student.archived ? '학습자 복원' : '학습자 보관'}</SubmitButton>
-                </form>
-                <form action={createPasscodeResetAction}>
-                  <input name="tuteeId" type="hidden" value={student.id} />
-                  <SubmitButton style={{ width: '100%' }} pendingText="링크 생성 중...">비밀번호 재설정 링크</SubmitButton>
-                </form>
-                <form action={deleteTuteeAction} onSubmit={event => { if (!window.confirm('학습자와 모든 학습 기록을 영구 삭제할까요?')) event.preventDefault(); }}>
-                  <input name="tuteeId" type="hidden" value={student.id} />
-                  <SubmitButton className="danger" style={{ width: '100%' }}>영구 삭제</SubmitButton>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
+import type { TutorDashboardData } from '@/lib/models';
+import { BookOpen, Settings, User } from '@/components/AppIcons';
+import { Header } from '@/components/dashboard/tutor/Header';
+import { InvitePanel } from '@/components/dashboard/tutor/InvitePanel';
+import { ListComposer } from '@/components/dashboard/tutor/ListComposer';
+import { StatusBadge } from '@/components/dashboard/tutor/StatusBadge';
+import { StudentSheet } from '@/components/dashboard/tutor/StudentSheet';
+import { TutorSecurityPanel } from '@/components/dashboard/tutor/TutorSecurityPanel';
+import { latestAttempt, statusOf } from '@/components/dashboard/tutor/status';
+import type { TutorTab } from '@/components/dashboard/tutor/types';
 
 export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData; sharedLink?: string }) {
   const [sheetStudentId, setSheetStudentId] = useState<string | null>(null);
@@ -541,25 +34,9 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
       <div className="tutor-page tutor-b">
         <Header username={data.user.username} />
         <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="dashboard-title"><div><h1>학습자와 단어장 관리</h1></div></div>
-          <div className="tutor-tabs" role="tablist" aria-label="튜터 대시보드">
-            {tabs.map(tab => (
-              <button
-                aria-controls={`tutor-panel-${tab.id}`}
-                aria-selected={activeTab === tab.id}
-                className={activeTab === tab.id ? 'is-active' : ''}
-                id={`tutor-tab-${tab.id}`}
-                key={tab.id}
-                role="tab"
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-                {tab.count !== undefined && <b>{tab.count}</b>}
-              </button>
-            ))}
-          </div>
+          <section className="tutee-welcome tutor-welcome">
+            <div><h1>오늘 학습 흐름을 확인해볼까요?</h1><p>학습자 상태와 단어장을 한 곳에서 관리하세요.</p></div>
+          </section>
           <section
             aria-labelledby="tutor-tab-students"
             className="tutor-tab-panel tutor-tab-panel--students"
@@ -582,7 +59,7 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
                 <h2>잘 진행 중 <b>{progressing.length}</b></h2>
                 {progressing.map(student => (
                   <motion.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
-                    <StatusBadge status={statusOf(student)} /><strong>{student.displayName}</strong><p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
+                    <StatusBadge status={statusOf(student)} /><strong>{student.displayName} <small>@{student.username}</small></strong><p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
                   </motion.button>
                 ))}
                 {!progressing.length && <p className="empty-list-copy">진행 중인 학습자가 없습니다.</p>}
@@ -612,6 +89,23 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
             <TutorSecurityPanel />
           </section>
         </motion.main>
+        <div className="tutor-tabs" role="tablist" aria-label="튜터 대시보드">
+          {tabs.map(tab => (
+            <button
+              aria-controls={`tutor-panel-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              className={activeTab === tab.id ? 'is-active' : ''}
+              id={`tutor-tab-${tab.id}`}
+              key={tab.id}
+              role="tab"
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="nav-indicator">{tab.icon}</span>
+              <span className="nav-label">{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {mounted && createPortal(

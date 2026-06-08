@@ -1,0 +1,156 @@
+/* ──────────────────────────────────────────────
+   PRACTICE COMPONENT CLASSES
+   ────────────────────────────────────────────── */
+
+/* Mode selector button */
+.mbtn {
+  border-style: solid;
+  cursor: pointer;
+  font-family: var(--font-pretendard);
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+.mbtn:focus-visible {
+  outline: 2px solid var(--elec);
+  outline-offset: 2px;
+}
+
+/* Quiz option button */
+.opt {
+  border-style: solid;
+  cursor: pointer;
+  font-family: var(--font-pretendard);
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.opt:focus-visible {
+  outline: 2px solid var(--elec);
+  outline-offset: 2px;
+}
+.opt:disabled {
+  cursor: default;
+}
+
+/* CTA button */
+.cta {
+  cursor: pointer;
+  font-family: var(--font-pretendard);
+  transition: opacity 0.15s, transform 0.1s;
+}
+.cta:not(:disabled):hover  { opacity: 0.88; }
+.cta:not(:disabled):active { transform: scale(0.97); }
+.cta:disabled { cursor: default; }
+.cta:focus-visible {
+  outline: 2px solid var(--elec);
+  outline-offset: 2px;
+}
+
+.primary-action {
+  width: 100%;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-buttons);
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.primary-action:disabled {
+  background: #d1d9e0;
+  color: var(--ash);
+}
+.primary-action--compact {
+  width: auto;
+  padding: 10px 18px;
+  font-size: 14px;
+  flex-shrink: 0;
+  gap: 5px;
+}
+
+.practice-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-badges);
+  font-family: var(--font-pretendard);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.practice-badge--mcq {
+  background: var(--ghostly);
+  color: var(--elec);
+  padding: 2px 9px;
+}
+.practice-badge--type {
+  background: var(--lavender-mist);
+  color: var(--deep-violet);
+  padding: 2px 9px;
+}
+.practice-badge--multi {
+  background: var(--mint);
+  color: var(--mint-t);
+  padding: 2px 9px;
+}
+.practice-badge--pos {
+  background: var(--ghostly);
+  color: var(--elec);
+  padding: 2px 9px;
+}
+.practice-badge--sequence {
+  background: var(--sky-wash);
+  color: var(--pine);
+  padding: 3px 10px;
+  text-transform: none;
+}
+
+/* Animations now handled by Framer Motion in components/practice/**
+   Only keeping the .sky-wash background utility for the page */
+
+/* ──────────────────────────────────────────────
+   KEYFRAMES (legacy — kept for non-FM components)
+   ────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

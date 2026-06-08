@@ -149,9 +149,11 @@ export async function deleteListAction(formData: FormData) {
 export async function createAssignmentAction(_: TutorActionState, formData: FormData): Promise<TutorActionState> {
   const tutor = await requireUser('tutor');
   const tuteeId = text(formData, 'tuteeId');
-  const listId = text(formData, 'listId');
+  const listIds = [...new Set(formData.getAll('listId').map(value => String(value).trim()).filter(Boolean))];
   const dueDate = dueDateFromForm(formData);
   const mode = text(formData, 'mode') || 'practice';
+  if (listIds.length < 1) return { error: '배정할 단어장을 하나 이상 선택하세요.' };
+  if (listIds.length > 50) return { error: '과제는 한 번에 50개까지 배정할 수 있습니다.' };
   if (!['practice', 'test'].includes(mode)) return { error: '올바른 학습 유형을 선택하세요.' };
   let timeLimitMinutes: number | null = null;
   if (mode === 'test') {
@@ -165,19 +167,32 @@ export async function createAssignmentAction(_: TutorActionState, formData: Form
   const result = await db().begin(async sql => {
     const lists = await sql<{ id: string; title: string }[]>`
       select id, title from vocabulary_lists
-      where id = ${listId} and tutor_id = ${tutor.id} and archived_at is null
+      where id in ${sql(listIds)} and tutor_id = ${tutor.id} and archived_at is null
     `;
-    const list = lists[0];
-    if (!list) return false;
-    const created = await sql<{ id: string }[]>`
-      insert into assignments (tutor_id, tutee_id, source_list_id, title, due_date, mode, time_limit_minutes)
-      values (${tutor.id}, ${tuteeId}, ${list.id}, ${list.title}, ${dueDate}, ${mode}, ${timeLimitMinutes}) returning id
+    if (lists.length !== listIds.length) return 0;
+
+    type SourceEntry = { list_id: string; position: number; word: string; pos: string; meanings: string[] };
+    const entries = await sql<SourceEntry[]>`
+      select list_id, position, word, pos, meanings from vocabulary_entries
+      where list_id in ${sql(listIds)} order by position
     `;
-    const srcEntries = await sql<{ position: number; word: string; pos: string; meanings: string[] }[]>`
-      select position, word, pos, meanings from vocabulary_entries
-      where list_id = ${list.id} order by position
-    `;
-    if (srcEntries.length > 0) {
+    const entriesByList = new Map<string, SourceEntry[]>();
+    for (const entry of entries) {
+      const group = entriesByList.get(entry.list_id) ?? [];
+      group.push(entry);
+      entriesByList.set(entry.list_id, group);
+    }
+    const listsById = new Map(lists.map(list => [list.id, list]));
+
+    for (const listId of listIds) {
+      const list = listsById.get(listId);
+      if (!list) return 0;
+      const created = await sql<{ id: string }[]>`
+        insert into assignments (tutor_id, tutee_id, source_list_id, title, due_date, mode, time_limit_minutes)
+        values (${tutor.id}, ${tuteeId}, ${list.id}, ${list.title}, ${dueDate}, ${mode}, ${timeLimitMinutes}) returning id
+      `;
+      const srcEntries = entriesByList.get(list.id) ?? [];
+      if (!srcEntries.length) continue;
       await sql`
         insert into assignment_entries ${sql(srcEntries.map(e => ({
           assignment_id: created[0].id,
@@ -188,12 +203,12 @@ export async function createAssignmentAction(_: TutorActionState, formData: Form
         })))}
       `;
     }
-    return true;
+    return listIds.length;
   });
   if (!result) return { error: '활성 단어장을 선택하세요.' };
   revalidatePath('/tutor');
   revalidatePath('/tutee');
-  return { message: '새 과제를 배정했습니다.' };
+  return { message: result === 1 ? '새 과제를 배정했습니다.' : `${result}개 과제를 배정했습니다.` };
 }
 
 export async function updateAssignmentDueDateAction(formData: FormData) {

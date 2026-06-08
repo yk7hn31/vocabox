@@ -1,0 +1,968 @@
+@media (max-width: 1120px) {
+  .coach-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .coach-panel button {
+    grid-column: 1 / -1;
+  }
+
+  .coach-board {
+    grid-template-columns: 1fr;
+  }
+
+  .tutee-board {
+    grid-template-columns: 1fr;
+  }
+
+  .assignment-library {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 920px) {
+  .hero,
+  .workflow {
+    grid-template-columns: 1fr;
+    gap: 54px;
+  }
+
+  .hero {
+    margin-top: 36px;
+    padding-bottom: 68px;
+  }
+
+  .hero-copy {
+    max-width: 650px;
+  }
+
+  .quiz-preview {
+    width: min(455px, 100%);
+    justify-self: center;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tutor-b main {
+    padding-top: 22px;
+  }
+
+  .tutee-main {
+    padding-top: 25px;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-header {
+    width: calc(100% - 32px);
+    height: 70px;
+  }
+
+  .site-nav > a:not(.nav-action) {
+    display: none;
+  }
+
+  .nav-account {
+    display: none;
+  }
+
+  .site-nav {
+    gap: 0;
+  }
+
+  .nav-action {
+    padding: 10px 17px;
+    font-size: 13px;
+  }
+
+  .hero,
+  .feature-section,
+  .workflow,
+  .final-cta,
+  .site-footer {
+    width: calc(100% - 32px);
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    margin-top: 29px;
+    gap: 46px;
+  }
+
+  .hero h1 {
+    font-size: clamp(39px, 12vw, 50px);
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-tags {
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  .quiz-preview {
+    padding: 18px 17px;
+  }
+
+  .quiz-preview::before {
+    display: none;
+  }
+
+  .feature-section {
+    padding: 62px 0;
+  }
+
+  .feature-card {
+    padding: 29px 26px;
+  }
+
+  .workflow {
+    padding: 10px 0 66px;
+  }
+
+  .format-card {
+    padding: 24px 19px;
+  }
+
+  .final-cta {
+    padding: 55px 20px;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .practice-frame {
+    padding-top: 8px;
+  }
+
+  .setup-card {
+    padding: 27px 20px 22px;
+  }
+
+  .auth-header {
+    width: calc(100% - 32px);
+  }
+
+  .auth-centered {
+    align-items: flex-start;
+    padding: 22px 16px 30px;
+  }
+
+  .auth-card {
+    width: 100%;
+    border-radius: 25px;
+    padding: 26px 20px;
+  }
+
+  .auth-column {
+    width: 100%;
+  }
+
+  .tutor-header {
+    padding: 10px 16px;
+  }
+
+  .tutee-header {
+    padding: 10px 16px;
+  }
+
+  .tutor-b main {
+    padding: 18px 13px;
+  }
+
+  .tutee-main {
+    padding: 22px 13px 80px;
+  }
+
+  .tutee-welcome {
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .tutee-welcome h1 {
+    font-size: 27px;
+  }
+
+  .streak-card {
+    width: 100%;
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .streak-card strong,
+  .streak-card span {
+    margin-bottom: 0;
+  }
+
+  .streak-card small {
+    margin-left: auto;
+  }
+
+  .learning-actions {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .learning-actions button {
+    padding: 13px 14px;
+  }
+
+  .tutee-focus,
+  .assignment-library {
+    min-height: 0;
+    border-radius: 19px;
+    padding: 20px 15px;
+  }
+
+  .tutee-focus h2 {
+    font-size: 23px;
+  }
+
+  .word-preview > div {
+    grid-template-columns: 97px 1fr auto;
+    padding: 0 10px;
+  }
+
+  .session-preview article {
+    padding: 16px 10px;
+  }
+
+  .session-preview strong {
+    font-size: 21px;
+  }
+
+  .assigned-sheet-close {
+    right: 17px;
+    top: 18px;
+  }
+
+  .assigned-sheet-header {
+    padding: 5px 17px 18px;
+  }
+
+  .assigned-sheet-scroll {
+    padding: 13px 12px 18px;
+  }
+
+  .assigned-word-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assigned-word-row:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .detail-metrics,
+  .coach-board {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .dashboard-title h1 {
+    font-size: 26px;
+  }
+
+  .detail-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trend-card {
+    grid-template-columns: 1fr;
+    height: 190px;
+  }
+
+  .coach-panel,
+  .tutor-b .coach-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .queue-column {
+    min-height: auto;
+  }
+
+  .mobile-detail-layer {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+  }
+
+  .mobile-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    background: rgba(10, 13, 18, .38);
+  }
+
+  .mobile-detail-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: min(90dvh, 720px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--white);
+    border-radius: 25px 25px 0 0;
+    padding: 11px 12px calc(15px + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 35px rgba(10, 13, 18, .14);
+  }
+
+  .sheet-grabber {
+    width: 39px;
+    height: 5px;
+    border-radius: 99px;
+    background: #d5dbe2;
+    margin: 0 auto 10px;
+  }
+
+  .sheet-close {
+    position: absolute;
+    top: 17px;
+    right: 18px;
+    z-index: 1;
+    width: 31px;
+    height: 31px;
+    border: 0;
+    border-radius: 50%;
+    color: var(--pine);
+    background: var(--card);
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .sheet-close .feather-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .mobile-detail-sheet .student-detail {
+    border: 0;
+    padding: 13px 7px 4px;
+  }
+
+  .mobile-detail-sheet .detail-heading {
+    padding-right: 43px;
+  }
+
+  .mobile-detail-sheet .trend-card {
+    height: 180px;
+  }
+
+  .dashboard-notice {
+    left: 13px;
+    right: 13px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 620px) {
+  :root {
+    --section-gap: 18px;
+    --card-padding: var(--mobile-card-padding);
+    --element-gap: var(--mobile-stack-gap);
+    --radius-cards: 20px;
+    --radius-buttons: 20px;
+  }
+
+  body {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: rgba(0, 105, 224, .12);
+  }
+
+  input,
+  textarea,
+  select {
+    min-height: var(--mobile-control-min-height);
+    font-size: var(--form-control-font-size);
+  }
+
+  .site-header,
+  .hero,
+  .feature-section,
+  .workflow,
+  .final-cta,
+  .site-footer,
+  .auth-header {
+    width: calc(100% - (var(--mobile-gutter) * 2));
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 20px;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .button,
+  .primary-action,
+  .auth-primary,
+  .tutee-start-action,
+  .tutee-secondary-action,
+  .tutee-flashcard-action,
+  .coach-panel button,
+  .new-assignment,
+  .manage-card button,
+  .assignment-record button {
+    min-height: var(--mobile-control-min-height);
+    padding-inline: 14px;
+  }
+
+  .primary-action {
+    padding-block: 12px;
+    font-size: 16px;
+  }
+
+  .primary-action--compact {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .hero {
+    margin-top: 18px;
+    gap: 30px;
+    padding-bottom: 52px;
+  }
+
+  .eyebrow,
+  .auth-kicker {
+    margin-bottom: 10px;
+  }
+
+  .hero h1 {
+    margin-bottom: 16px;
+    line-height: 1.08;
+  }
+
+  .hero-description {
+    margin-bottom: 22px;
+    line-height: 1.62;
+  }
+
+  .hero-actions,
+  .hero-portal {
+    margin-bottom: 16px;
+  }
+
+  .hero-tags {
+    gap: 10px 14px;
+    font-size: 12px;
+  }
+
+  .quiz-preview {
+    border-radius: 22px;
+    padding: 16px 14px;
+  }
+
+  .preview-top,
+  .preview-progress,
+  .preview-meta,
+  .preview-word,
+  .preview-options {
+    margin-bottom: 10px;
+  }
+
+  .preview-word {
+    border-radius: 18px;
+    padding: 18px 14px 16px;
+  }
+
+  .preview-word strong {
+    font-size: 29px;
+  }
+
+  .preview-options span,
+  .preview-result {
+    padding: 10px 12px;
+  }
+
+  .feature-section {
+    padding: 48px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 28px;
+  }
+
+  .feature-grid,
+  .steps,
+  .tutor-tab-panel,
+  .tutee-tab-panel,
+  .management-grid,
+  .learning-actions,
+  .tutee-board {
+    gap: var(--mobile-stack-gap);
+  }
+
+  .feature-card {
+    min-height: 0;
+    border-radius: 20px;
+    padding: 22px 18px;
+  }
+
+  .feature-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 18px;
+  }
+
+  .feature-card h3 {
+    font-size: 19px;
+  }
+
+  .workflow {
+    gap: 32px;
+    padding: 4px 0 52px;
+  }
+
+  .workflow-copy > p:not(.eyebrow) {
+    margin: 14px 0 24px;
+  }
+
+  .format-card,
+  .final-cta {
+    border-radius: 22px;
+    padding: 22px 16px;
+  }
+
+  .format-card pre {
+    border-radius: 14px;
+    padding: 15px 14px;
+    line-height: 1.8;
+  }
+
+  .final-cta {
+    margin-bottom: 34px;
+  }
+
+  .final-cta h2 {
+    margin-bottom: 20px;
+  }
+
+  .practice-page {
+    padding: 0 var(--mobile-gutter) calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .flashcard {
+    min-height: 278px;
+    border-radius: 20px;
+  }
+
+  .flashcard-face {
+    padding: 26px 22px;
+  }
+
+  .flashcard-face strong {
+    font-size: 28px;
+  }
+
+  .practice-header,
+  .auth-header {
+    height: 62px;
+  }
+
+  .practice-frame {
+    padding-top: 4px;
+  }
+
+  .setup-card {
+    border-radius: 22px;
+    padding: 22px 16px 18px;
+  }
+
+  .setup-card [style*="padding: 24px 20px"] {
+    padding: 18px 14px !important;
+  }
+
+  .setup-card [style*="margin-bottom: 22px"] {
+    margin-bottom: 16px !important;
+  }
+
+  .setup-card [style*="font-size: 26px"] {
+    font-size: 24px !important;
+  }
+
+  .setup-card [style*="font-size: 14px"] {
+    font-size: 15px !important;
+  }
+
+  .setup-card [style*="font-size: 12px"] {
+    font-size: 13px !important;
+  }
+
+  .opt {
+    min-height: 48px;
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  #typed-answer {
+    min-height: 50px;
+    padding: 12px 14px !important;
+    font-size: var(--form-control-font-size) !important;
+  }
+
+  .auth-centered {
+    min-height: calc(100dvh - 62px);
+    padding: 16px var(--mobile-gutter) calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .auth-card {
+    border-radius: 22px;
+    padding: 22px 18px;
+  }
+
+  .auth-card > h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .auth-lead {
+    font-size: 14px;
+  }
+
+  .auth-tabs {
+    margin-bottom: 22px;
+  }
+
+  .auth-tabs button,
+  .auth-tabs a {
+    min-height: var(--mobile-control-min-height);
+    height: auto;
+    font-size: 14px;
+  }
+
+  .auth-form {
+    gap: 13px;
+  }
+
+  .auth-form input:not([type="checkbox"]) {
+    height: 48px;
+    padding: 0 14px;
+  }
+
+  .tutor-header,
+  .tutee-header {
+    min-height: 60px;
+    padding: 8px var(--mobile-gutter);
+    gap: 8px;
+  }
+
+  .tutor-header .brand--compact,
+  .tutee-header .brand--compact {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .tutor-header .brand--compact .brand-name,
+  .tutee-header .brand--compact .brand-name {
+    display: none;
+  }
+
+  .tutor-header .brand--compact .brand-mark,
+  .tutee-header .brand--compact .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .tutor-account-pill {
+    height: 36px;
+    max-width: 136px;
+    padding-right: 9px;
+  }
+
+  .tutor-avatar,
+  .tutee-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .tutor-header button.account-link,
+  .tutee-header button.account-link {
+    height: 36px;
+    padding: 0 10px;
+  }
+
+  .tutor-b main,
+  .tutee-main {
+    padding: 14px var(--mobile-gutter) calc(80px + env(safe-area-inset-bottom));
+  }
+
+  .dashboard-title {
+    gap: 8px;
+    margin: 4px 0 14px;
+  }
+
+  .dashboard-title h1,
+  .tutee-welcome h1 {
+    font-size: 25px;
+  }
+
+  .tutor-tabs button,
+  .tutee-tabs button {
+    font-size: 10px;
+  }
+
+  .student-detail,
+  .queue-column,
+  .manage-card,
+  .tutee-focus,
+  .assignment-library,
+  .streak-card,
+  .assignment-record {
+    border-radius: 16px;
+    padding: var(--mobile-card-padding);
+  }
+
+  .manage-card h2,
+  .assignment-records h3 {
+    margin-bottom: 10px;
+  }
+
+  .compact-form,
+  .compact-security-form,
+  .list-composer > form {
+    gap: 9px;
+  }
+
+  .manage-card input:not(.app-number-field),
+  .manage-card textarea,
+  .assignment-form input:not(.app-number-field),
+  .assignment-record input:not(.app-number-field),
+  .assignment-form select,
+  .assignment-form input[type="date"],
+  .assignment-record input[type="date"] {
+    min-height: 46px;
+    padding: 10px 12px;
+  }
+
+  .mini-list > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    padding-top: 10px;
+  }
+
+  .mini-list form,
+  .mini-list button {
+    width: 100%;
+  }
+
+  .csv-upload-target {
+    min-height: 76px;
+    padding: 13px;
+  }
+
+  .assignment-form {
+    padding: 11px;
+  }
+
+  .assignment-due-form {
+    grid-template-columns: 1fr;
+  }
+
+  .assignment-due-form button,
+  .assignment-submit {
+    width: 100%;
+    min-height: var(--mobile-control-min-height);
+  }
+
+  .record-actions,
+  .student-account-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .record-actions form,
+  .student-account-actions form {
+    width: 100%;
+  }
+
+  .student-account-actions button,
+  .assignment-record .record-actions button {
+    width: 100%;
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .detail-heading {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .detail-metrics {
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  .detail-metrics article {
+    padding: 11px 10px;
+  }
+
+  .trend-card {
+    gap: 12px;
+    padding: 13px;
+    margin-bottom: 14px;
+  }
+
+  .coach-panel {
+    gap: 11px;
+    padding: 12px;
+  }
+
+  .tutee-welcome {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .streak-card {
+    gap: 10px;
+  }
+
+  .tutee-focus h2 {
+    font-size: 22px;
+  }
+
+  .tutee-focus-description {
+    margin-bottom: 16px;
+  }
+
+  .word-preview,
+  .session-preview {
+    margin-bottom: 12px;
+  }
+
+  .word-preview > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    align-items: start;
+    min-height: 0;
+    padding: 11px 12px;
+  }
+
+  .word-status {
+    width: max-content;
+  }
+
+  .assignment-library-title {
+    margin: 0 0 12px;
+  }
+
+  .assignment-library button {
+    margin-bottom: 8px;
+    padding: 12px;
+  }
+
+  .vocab-list-card {
+    padding: 12px 2px;
+  }
+
+  .vocab-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-detail-sheet {
+    border-radius: 20px 20px 0 0;
+  }
+
+  .assigned-sheet-header,
+  .assigned-sheet-scroll {
+    padding-inline: 14px;
+  }
+
+  .assigned-group-heading {
+    padding: 12px;
+  }
+
+  .assigned-word-row {
+    min-height: 0;
+    padding: 10px 12px;
+  }
+
+  .mobile-detail-sheet {
+    padding: 10px var(--mobile-gutter) calc(14px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-detail-sheet .student-detail {
+    padding: 10px 0 2px;
+  }
+
+  /* ── Mobile typography floor: normalize minimum sizes ─────────── */
+
+  /* Raise floor: 10px → 11px */
+  .practice-badge { padding: 3px 10px; }
+  .word-status { font-size: 10px; padding: 3px 7px; }
+
+  /* Raise secondary labels: 11px → 12px */
+  .queue-column button small,
+  .queue-column button p { font-size: 12px; }
+  .word-preview strong { font-size: 13px; }
+  .word-preview span { font-size: 12px; }
+  .assigned-word-row span { font-size: 12px; }
+  .assigned-group-heading h3 { font-size: 14px; }
+  .assigned-group-heading p { font-size: 12px; }
+  .share-link { font-size: 12px; }
+  .empty-list-copy { font-size: 13px; }
+
+  /* Practice component cards: normalize radius + padding via inline-style selectors */
+  .practice-frame [style*="border-radius: 32px"] {
+    border-radius: var(--radius-cards) !important;
+  }
+  /* Quiz word card: reduce horizontal padding on narrow screens */
+  .practice-frame [style*="30px 36px"] {
+    padding: 22px 18px 16px !important;
+  }
+  /* Result summary card */
+  .practice-frame [style*="36px 32px"] {
+    padding: 26px 22px 20px !important;
+  }
+}
+
+/* Desktop nav bar: match content max-width + centering */
+@media (min-width: 521px) {
+  .tutor-tabs,
+  .tutee-tabs {
+    left: 50%;
+    right: auto;
+    width: 520px;
+    transform: translateX(-50%);
+  }
+}
+

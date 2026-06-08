@@ -1,0 +1,86 @@
+/* ──────────────────────────────────────────────
+   PRACTICE SHELL
+   ────────────────────────────────────────────── */
+.practice-page {
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--bg);
+  padding: 0 16px 48px;
+}
+
+.practice-header {
+  height: 68px;
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.practice-back {
+  color: var(--pine);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+}
+
+.practice-back:hover {
+  color: var(--obs);
+}
+
+.practice-dashboard-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid #d9eaf7;
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--pine);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.practice-dashboard-back:hover {
+  background: #eef7ff;
+  color: var(--obs);
+}
+
+.practice-dashboard-back .feather-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.practice-context {
+  min-width: 0;
+  max-width: min(58vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--pine);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.practice-frame {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+.setup-card {
+  background: var(--white);
+  border: 1px solid rgba(204, 231, 255, .78);
+  border-radius: 30px;
+  box-shadow: var(--shadow);
+  padding: 31px 28px 28px;
+}
+
+.upload-zone:focus-visible {
+  outline: 2px solid var(--elec);
+  outline-offset: 3px;
+}
+
