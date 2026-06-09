@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FeatherIcon } from '@/components/FeatherIcon';
+import { Check, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // ── shared portal dropdown behaviour ──────────────────────────────────────
 
@@ -101,7 +101,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
         onClick={toggle}
       >
         <span>{selected?.label ?? placeholder}</span>
-        <FeatherIcon className={`app-select-chevron${open ? ' is-open' : ''}`} name="chevron-down" />
+        <ChevronDown className={`app-select-chevron${open ? ' is-open' : ''}`} />
       </button>
       {mounted && createPortal(
         <AnimatePresence>
@@ -127,7 +127,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
                 >
                   <span>{opt.label}</span>
                   {opt.value === value && (
-                    <FeatherIcon name="check" strokeWidth={2.5} width={13} height={13} />
+                    <Check strokeWidth={2.5} width={13} height={13} />
                   )}
                 </li>
               ))}
@@ -227,11 +227,11 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
             >
               <div className="app-calendar-nav">
                 <button type="button" className="app-calendar-nav-btn" onClick={prevMonth} aria-label="이전 달">
-                  <FeatherIcon name="chevron-left" width={14} height={14} />
+                  <ChevronLeft width={14} height={14} />
                 </button>
                 <span className="app-calendar-month">{year}년 {month + 1}월</span>
                 <button type="button" className="app-calendar-nav-btn" onClick={nextMonth} aria-label="다음 달">
-                  <FeatherIcon name="chevron-right" width={14} height={14} />
+                  <ChevronRight width={14} height={14} />
                 </button>
               </div>
               <div className="app-calendar-weekdays">

@@ -1,6 +1,20 @@
 'use client';
 
-import { FeatherIcon, type FeatherIconName } from '@/components/FeatherIcon';
+import type { LucideIcon } from 'lucide-react';
+import {
+  Award,
+  ChevronRight,
+  CircleCheck,
+  FileText,
+  Heart,
+  Info,
+  List,
+  Pencil,
+  RotateCcw,
+  Upload,
+  X,
+  Zap,
+} from 'lucide-react';
 
 export type IconName =
   | 'x' | 'check' | 'heart' | 'cup' | 'cr' | 'ccw'
@@ -13,28 +27,28 @@ interface IconProps {
   sw?: number;
 }
 
-const iconNames = {
-  x: 'x',
-  check: 'check-circle',
-  heart: 'heart',
-  cup: 'upload',
-  cr: 'chevron-right',
-  ccw: 'rotate-ccw',
-  award: 'award',
-  pen: 'edit-2',
-  list: 'list',
-  file: 'file-text',
-  info: 'info',
-  zap: 'zap',
-} satisfies Record<IconName, FeatherIconName>;
+const icons = {
+  x: X,
+  check: CircleCheck,
+  heart: Heart,
+  cup: Upload,
+  cr: ChevronRight,
+  ccw: RotateCcw,
+  award: Award,
+  pen: Pencil,
+  list: List,
+  file: FileText,
+  info: Info,
+  zap: Zap,
+} satisfies Record<IconName, LucideIcon>;
 
 export function Icon({ name, size = 16, color = 'currentColor', sw = 2 }: IconProps) {
+  const Glyph = icons[name];
   return (
-    <FeatherIcon
+    <Glyph
       fill={name === 'zap' ? color : undefined}
       fillOpacity={name === 'zap' ? .15 : undefined}
       height={size}
-      name={iconNames[name]}
       stroke={color}
       strokeWidth={sw}
       style={{ flexShrink: 0 }}
