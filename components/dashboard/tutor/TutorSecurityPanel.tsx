@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { changeTutorPasswordAction } from '@/app/actions/auth';
 import { Lock, X } from '@/components/AppIcons';
 import { SubmitButton } from '@/components/SubmitButton';
@@ -32,7 +32,7 @@ export function TutorSecurityPanel() {
         <AnimatePresence>
           {open && (
             <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="비밀번호 변경">
-              <motion.button
+              <m.button
                 className="bottom-sheet-backdrop"
                 type="button"
                 onClick={() => setOpen(false)}
@@ -42,7 +42,7 @@ export function TutorSecurityPanel() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               />
-              <motion.div
+              <m.div
                 className="bottom-sheet"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -64,7 +64,7 @@ export function TutorSecurityPanel() {
                     <SubmitButton className="cta primary-action" pendingText="변경 중...">비밀번호 변경</SubmitButton>
                   </div>
                 </form>
-              </motion.div>
+              </m.div>
             </div>
           )}
         </AnimatePresence>,

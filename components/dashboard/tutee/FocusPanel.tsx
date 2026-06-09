@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { TuteeAssignment } from '@/lib/models';
 import { ArrowRight, BookOpen, RefreshCw } from '@/components/AppIcons';
 import { StudyAssignmentSelect } from '@/components/dashboard/StudyAssignmentSelect';
@@ -22,7 +22,7 @@ export function FocusPanel({
 }) {
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <motion.section className="tutee-focus" key={assignment.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+      <m.section className="tutee-focus" key={assignment.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
         <h2>튜터가 배정한 단어</h2>
         <p className="tutee-focus-description">목록을 미리 보고, 준비되면 혼합형 퀴즈를 시작하세요.</p>
         <StudyAssignmentSelect assignments={assignments} selectedId={assignment.id} onSelect={onSelectAssignment} />
@@ -63,7 +63,7 @@ export function FocusPanel({
           </>
         )}
         {readOnly && <p className="read-only-note">보관된 계정입니다. 이전 기록만 볼 수 있습니다.</p>}
-      </motion.section>
+      </m.section>
     </AnimatePresence>
   );
 }

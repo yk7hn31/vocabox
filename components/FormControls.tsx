@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // ── shared portal dropdown behaviour ──────────────────────────────────────
@@ -106,7 +106,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
       {mounted && createPortal(
         <AnimatePresence>
           {open && pos && (
-            <motion.ul
+            <m.ul
               ref={dropdownRef}
               className="app-select-dropdown"
               role="listbox"
@@ -131,7 +131,7 @@ export function AppSelect({ name, options, placeholder = '선택', defaultValue 
                   )}
                 </li>
               ))}
-            </motion.ul>
+            </m.ul>
           )}
         </AnimatePresence>,
         document.body
@@ -214,7 +214,7 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
       {mounted && createPortal(
         <AnimatePresence>
           {open && pos && (
-            <motion.div
+            <m.div
               ref={calendarRef}
               className="app-calendar"
               role="dialog"
@@ -265,7 +265,7 @@ export function AppDateInput({ name, defaultValue = '', placeholder = '날짜 �
                   </button>
                 </div>
               )}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>,
         document.body

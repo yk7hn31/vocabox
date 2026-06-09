@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { TuteeAssignment } from '@/lib/models';
 import { X } from '@/components/AppIcons';
 import { AssignmentDetail } from './AssignmentDetail';
@@ -27,7 +27,7 @@ export function AssignmentDetailSheet({ assignment, open, onClose }: { assignmen
     <AnimatePresence>
       {open && (
         <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={`${assignment.title} 상세`}>
-          <motion.button
+          <m.button
             className="bottom-sheet-backdrop"
             type="button"
             onClick={onClose}
@@ -37,7 +37,7 @@ export function AssignmentDetailSheet({ assignment, open, onClose }: { assignmen
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           />
-          <motion.section
+          <m.section
             className="bottom-sheet assignment-detail assignment-detail--sheet"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -58,7 +58,7 @@ export function AssignmentDetailSheet({ assignment, open, onClose }: { assignmen
                 onChange={event => setQuery(event.target.value)}
               />
             </div>
-          </motion.section>
+          </m.section>
         </div>
       )}
     </AnimatePresence>,

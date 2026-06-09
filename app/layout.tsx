@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import './globals.css';
+import { MotionProvider } from '@/components/MotionProvider';
 
 export const metadata: Metadata = {
   applicationName: 'VocaBox',
@@ -29,7 +30,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   );
 }

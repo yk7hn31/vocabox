@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { SavedList } from '@/lib/models';
 import type { WordItem } from '@/components/practice/types';
 import { importVocabularyCsv, POS_CODE_HINTS } from '@/components/practice/preparation';
@@ -112,7 +112,7 @@ export function ListComposer({ lists }: { lists: SavedList[] }) {
           {/* View-only sheet */}
           {viewList && (
             <div key="view" className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="단어 목록">
-              <motion.button
+              <m.button
                 className="bottom-sheet-backdrop"
                 type="button"
                 onClick={() => setViewList(null)}
@@ -122,7 +122,7 @@ export function ListComposer({ lists }: { lists: SavedList[] }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               />
-              <motion.div
+              <m.div
                 className="bottom-sheet"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -161,14 +161,14 @@ export function ListComposer({ lists }: { lists: SavedList[] }) {
                     </table>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           )}
 
           {/* Edit sheet */}
           {sheetOpen && (
             <div key="edit" className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={listId ? '단어장 편집' : '새 단어장'}>
-              <motion.button
+              <m.button
                 className="bottom-sheet-backdrop"
                 type="button"
                 onClick={() => setSheetOpen(false)}
@@ -178,7 +178,7 @@ export function ListComposer({ lists }: { lists: SavedList[] }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               />
-              <motion.div
+              <m.div
                 className="bottom-sheet"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -264,7 +264,7 @@ export function ListComposer({ lists }: { lists: SavedList[] }) {
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </m.div>
             </div>
           )}
         </AnimatePresence>,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Check, ChevronLeft, ChevronRight, RotateCcw } from '@/components/AppIcons';
 import type { WordItem } from './types';
 
@@ -95,7 +95,7 @@ export function FlashcardApp({ title, entries }: { title: string; entries: WordI
 
           <AnimatePresence mode="wait">
             {current && (
-              <motion.button
+              <m.button
                 aria-label={flipped ? `${current.word} 뜻 숨기기` : `${current.word} 뜻 보기`}
                 className={`flashcard${flipped ? ' is-flipped' : ''}${known ? ' is-known' : ''}`}
                 key={current.flashcardId}
@@ -115,7 +115,7 @@ export function FlashcardApp({ title, entries }: { title: string; entries: WordI
                   <small>{current.word}</small>
                   <strong>{current.meanings.join(' / ')}</strong>
                 </span>
-              </motion.button>
+              </m.button>
             )}
           </AnimatePresence>
 

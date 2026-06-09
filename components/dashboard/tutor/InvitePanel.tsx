@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { TutorDashboardData } from '@/lib/models';
 import { createInviteAction, revokeInviteAction } from '@/app/actions/tutor';
 import { Send, X } from '@/components/AppIcons';
@@ -35,7 +35,7 @@ export function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sh
         <AnimatePresence>
           {open && (
             <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="학습자 초대">
-              <motion.button
+              <m.button
                 className="bottom-sheet-backdrop"
                 type="button"
                 onClick={() => setOpen(false)}
@@ -45,7 +45,7 @@ export function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sh
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               />
-              <motion.div
+              <m.div
                 className="bottom-sheet"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
@@ -96,7 +96,7 @@ export function InvitePanel({ data, sharedLink }: { data: TutorDashboardData; sh
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           )}
         </AnimatePresence>,

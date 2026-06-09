@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { TuteeAssignment } from '@/lib/models';
 import { ChevronDown, X } from '@/components/AppIcons';
 import { dueLabel } from './utils';
@@ -24,7 +24,7 @@ export function AssignedWordsSheet({ assignments, selected, open, onClose }: { a
     <AnimatePresence>
       {open && (
         <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label="배정된 단어">
-          <motion.button
+          <m.button
             className="bottom-sheet-backdrop"
             type="button"
             onClick={onClose}
@@ -34,7 +34,7 @@ export function AssignedWordsSheet({ assignments, selected, open, onClose }: { a
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           />
-          <motion.div
+          <m.div
             className="bottom-sheet"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -58,7 +58,7 @@ export function AssignedWordsSheet({ assignments, selected, open, onClose }: { a
                 );
               })}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

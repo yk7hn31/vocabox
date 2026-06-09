@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { ResultSummary } from './session';
 import { Icon } from './Icon';
 import { PosBadge, QuestionTypeBadge, RestartAction } from './PracticeUI';
@@ -31,7 +31,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
     <div style={{ maxWidth: 460, width: '100%' }}>
       <h2 className="sr-only">퀴즈 결과</h2>
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.95, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
@@ -66,7 +66,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
           ))}
         </div>
         <RestartAction onClick={onRestart} />
-      </motion.div>
+      </m.div>
 
       {wrongItems.length > 0 && (
         <div style={{ marginBottom: 16 }}>
@@ -75,7 +75,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {wrongItems.map((entry, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 custom={index}
                 variants={resultItem}
@@ -104,7 +104,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
                     내 답: {entry.userAnswer}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -120,7 +120,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
             const isRight = isScored && entry.isRight === true;
             const isWrong = isScored && entry.isRight === false;
             return (
-              <motion.div
+              <m.div
                 key={index}
                 custom={index}
                 variants={resultItem}
@@ -156,7 +156,7 @@ export function ResultScreen({ summary, onRestart }: ResultScreenProps) {
                     </p>
                   )}
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

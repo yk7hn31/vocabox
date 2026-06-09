@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, MotionConfig } from 'framer-motion';
+import { m, MotionConfig } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import { Check } from '@/components/AppIcons';
 import { OtpInput } from '@/components/OtpInput';
@@ -86,12 +86,12 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
   return (
     <MotionConfig reducedMotion="user">
       <div className="auth-page auth-a">
-        <motion.header className="auth-header" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.28 }}>
+        <m.header className="auth-header" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.28 }}>
           <Brand compact /><Link href="/">홈으로</Link>
-        </motion.header>
+        </m.header>
         <main className="auth-centered">
           <div className="auth-column">
-            <motion.div
+            <m.div
               className="auth-card"
               initial={{ opacity: 0, y: 18, scale: 0.985 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -193,7 +193,7 @@ export function AuthView({ flow = 'login', token = '', displayName, valid = true
                   )}
                 </>
               )}
-            </motion.div>
+            </m.div>
             {!invited && !reset && flow !== 'reset-complete' && (
               <div className="auth-role-switch">
                 {register ? (
