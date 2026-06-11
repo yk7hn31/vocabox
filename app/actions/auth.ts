@@ -1,6 +1,5 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createSession, requireUser, revokeCurrentSession, revokeUserSessions } from '@/lib/server/auth';
@@ -24,55 +23,17 @@ function text(formData: FormData, name: string) {
   return String(formData.get(name) ?? '').trim();
 }
 
-async function requestIp() {
-  const values = await headers();
-  return values.get('x-forwarded-for')?.split(',')[0]?.trim() || values.get('x-real-ip') || 'unknown';
-}
-
-async function blockedIp(ip: string) {
-  const rows = await db()<{ blocked_until: Date | null }[]>`
-    select blocked_until from login_throttles where ip_address = ${ip} limit 1
-  `;
-  return Boolean(rows[0]?.blocked_until && rows[0].blocked_until > new Date());
-}
-
-async function failLogin(ip: string) {
-  await db()`
-    insert into login_throttles (ip_address, failure_count, window_started_at, blocked_until, updated_at)
-    values (${ip}, 1, now(), null, now())
-    on conflict (ip_address) do update set
-      failure_count = case
-        when login_throttles.window_started_at < now() - interval '15 minutes' then 1
-        else login_throttles.failure_count + 1 end,
-      window_started_at = case
-        when login_throttles.window_started_at < now() - interval '15 minutes' then now()
-        else login_throttles.window_started_at end,
-      blocked_until = case
-        when login_throttles.window_started_at >= now() - interval '15 minutes'
-          and login_throttles.failure_count + 1 >= 10 then now() + interval '15 minutes'
-        else null end,
-      updated_at = now()
-  `;
-}
-
 export async function lookupUsernameAction(_: UsernameState, formData: FormData): Promise<UsernameState> {
-  const ip = await requestIp();
-  if (await blockedIp(ip)) return { error: '로그인 시도가 많습니다. 15분 후 다시 시도하세요.' };
   const username = normalizeUsername(text(formData, 'username'));
   if (!username) return { error: '아이디를 입력하세요.' };
   const rows = await db()<{ role: string }[]>`
     select role from users where username_normalized = ${username} limit 1
   `;
-  if (!rows[0]) {
-    await failLogin(ip);
-    return { error: '등록된 아이디가 없습니다.' };
-  }
+  if (!rows[0]) return { error: '등록된 아이디가 없습니다.' };
   return { role: rows[0].role as 'tutor' | 'tutee', username };
 }
 
 export async function loginAction(_: AuthState, formData: FormData): Promise<AuthState> {
-  const ip = await requestIp();
-  if (await blockedIp(ip)) return { error: '로그인 시도가 많습니다. 15분 후 다시 시도하세요.' };
   const username = normalizeUsername(text(formData, 'username'));
   const secret = String(formData.get('secret') ?? '');
   const rows = await db()<{ id: string; role: 'tutor' | 'tutee'; credential_hash: string }[]>`
@@ -80,10 +41,8 @@ export async function loginAction(_: AuthState, formData: FormData): Promise<Aut
   `;
   const account = rows[0];
   if (!account || !(await verifyCredential(account.credential_hash, secret))) {
-    await failLogin(ip);
     return { error: '아이디 또는 비밀번호를 확인하세요.' };
   }
-  await db()`delete from login_throttles where ip_address = ${ip}`;
   await createSession(account.id);
   redirect(account.role === 'tutor' ? '/tutor' : '/tutee');
 }
