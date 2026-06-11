@@ -71,7 +71,7 @@ Design system: Geniestudio — light theme, `--color-midnight-ink` (`#181d27`) f
 
 ### Database
 
-Postgres accessed directly via the `postgres` npm package (not Supabase client). Schema in `supabase/migrations/`. Core tables: `users`, `tutee_profiles`, `sessions`, `vocabulary_lists`, `vocabulary_entries`, `assignments`, `assignment_entries`, `attempts`, `attempt_responses`, `tutee_invites`, `passcode_resets`, `login_throttles`.
+Postgres accessed directly via the `postgres` npm package (not Supabase client). Schema in `supabase/migrations/`. Core tables: `users`, `tutee_profiles`, `sessions`, `vocabulary_lists`, `vocabulary_entries`, `assignments`, `assignment_entries`, `attempts`, `attempt_responses`, `tutee_invites`, `passcode_resets`.
 
 RLS is enabled on all tables; enforcement is done at the application layer in server actions (tutor ownership checks before every mutation).
 
