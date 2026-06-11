@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useReducer, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Brand } from '@/components/Brand';
 import { UploadScreen } from './UploadScreen';
 import { QuizScreen } from './QuizScreen';
@@ -73,7 +73,7 @@ export function PracticeApp({ startWithSample = false }: PracticeAppProps) {
       <div className="practice-frame">
         <div style={{ width: '100%', maxWidth: 460, display: 'flex', justifyContent: 'center' }}>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={session.screen}
               style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
               initial={{ opacity: 0, y: 20 }}
@@ -82,7 +82,7 @@ export function PracticeApp({ startWithSample = false }: PracticeAppProps) {
               transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
             >
               {content()}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
-import { motion, MotionConfig } from 'framer-motion';
+import { m, MotionConfig } from 'framer-motion';
 import type { TuteeDashboardData } from '@/lib/models';
 import { Award, BookOpen, Clipboard, Settings } from '@/components/AppIcons';
 import { AssignmentDetailSheet } from '@/components/dashboard/tutee/AssignmentDetailSheet';
@@ -33,7 +33,7 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
     <MotionConfig reducedMotion="user">
       <div className="tutee-page">
         <Header username={data.user.username} />
-        <motion.main className="tutee-main" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+        <m.main className="tutee-main" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <section className="tutee-welcome">
             <div><h1>오늘도 한 세트 해볼까요?</h1><p>@{data.tutorUsername} 튜터가 보낸 과제를 확인하세요.</p></div>
             <div className="streak-card">
@@ -83,7 +83,7 @@ export function TuteeDashboard({ data }: { data: TuteeDashboardData }) {
           >
             <SecurityPanel />
           </section>
-        </motion.main>
+        </m.main>
         <div className="tutee-tabs" role="tablist" aria-label="학습자 대시보드">
           {tabs.map(tab => (
             <button

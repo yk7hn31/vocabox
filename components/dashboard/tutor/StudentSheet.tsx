@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { SavedList, TutorAssignment, TutorTutee } from '@/lib/models';
 import type { ResultEntry } from '@/components/practice/types';
 import {
@@ -124,7 +124,7 @@ function AssignmentManagementSheet({
 
   return (
     <div className="assignment-create-layer assignment-manage-layer" role="dialog" aria-modal="true" aria-label={`${assignment.title} 과제 설정`}>
-      <motion.button
+      <m.button
         className="assignment-create-backdrop"
         type="button"
         onClick={onClose}
@@ -134,7 +134,7 @@ function AssignmentManagementSheet({
         exit={{ opacity: 0 }}
         transition={{ duration: 0.16 }}
       />
-      <motion.div
+      <m.div
         className="bottom-sheet bottom-sheet--wide assignment-create-sheet assignment-manage-sheet"
         initial={{ y: '100%', opacity: 0.92 }}
         animate={{ y: 0, opacity: 1 }}
@@ -262,7 +262,7 @@ function AssignmentManagementSheet({
             </section>
           )}
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -348,7 +348,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
 
   return (
     <div className="bottom-sheet-layer" role="dialog" aria-modal="true" aria-label={`${student.displayName} 상세 정보`}>
-      <motion.button
+      <m.button
         className="bottom-sheet-backdrop"
         type="button"
         onClick={onClose}
@@ -358,7 +358,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
       />
-      <motion.div
+      <m.div
         className="bottom-sheet bottom-sheet--wide"
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
@@ -492,7 +492,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
             </button>
           </div>
         )}
-      </motion.div>
+      </m.div>
       <AnimatePresence>
         {selectedAssignment && (
           <AssignmentManagementSheet
@@ -506,7 +506,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
         )}
         {selectedAttemptForDetail && (
           <div key="attempt-detail" className="attempt-detail-layer" role="dialog" aria-modal="true" aria-label="시도 상세">
-            <motion.button
+            <m.button
               className="attempt-detail-backdrop"
               type="button"
               onClick={() => setSelectedAttemptId(null)}
@@ -516,7 +516,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
               exit={{ opacity: 0 }}
               transition={{ duration: 0.14 }}
             />
-            <motion.div
+            <m.div
               className="bottom-sheet--wide attempt-detail-sheet"
               initial={{ y: '100%', opacity: 0.92 }}
               animate={{ y: 0, opacity: 1 }}
@@ -562,12 +562,12 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
                   </div>
                 )}
               </div>
-            </motion.div>
+            </m.div>
           </div>
         )}
         {assignmentSheetOpen && (
           <div key="assignment-create" className="assignment-create-layer" role="dialog" aria-modal="true" aria-label="새 과제 배정">
-            <motion.button
+            <m.button
               className="assignment-create-backdrop"
               type="button"
               onClick={() => setAssignmentSheetOpen(false)}
@@ -577,7 +577,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
               exit={{ opacity: 0 }}
               transition={{ duration: 0.16 }}
             />
-            <motion.div
+            <m.div
               className="bottom-sheet bottom-sheet--wide assignment-create-sheet"
               initial={{ y: '100%', opacity: 0.92 }}
               animate={{ y: 0, opacity: 1 }}
@@ -637,7 +637,7 @@ export function StudentSheet({ student, lists, onClose }: { student: TutorTutee;
                 </button>
                 {assignState.error && <p className="form-error">{assignState.error}</p>}
               </form>
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>

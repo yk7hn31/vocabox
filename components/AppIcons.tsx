@@ -1,36 +1,62 @@
-import type { FeatherIconName, FeatherIconProps } from '@/components/FeatherIcon';
-import { FeatherIcon } from '@/components/FeatherIcon';
+import type { LucideIcon, LucideProps } from 'lucide-react';
+import {
+  Activity as ActivityIcon,
+  Archive as ArchiveIcon,
+  ArrowRight as ArrowRightIcon,
+  Award as AwardIcon,
+  BookOpen as BookOpenIcon,
+  Check as CheckIcon,
+  ChevronDown as ChevronDownIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  CircleAlert as AlertCircleIcon,
+  CircleCheck as CheckCircleIcon,
+  Clipboard as ClipboardIcon,
+  Clock as ClockIcon,
+  Lock as LockIcon,
+  Pencil as Edit2Icon,
+  Plus as PlusIcon,
+  RefreshCw as RefreshCwIcon,
+  RotateCcw as RotateCcwIcon,
+  Send as SendIcon,
+  Settings as SettingsIcon,
+  SquareCheckBig as CheckSquareIcon,
+  Trash2 as Trash2Icon,
+  Upload as UploadIcon,
+  User as UserIcon,
+  X as XIcon,
+} from 'lucide-react';
 
-type IconProps = Omit<FeatherIconProps, 'name'>;
+type IconProps = Omit<LucideProps, 'ref'>;
 
-function createIcon(name: FeatherIconName) {
+function createIcon(Base: LucideIcon) {
   return function Icon({ className, ...props }: IconProps) {
-    return <FeatherIcon className={`feather-icon${className ? ` ${className}` : ''}`} name={name} {...props} />;
+    return <Base className={`feather-icon${className ? ` ${className}` : ''}`} {...props} />;
   };
 }
 
-export const Activity = createIcon('activity');
-export const AlertCircle = createIcon('alert-circle');
-export const Archive = createIcon('archive');
-export const ArrowRight = createIcon('arrow-right');
-export const Award = createIcon('award');
-export const BookOpen = createIcon('book-open');
-export const Check = createIcon('check');
-export const CheckCircle = createIcon('check-circle');
-export const CheckSquare = createIcon('check-square');
-export const ChevronDown = createIcon('chevron-down');
-export const ChevronLeft = createIcon('chevron-left');
-export const ChevronRight = createIcon('chevron-right');
-export const Clipboard = createIcon('clipboard');
-export const Clock = createIcon('clock');
-export const Edit2 = createIcon('edit-2');
-export const Lock = createIcon('lock');
-export const Plus = createIcon('plus');
-export const RefreshCw = createIcon('refresh-cw');
-export const RotateCcw = createIcon('rotate-ccw');
-export const Send = createIcon('send');
-export const Settings = createIcon('settings');
-export const Trash2 = createIcon('trash-2');
-export const Upload = createIcon('upload');
-export const User = createIcon('user');
-export const X = createIcon('x');
+export const Activity = createIcon(ActivityIcon);
+export const AlertCircle = createIcon(AlertCircleIcon);
+export const Archive = createIcon(ArchiveIcon);
+export const ArrowRight = createIcon(ArrowRightIcon);
+export const Award = createIcon(AwardIcon);
+export const BookOpen = createIcon(BookOpenIcon);
+export const Check = createIcon(CheckIcon);
+export const CheckCircle = createIcon(CheckCircleIcon);
+export const CheckSquare = createIcon(CheckSquareIcon);
+export const ChevronDown = createIcon(ChevronDownIcon);
+export const ChevronLeft = createIcon(ChevronLeftIcon);
+export const ChevronRight = createIcon(ChevronRightIcon);
+export const Clipboard = createIcon(ClipboardIcon);
+export const Clock = createIcon(ClockIcon);
+export const Edit2 = createIcon(Edit2Icon);
+export const Lock = createIcon(LockIcon);
+export const Plus = createIcon(PlusIcon);
+export const RefreshCw = createIcon(RefreshCwIcon);
+export const RotateCcw = createIcon(RotateCcwIcon);
+export const Send = createIcon(SendIcon);
+export const Settings = createIcon(SettingsIcon);
+export const Trash2 = createIcon(Trash2Icon);
+export const Upload = createIcon(UploadIcon);
+export const User = createIcon(UserIcon);
+export const X = createIcon(XIcon);

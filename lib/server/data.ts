@@ -93,25 +93,31 @@ async function readAssignments(tuteeIds: string[]) {
 
 export async function getTutorDashboard(user: CurrentUser): Promise<TutorDashboardData> {
   const sql = db();
-  const tuteeRows = await sql<TuteeRow[]>`
-    select u.id, u.username, tp.display_name, tp.archived_at
-    from tutee_profiles tp join users u on u.id = tp.user_id
-    where tp.tutor_id = ${user.id} order by tp.created_at desc
-  `;
-  const listRows = await sql<ListRow[]>`
-    select id, title, archived_at from vocabulary_lists
-    where tutor_id = ${user.id} order by created_at desc
-  `;
+  // Independent top-level queries run in parallel to save serial round-trips.
+  const [tuteeRows, listRows, inviteRows] = await Promise.all([
+    sql<TuteeRow[]>`
+      select u.id, u.username, tp.display_name, tp.archived_at
+      from tutee_profiles tp join users u on u.id = tp.user_id
+      where tp.tutor_id = ${user.id} order by tp.created_at desc
+    `,
+    sql<ListRow[]>`
+      select id, title, archived_at from vocabulary_lists
+      where tutor_id = ${user.id} order by created_at desc
+    `,
+    sql<{ id: string; display_name: string; expires_at: Date; revoked_at: Date | null; accepted_at: Date | null }[]>`
+      select id, display_name, expires_at, revoked_at, accepted_at
+      from tutee_invites where tutor_id = ${user.id} order by created_at desc limit 20
+    `,
+  ]);
+  // These two each depend on the ids resolved above, so they run together next.
   const listIds = listRows.map(item => item.id);
-  const listEntries = listIds.length ? await sql<EntryRow[]>`
-    select id, list_id as parent_id, word, pos, meanings
-    from vocabulary_entries where list_id in ${sql(listIds)} order by position
-  ` : [];
-  const inviteRows = await sql<{ id: string; display_name: string; expires_at: Date; revoked_at: Date | null; accepted_at: Date | null }[]>`
-    select id, display_name, expires_at, revoked_at, accepted_at
-    from tutee_invites where tutor_id = ${user.id} order by created_at desc limit 20
-  `;
-  const related = await readAssignments(tuteeRows.map(item => item.id));
+  const [listEntries, related] = await Promise.all([
+    listIds.length ? sql<EntryRow[]>`
+      select id, list_id as parent_id, word, pos, meanings
+      from vocabulary_entries where list_id in ${sql(listIds)} order by position
+    ` : Promise.resolve([] as EntryRow[]),
+    readAssignments(tuteeRows.map(item => item.id)),
+  ]);
 
   const tutees: TutorTutee[] = tuteeRows.map(row => ({
     id: row.id,

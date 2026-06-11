@@ -3,7 +3,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { submitAttemptAction } from '@/app/actions/attempt';
 import { ChevronLeft } from '@/components/AppIcons';
 import type { QuizItem } from './types';
@@ -50,7 +50,7 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
       <div className="practice-frame">
         <div style={{ width: '100%', maxWidth: 460, display: 'flex', justifyContent: 'center' }}>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={session.screen}
               style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: 12 }}
               initial={{ opacity: 0, y: 20 }}
@@ -81,7 +81,7 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
                   {!saving && saveMessage && <p className="practice-save-message">{saveMessage}</p>}
                 </>
               )}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>

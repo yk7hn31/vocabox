@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { QuizView } from './session';
 import { Icon } from './Icon';
 import {
@@ -134,7 +134,7 @@ export function QuizScreen({
       </p>
 
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={index}
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
@@ -202,14 +202,14 @@ export function QuizScreen({
               </div>
 
               {phase === 'selected' && (!testMode || item.qType === 'multi') && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.16 }}
                   style={{ marginBottom: 12 }}
                 >
                   <PrimaryAction onClick={onSubmit}>{item.qType === 'multi' ? '선택 완료' : '제출'}</PrimaryAction>
-                </motion.div>
+                </m.div>
               )}
             </>
           )}
@@ -248,12 +248,12 @@ export function QuizScreen({
               )}
             </div>
           )}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       <AnimatePresence>
         {answered && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
@@ -315,7 +315,7 @@ export function QuizScreen({
                 <ContinueAction isLast={isLast} onClick={onContinue} />
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

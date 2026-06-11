@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
+import { AnimatePresence, m, MotionConfig } from 'framer-motion';
 import type { TutorDashboardData } from '@/lib/models';
 import { BookOpen, Settings, User } from '@/components/AppIcons';
 import { Header } from '@/components/dashboard/tutor/Header';
@@ -33,7 +33,7 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
     <MotionConfig reducedMotion="user">
       <div className="tutor-page tutor-b">
         <Header username={data.user.username} />
-        <motion.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+        <m.main initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <section className="tutee-welcome tutor-welcome">
             <div><h1>오늘 학습 흐름을 확인해볼까요?</h1><p>학습자 상태와 단어장을 한 곳에서 관리하세요.</p></div>
           </section>
@@ -48,19 +48,19 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
               <section className="queue-column queue-column--care">
                 <h2>먼저 확인 <b>{attention.length}</b></h2>
                 {attention.map(student => (
-                  <motion.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
+                  <m.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
                     <StatusBadge status={statusOf(student)} /><strong>{student.displayName} <small>@{student.username}</small></strong>
                     <p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
-                  </motion.button>
+                  </m.button>
                 ))}
                 {!attention.length && <p className="empty-list-copy">확인할 학습자가 없습니다.</p>}
               </section>
               <section className="queue-column">
                 <h2>잘 진행 중 <b>{progressing.length}</b></h2>
                 {progressing.map(student => (
-                  <motion.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
+                  <m.button layout key={student.id} type="button" whileTap={{ scale: .985 }} onClick={() => setSheetStudentId(student.id)}>
                     <StatusBadge status={statusOf(student)} /><strong>{student.displayName} <small>@{student.username}</small></strong><p>최근 정확도 {latestAttempt(student)?.percent ?? '-'}%</p>
-                  </motion.button>
+                  </m.button>
                 ))}
                 {!progressing.length && <p className="empty-list-copy">진행 중인 학습자가 없습니다.</p>}
               </section>
@@ -88,7 +88,7 @@ export function TutorDashboard({ data, sharedLink }: { data: TutorDashboardData;
             <InvitePanel data={data} sharedLink={sharedLink} />
             <TutorSecurityPanel />
           </section>
-        </motion.main>
+        </m.main>
         <div className="tutor-tabs" role="tablist" aria-label="튜터 대시보드">
           {tabs.map(tab => (
             <button
