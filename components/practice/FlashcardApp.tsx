@@ -30,6 +30,7 @@ export function FlashcardApp({ title, entries }: { title: string; entries: WordI
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [knownIds, setKnownIds] = useState<Set<string>>(() => new Set());
+  const [backLoading, setBackLoading] = useState(false);
   const current = cards[index];
   const known = current ? knownIds.has(current.flashcardId) : false;
   const progress = cards.length ? Math.round(((index + 1) / cards.length) * 100) : 0;
@@ -80,7 +81,13 @@ export function FlashcardApp({ title, entries }: { title: string; entries: WordI
   return (
     <div className="practice-page">
       <header className="practice-header">
-        <Link className="practice-dashboard-back" href="/tutee"><ChevronLeft />대시보드</Link>
+        <Link
+          className={`practice-dashboard-back${backLoading ? ' is-loading' : ''}`}
+          href="/tutee"
+          onClick={() => setBackLoading(true)}
+        >
+          {backLoading ? '이동 중...' : <><ChevronLeft />대시보드</>}
+        </Link>
         <span className="practice-context">{title}</span>
       </header>
       <div className="practice-frame">

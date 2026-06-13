@@ -22,10 +22,17 @@
   font-size: 14px;
   font-weight: 600;
   padding: 8px 12px;
+  transition: color 0.2s, opacity 0.2s;
 }
 
 .practice-back:hover {
   color: var(--obs);
+}
+
+.practice-back.is-loading {
+  color: var(--pine);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .practice-dashboard-back {
@@ -40,11 +47,19 @@
   color: var(--pine);
   font-size: 14px;
   font-weight: 700;
+  transition: background 0.2s, color 0.2s, opacity 0.2s;
 }
 
 .practice-dashboard-back:hover {
   background: #eef7ff;
   color: var(--obs);
+}
+
+.practice-dashboard-back.is-loading {
+  background: #ddeef9;
+  color: var(--pine);
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .practice-dashboard-back .feather-icon {

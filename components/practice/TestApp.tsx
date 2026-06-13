@@ -29,6 +29,7 @@ export function TestApp({ assignmentId, title, questions, timeLimitMinutes }: {
   const [timedOut, setTimedOut] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [backLoading, setBackLoading] = useState(false);
   const startedAt = useRef(Date.now());
   const persisted = useRef(false);
 
@@ -89,7 +90,13 @@ export function TestApp({ assignmentId, title, questions, timeLimitMinutes }: {
             {formatTime(timeLeft)}
           </div>
         )}
-        <Link className="practice-back" href="/tutee">{title} · 대시보드</Link>
+        <Link
+          className={`practice-back${backLoading ? ' is-loading' : ''}`}
+          href="/tutee"
+          onClick={() => setBackLoading(true)}
+        >
+          {backLoading ? '이동 중...' : `${title} · 대시보드`}
+        </Link>
       </header>
 
       {timedOut && (

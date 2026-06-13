@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, m } from 'framer-motion';
 import type { TuteeAssignment } from '@/lib/models';
@@ -20,6 +21,8 @@ export function FocusPanel({
   openWords: () => void;
   onSelectAssignment: (value: TuteeAssignment) => void;
 }) {
+  const [loading, setLoading] = useState<'main' | 'flashcard' | null>(null);
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       <m.section className="tutee-focus" key={assignment.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
@@ -47,17 +50,21 @@ export function FocusPanel({
         {!readOnly && (
           <>
             <Link
-              className="tutee-start-action"
+              className={`tutee-start-action${loading === 'main' ? ' is-loading' : ''}`}
               href={`/tutee/assignments/${assignment.id}/${assignment.mode === 'test' ? 'test' : 'practice'}`}
+              onClick={() => setLoading('main')}
             >
-              {assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'} <ArrowRight />
+              {loading === 'main' ? '이동 중...' : assignment.mode === 'test' ? '시험 시작하기' : '학습 시작하기'}
+              {loading !== 'main' && <ArrowRight />}
             </Link>
             {assignment.mode === 'practice' && (
               <Link
-                className="tutee-flashcard-action"
+                className={`tutee-flashcard-action${loading === 'flashcard' ? ' is-loading' : ''}`}
                 href={`/tutee/assignments/${assignment.id}/flashcards`}
+                onClick={() => setLoading('flashcard')}
               >
-                플래쉬카드로 암기하기 <RefreshCw />
+                {loading === 'flashcard' ? '이동 중...' : '플래쉬카드로 암기하기'}
+                {loading !== 'flashcard' && <RefreshCw />}
               </Link>
             )}
           </>

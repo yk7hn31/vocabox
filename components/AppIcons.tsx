@@ -13,6 +13,7 @@ import {
   CircleCheck as CheckCircleIcon,
   Clipboard as ClipboardIcon,
   Clock as ClockIcon,
+  Loader as LoaderIcon,
   Lock as LockIcon,
   Pencil as Edit2Icon,
   Plus as PlusIcon,
@@ -50,6 +51,7 @@ export const ChevronRight = createIcon(ChevronRightIcon);
 export const Clipboard = createIcon(ClipboardIcon);
 export const Clock = createIcon(ClockIcon);
 export const Edit2 = createIcon(Edit2Icon);
+export const Loader = createIcon(LoaderIcon);
 export const Lock = createIcon(LockIcon);
 export const Plus = createIcon(PlusIcon);
 export const RefreshCw = createIcon(RefreshCwIcon);

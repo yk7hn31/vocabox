@@ -16,6 +16,7 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
   const [session, dispatch] = useReducer(reducePracticeSession, INITIAL_PRACTICE_SESSION);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [backLoading, setBackLoading] = useState(false);
   const startedAt = useRef(Date.now());
   const persisted = useRef(false);
   const activeQuestions = useRef(questions);
@@ -44,7 +45,13 @@ export function SavedPracticeApp({ assignmentId, title, questions }: { assignmen
   return (
     <div className="practice-page">
       <header className="practice-header">
-        <Link className="practice-dashboard-back" href="/tutee"><ChevronLeft />대시보드</Link>
+        <Link
+          className={`practice-dashboard-back${backLoading ? ' is-loading' : ''}`}
+          href="/tutee"
+          onClick={() => setBackLoading(true)}
+        >
+          {backLoading ? '이동 중...' : <><ChevronLeft />대시보드</>}
+        </Link>
         <span className="practice-context">{title}</span>
       </header>
       <div className="practice-frame">
